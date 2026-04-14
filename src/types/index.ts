@@ -11,6 +11,7 @@ export type {
   ShoppingItem,
   ShoppingItemQuantity,
   ShoppingItemStatus,
+  ShoppingList,
 } from "./shoppingItem";
 export type { Recipe, RecipeIngredient } from "./recipe";
 export type { ActivityLog, ActivityAction } from "./activityLog";

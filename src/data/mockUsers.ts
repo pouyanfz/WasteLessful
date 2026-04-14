@@ -24,6 +24,8 @@ export const mockUsers: User[] = [
       autoAddToShoppingListOnExpiry: true,
       autoAddToShoppingListOnLowQuantity: false,
       getGroupNotifications: true,
+      archiveRetentionDays: null,
+      archiveMaxItems: null,
     },
   },
   {
@@ -47,6 +49,8 @@ export const mockUsers: User[] = [
       autoAddToShoppingListOnExpiry: false,
       autoAddToShoppingListOnLowQuantity: false,
       getGroupNotifications: false,
+      archiveRetentionDays: 30,
+      archiveMaxItems: 50,
     },
   },
 ];

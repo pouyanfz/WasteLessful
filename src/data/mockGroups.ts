@@ -5,6 +5,7 @@ export const mockGroups: Group[] = [
   {
     id: "group-1",
     name: "Home",
+    color: "#3b82f6",
     ownerId: "user-1",
     memberIds: ["user-1", "user-2"],
     inviteCode: "HOME-1234",
@@ -14,6 +15,7 @@ export const mockGroups: Group[] = [
   {
     id: "group-2",
     name: "Office",
+    color: "#10b981",
     ownerId: "user-1",
     memberIds: ["user-1"],
     inviteCode: "OFFI-5678",

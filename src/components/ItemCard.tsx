@@ -1,9 +1,12 @@
-import type { Item } from "../types";
+import type { Item, Group } from "../types";
 import { daysUntilExpiry, daysSinceAdded } from "../utils/expiry";
 import { quantityPercentage } from "../utils/quantity";
+import { groupBadgeBg, groupBadgeColor } from "../data/groupColors";
 
 interface ItemCardProps {
   item: Item;
+  group?: Pick<Group, "name" | "color">;
+  showGroupBadge?: boolean;
   onClick?: () => void;
   onAdjust?: (delta: number) => void;
 }
@@ -21,7 +24,7 @@ function getExpiryLabel(item: Item): { label: string; color: string } {
   return { label: `Expires in ${days}d`, color: "text-green-500" };
 }
 
-export default function ItemCard({ item, onClick, onAdjust }: ItemCardProps) {
+export default function ItemCard({ item, group, showGroupBadge = false, onClick, onAdjust }: ItemCardProps) {
   const pct = quantityPercentage(item.quantity.current, item.quantity.initial);
   const { label, color } = getExpiryLabel(item);
 
@@ -30,21 +33,30 @@ export default function ItemCard({ item, onClick, onAdjust }: ItemCardProps) {
 
   return (
     <div
-      className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer active:scale-[0.98] transition-transform"
+      className="rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer active:scale-[0.98] transition-transform"
+      style={{ backgroundColor: group?.color ? `${group.color}12` : "#ffffff" }}
       onClick={onClick}
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 flex-1">
           {item.colorTag && (
             <span
               className="w-3 h-3 rounded-full shrink-0"
               style={{ backgroundColor: item.colorTag }}
             />
           )}
-          <span className="font-medium text-gray-900">{item.name}</span>
+          <span className="font-medium text-gray-900 truncate">{item.name}</span>
         </div>
-        <span className={`text-xs ${color}`}>{label}</span>
+        {group && showGroupBadge && (
+          <span
+            style={{ backgroundColor: groupBadgeBg(group.color), color: groupBadgeColor(group.color) }}
+            className="text-xs rounded-full px-2 py-0.5 font-medium shrink-0"
+          >
+            {group.name}
+          </span>
+        )}
+        <span className={`text-xs ${color} shrink-0`}>{label}</span>
       </div>
 
       {/* Quantity bar */}
