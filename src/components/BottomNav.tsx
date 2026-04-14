@@ -21,11 +21,21 @@ const links = [
       </svg>
     ),
   },
+  {
+    to: "/recipes",
+    label: "Recipes",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C8.5 2 6 4.5 6 7c0 1.5.7 2.8 1.8 3.7L7 21h10l-.8-10.3C17.3 9.8 18 8.5 18 7c0-2.5-2.5-5-6-5z" />
+        <path d="M9 21v-4a3 3 0 0 1 6 0v4" />
+      </svg>
+    ),
+  },
 ];
 
 export default function BottomNav() {
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-100 flex">
+    <nav className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-100 flex">
       {links.map(({ to, label, icon }) => (
         <NavLink
           key={to}

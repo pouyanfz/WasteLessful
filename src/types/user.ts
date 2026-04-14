@@ -11,6 +11,8 @@ export interface UserSettings {
   autoAddToShoppingListOnExpiry: boolean;
   autoAddToShoppingListOnLowQuantity: boolean;
   getGroupNotifications: boolean;
+  archiveRetentionDays: number | null;
+  archiveMaxItems: number | null;
 }
 
 export interface User {

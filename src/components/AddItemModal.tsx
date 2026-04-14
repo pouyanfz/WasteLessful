@@ -13,19 +13,26 @@ interface AddItemModalProps {
   userId: string;
   onAdd: (item: Item) => void;
   onClose: () => void;
+  prefill?: { name: string; amount: number; unit: string };
 }
 
-export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, onClose }: AddItemModalProps) {
+export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, onClose, prefill }: AddItemModalProps) {
   const [selectedGroupId, setSelectedGroupId] = useState(defaultGroupId);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(prefill?.name ?? "");
   const [categories, setCategories] = useState<string[]>([]);
   const [customCategoryInput, setCustomCategoryInput] = useState("");
   const [colorTag, setColorTag] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
-  const [quantity, setQuantity] = useState({ current: 1, initial: 1, unit: "pack" as QuantityUnit });
-  const [isCustomUnit, setIsCustomUnit] = useState(false);
+  const prefillUnit = prefill?.unit ?? "pack";
+  const isKnownUnit = (UNITS as readonly string[]).includes(prefillUnit);
+  const [quantity, setQuantity] = useState({
+    current: prefill?.amount ?? 1,
+    initial: prefill?.amount ?? 1,
+    unit: (isKnownUnit ? prefillUnit : "pack") as QuantityUnit,
+  });
+  const [isCustomUnit, setIsCustomUnit] = useState(!isKnownUnit && !!prefill);
   const [customUnitInput, setCustomUnitInput] = useState("");
-  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(null);
+  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(!isKnownUnit && prefill ? prefillUnit : null);
   const [expiresAt, setExpiresAt] = useState("");
 
   function toggleCategory(cat: string) {
@@ -275,10 +282,11 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                   key={c}
                   type="button"
                   onClick={() => setColorTag(colorTag === c ? null : c)}
-                  className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
+                  className="w-7 h-7 rounded-full transition-transform hover:scale-110"
                   style={{
                     backgroundColor: c,
-                    borderColor: colorTag === c ? "#111" : "transparent",
+                    outline: colorTag === c ? `2px solid ${c}` : "none",
+                    outlineOffset: "2px",
                   }}
                 />
               ))}

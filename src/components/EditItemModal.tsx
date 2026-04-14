@@ -262,8 +262,8 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
                   key={c}
                   type="button"
                   onClick={() => setColorTag(colorTag === c ? null : c)}
-                  className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
-                  style={{ backgroundColor: c, borderColor: colorTag === c ? "#111" : "transparent" }}
+                  className="w-7 h-7 rounded-full transition-transform hover:scale-110"
+                  style={{ backgroundColor: c, outline: colorTag === c ? `2px solid ${c}` : "none", outlineOffset: "2px" }}
                 />
               ))}
             </div>

@@ -6,6 +6,7 @@ export interface RecipeIngredient {
   quantityUnit: string | null;
   linkedItemId: string | null;
   shoppingItemId: string | null;
+  haveIt: boolean;
 }
 
 export interface Recipe {
