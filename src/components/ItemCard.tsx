@@ -4,6 +4,7 @@ import { quantityPercentage } from "../utils/quantity";
 
 interface ItemCardProps {
   item: Item;
+  onClick?: () => void;
 }
 
 function getExpiryLabel(item: Item): { label: string; color: string } {
@@ -19,7 +20,7 @@ function getExpiryLabel(item: Item): { label: string; color: string } {
   return { label: `Expires in ${days}d`, color: "text-green-500" };
 }
 
-export default function ItemCard({ item }: ItemCardProps) {
+export default function ItemCard({ item, onClick }: ItemCardProps) {
   const pct = quantityPercentage(item.quantity.current, item.quantity.initial);
   const { label, color } = getExpiryLabel(item);
 
@@ -27,7 +28,10 @@ export default function ItemCard({ item }: ItemCardProps) {
     pct <= 25 ? "bg-red-500" : pct <= 50 ? "bg-orange-400" : "bg-green-500";
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-2">
+    <div
+      className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer active:scale-[0.98] transition-transform"
+      onClick={onClick}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

@@ -7,26 +7,34 @@ const UNITS: QuantityUnit[] = ["kg", "g", "L", "mL", "bottle", "pack", "box", "c
 const COLOR_OPTIONS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#a855f7", "#ec4899"];
 const CATEGORY_OPTIONS = ["food", "drink", "dairy", "dry-goods", "condiment", "snack", "cleaning"];
 
-interface AddItemModalProps {
-  defaultGroupId: string;
+interface EditItemModalProps {
+  item: Item;
   groups: Group[];
-  userId: string;
-  onAdd: (item: Item) => void;
+  onSave: (updated: Item) => void;
+  onDelete: (id: string) => void;
   onClose: () => void;
 }
 
-export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, onClose }: AddItemModalProps) {
-  const [selectedGroupId, setSelectedGroupId] = useState(defaultGroupId);
-  const [name, setName] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
+function toDateInputValue(ts: { toDate: () => Date } | null): string {
+  if (!ts) return "";
+  const d = ts.toDate();
+  return d.toISOString().split("T")[0];
+}
+
+export default function EditItemModal({ item, groups, onSave, onDelete, onClose }: EditItemModalProps) {
+  const [selectedGroupId, setSelectedGroupId] = useState(item.groupId);
+  const [name, setName] = useState(item.name);
+  const [categories, setCategories] = useState<string[]>(item.categories);
   const [customCategoryInput, setCustomCategoryInput] = useState("");
-  const [colorTag, setColorTag] = useState<string | null>(null);
-  const [notes, setNotes] = useState("");
-  const [quantity, setQuantity] = useState({ current: 1, initial: 1, unit: "pack" as QuantityUnit });
+  const [colorTag, setColorTag] = useState<string | null>(item.colorTag);
+  const [notes, setNotes] = useState(item.notes ?? "");
+  const [quantity, setQuantity] = useState(item.quantity);
+  const initialCustomUnit = UNITS.includes(item.quantity.unit) ? null : item.quantity.unit;
   const [isCustomUnit, setIsCustomUnit] = useState(false);
   const [customUnitInput, setCustomUnitInput] = useState("");
-  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(null);
-  const [expiresAt, setExpiresAt] = useState("");
+  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(initialCustomUnit);
+  const [expiresAt, setExpiresAt] = useState(toDateInputValue(item.dates.expiresAt));
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   function toggleCategory(cat: string) {
     setCategories((prev) =>
@@ -36,9 +44,7 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
 
   function addCustomCategory() {
     const val = customCategoryInput.trim().toLowerCase();
-    if (val && !categories.includes(val)) {
-      setCategories((prev) => [...prev, val]);
-    }
+    if (val && !categories.includes(val)) setCategories((prev) => [...prev, val]);
     setCustomCategoryInput("");
   }
 
@@ -60,30 +66,22 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
     e.preventDefault();
     if (!name.trim()) return;
 
-    const now = makeTimestamp(new Date());
-    const newItem: Item = {
-      id: crypto.randomUUID(),
+    const updated: Item = {
+      ...item,
       groupId: selectedGroupId,
       name: name.trim(),
       categories,
       colorTag,
-      photoURL: null,
       notes: notes.trim() || null,
       quantity,
       dates: {
-        addedAt: now as never,
-        purchasedAt: now as never,
+        ...item.dates,
         expiresAt: expiresAt ? makeTimestamp(new Date(expiresAt)) as never : null,
-        lastUsedAt: null,
       },
-      notification: { enabled: false, daysBeforeExp: null },
-      addedBy: userId,
-      updatedAt: now as never,
-      isArchived: false,
-      archivedAt: null,
+      updatedAt: makeTimestamp(new Date()) as never,
     };
 
-    onAdd(newItem);
+    onSave(updated);
     onClose();
   }
 
@@ -96,9 +94,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
         className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Title */}
+        {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Add Item</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Edit Item</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
         </div>
 
@@ -106,7 +104,7 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
           {/* Group */}
           {groups.length > 1 && (
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Add to</label>
+              <label className="text-sm font-medium text-gray-700">Group</label>
               <div className="flex gap-2 flex-wrap">
                 {groups.map((g) => (
                   <button
@@ -133,7 +131,6 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Milk"
               className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
               autoFocus
             />
@@ -149,7 +146,7 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                 step="any"
                 value={quantity.current}
                 onChange={(e) =>
-                  setQuantity((q) => ({ ...q, current: Number(e.target.value), initial: Number(e.target.value) }))
+                  setQuantity((q) => ({ ...q, current: Number(e.target.value) }))
                 }
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -167,9 +164,7 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                 }}
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
               >
-                {UNITS.map((u) => (
-                  <option key={u} value={u}>{u}</option>
-                ))}
+                {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
                 {confirmedCustomUnit && (
                   <option value={confirmedCustomUnit}>{confirmedCustomUnit}</option>
                 )}
@@ -228,24 +223,16 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                   {cat}
                 </button>
               ))}
-              {/* Custom categories not in the preset list */}
               {categories.filter((c) => !CATEGORY_OPTIONS.includes(c)).map((cat) => (
                 <span
                   key={cat}
                   className="text-xs rounded-full px-3 py-1 border bg-green-500 text-white border-green-500 flex items-center gap-1"
                 >
                   {cat}
-                  <button
-                    type="button"
-                    onClick={() => removeCategory(cat)}
-                    className="leading-none hover:text-green-200"
-                  >
-                    &times;
-                  </button>
+                  <button type="button" onClick={() => removeCategory(cat)} className="leading-none hover:text-green-200">&times;</button>
                 </span>
               ))}
             </div>
-            {/* Custom category input */}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -276,10 +263,7 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                   type="button"
                   onClick={() => setColorTag(colorTag === c ? null : c)}
                   className="w-7 h-7 rounded-full border-2 transition-transform hover:scale-110"
-                  style={{
-                    backgroundColor: c,
-                    borderColor: colorTag === c ? "#111" : "transparent",
-                  }}
+                  style={{ backgroundColor: c, borderColor: colorTag === c ? "#111" : "transparent" }}
                 />
               ))}
             </div>
@@ -297,14 +281,42 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
             />
           </div>
 
-          {/* Submit */}
+          {/* Save */}
           <button
             type="submit"
             disabled={!name.trim()}
             className="bg-green-500 text-white rounded-xl py-3 font-medium text-sm disabled:opacity-40 hover:bg-green-600 transition-colors"
           >
-            Add Item
+            Save Changes
           </button>
+
+          {/* Delete */}
+          {confirmDelete ? (
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => { onDelete(item.id); onClose(); }}
+                className="flex-1 bg-red-500 text-white rounded-xl py-3 font-medium text-sm hover:bg-red-600 transition-colors"
+              >
+                Confirm Delete
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                className="flex-1 border border-gray-200 text-gray-600 rounded-xl py-3 font-medium text-sm hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              className="text-red-400 text-sm hover:text-red-600 transition-colors"
+            >
+              Delete item
+            </button>
+          )}
         </form>
       </div>
     </div>
