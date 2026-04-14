@@ -188,6 +188,12 @@ export default function ItemsPage() {
     return Array.from(cats).sort();
   }, [tabItems]);
 
+  const availableColors = useMemo(() => {
+    const colors = new Set<string>();
+    tabItems.forEach((i) => colors.add(i.colorTag ?? "none"));
+    return Array.from(colors);
+  }, [tabItems]);
+
   const visibleItems = useMemo(() => applyFilters(tabItems, filters), [tabItems, filters]);
   const filterCount = activeFilterCount(filters);
 
@@ -196,6 +202,12 @@ export default function ItemsPage() {
     const cats = new Set<string>();
     items.forEach((i) => i.categories.forEach((c) => cats.add(c)));
     return Array.from(cats).sort();
+  }, [items]);
+
+  const allColors = useMemo(() => {
+    const colors = new Set<string>();
+    items.forEach((i) => colors.add(i.colorTag ?? "none"));
+    return Array.from(colors);
   }, [items]);
 
   const itemsByGroup = useMemo(() =>
@@ -366,7 +378,8 @@ export default function ItemsPage() {
       {showFilterSheet && (
         <FilterSheet
           filters={filters}
-          availableCategories={showFilterSheet ? allCategories : availableCategories}
+          availableCategories={desktopView === "columns" ? allCategories : availableCategories}
+          availableColors={desktopView === "columns" ? allColors : availableColors}
           onChange={setFilters}
           onClose={() => setShowFilterSheet(false)}
         />

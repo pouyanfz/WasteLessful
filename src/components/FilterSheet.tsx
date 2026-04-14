@@ -8,27 +8,26 @@ export type ExpiryStatus = "expired" | "expiringSoon" | "fresh" | "noExpiry";
 export interface Filters {
   expiryStatus: ExpiryStatus[];
   categories: string[];
+  colors: string[];
   lowQuantity: boolean;
 }
 
-export const EMPTY_FILTERS: Filters = { expiryStatus: [], categories: [], lowQuantity: false };
+export const EMPTY_FILTERS: Filters = { expiryStatus: [], categories: [], colors: [], lowQuantity: false };
 
 export function activeFilterCount(f: Filters): number {
-  return f.expiryStatus.length + f.categories.length + (f.lowQuantity ? 1 : 0);
+  return f.expiryStatus.length + f.categories.length + f.colors.length + (f.lowQuantity ? 1 : 0);
 }
 
 export function applyFilters(items: Item[], f: Filters): Item[] {
   const { notifyDaysBeforeExpiry, lowQuantityThreshold } = mockUser.settings;
   return items.filter((item) => {
     if (f.lowQuantity && !isLowQuantity(item.quantity.current, item.quantity.initial, lowQuantityThreshold)) return false;
-
     if (f.categories.length > 0 && !f.categories.some((c) => item.categories.includes(c))) return false;
-
+    if (f.colors.length > 0 && !f.colors.includes(item.colorTag ?? "none")) return false;
     if (f.expiryStatus.length > 0) {
       const status = getExpiryStatus(item, notifyDaysBeforeExpiry);
       if (!f.expiryStatus.includes(status)) return false;
     }
-
     return true;
   });
 }
@@ -51,11 +50,12 @@ const EXPIRY_OPTIONS: { value: ExpiryStatus; label: string; color: string }[] = 
 interface FilterSheetProps {
   filters: Filters;
   availableCategories: string[];
+  availableColors: string[];
   onChange: (f: Filters) => void;
   onClose: () => void;
 }
 
-export default function FilterSheet({ filters, availableCategories, onChange, onClose }: FilterSheetProps) {
+export default function FilterSheet({ filters, availableCategories, availableColors, onChange, onClose }: FilterSheetProps) {
   function toggleExpiry(val: ExpiryStatus) {
     onChange({
       ...filters,
@@ -71,6 +71,15 @@ export default function FilterSheet({ filters, availableCategories, onChange, on
       categories: filters.categories.includes(cat)
         ? filters.categories.filter((c) => c !== cat)
         : [...filters.categories, cat],
+    });
+  }
+
+  function toggleColor(color: string) {
+    onChange({
+      ...filters,
+      colors: filters.colors.includes(color)
+        ? filters.colors.filter((c) => c !== color)
+        : [...filters.colors, color],
     });
   }
 
@@ -141,6 +150,35 @@ export default function FilterSheet({ filters, availableCategories, onChange, on
             />
           </button>
         </section>
+
+        {/* Colors */}
+        {availableColors.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h3 className="text-sm font-medium text-gray-700">Color tag</h3>
+            <div className="flex flex-wrap gap-3">
+              {availableColors.map((color) => {
+                const active = filters.colors.includes(color);
+                const isNone = color === "none";
+                return (
+                  <button
+                    key={color}
+                    onClick={() => toggleColor(color)}
+                    title={isNone ? "No color" : color}
+                    className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-transform hover:scale-110 ${
+                      active ? "border-gray-800 scale-110" : "border-transparent"
+                    } ${isNone ? "bg-gray-100 border-gray-300" : ""}`}
+                    style={!isNone ? { backgroundColor: color } : undefined}
+                  >
+                    {isNone && <span className="text-gray-400 text-lg leading-none">∅</span>}
+                    {active && !isNone && (
+                      <span className="text-white text-sm font-bold drop-shadow">✓</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Categories */}
         {availableCategories.length > 0 && (
