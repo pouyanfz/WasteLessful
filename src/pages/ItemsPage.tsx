@@ -171,6 +171,17 @@ export default function ItemsPage() {
     setItems((prev) => prev.filter((i) => i.id !== id));
   }
 
+  function handleAdjust(id: string, delta: number) {
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id !== id) return item;
+        const next = Math.max(0, item.quantity.current + delta);
+        const newInitial = next > item.quantity.initial ? next : item.quantity.initial;
+        return { ...item, quantity: { ...item.quantity, current: next, initial: newInitial } };
+      })
+    );
+  }
+
   function openAddModal(groupId: string) {
     setAddToGroupId(groupId);
     setShowAddModal(true);
@@ -306,7 +317,7 @@ export default function ItemsPage() {
 
       {/* Mobile: tabs + single column */}
       <div className="lg:hidden">
-        <GroupTabs groups={groups} activeGroupId={activeGroupId} onChange={handleTabChange} onAddGroup={handleAddGroup} />
+        <GroupTabs groups={groups} activeGroupId={activeGroupId} onChange={handleTabChange} onAddGroup={handleAddGroup} onReorder={setGroups} />
         <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto pb-24">
           {visibleItems.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">
@@ -314,7 +325,7 @@ export default function ItemsPage() {
             </p>
           ) : (
             visibleItems.map((item) => (
-              <ItemCard key={item.id} item={item} onClick={() => setEditingItem(item)} />
+              <ItemCard key={item.id} item={item} onClick={() => setEditingItem(item)} onAdjust={(d) => handleAdjust(item.id, d)} />
             ))
           )}
         </main>
@@ -340,7 +351,7 @@ export default function ItemsPage() {
       {/* Desktop: single column view */}
       {desktopView === "single" && (
         <div className="hidden lg:block">
-          <GroupTabs groups={groups} activeGroupId={activeGroupId} onChange={handleTabChange} onAddGroup={handleAddGroup} />
+          <GroupTabs groups={groups} activeGroupId={activeGroupId} onChange={handleTabChange} onAddGroup={handleAddGroup} onReorder={setGroups} />
           <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto pb-12">
             {visibleItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
@@ -348,7 +359,7 @@ export default function ItemsPage() {
               </p>
             ) : (
               visibleItems.map((item) => (
-                <ItemCard key={item.id} item={item} onClick={() => setEditingItem(item)} />
+                <ItemCard key={item.id} item={item} onClick={() => setEditingItem(item)} onAdjust={(d) => handleAdjust(item.id, d)} />
               ))
             )}
           </main>

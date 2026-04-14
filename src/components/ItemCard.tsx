@@ -5,6 +5,7 @@ import { quantityPercentage } from "../utils/quantity";
 interface ItemCardProps {
   item: Item;
   onClick?: () => void;
+  onAdjust?: (delta: number) => void;
 }
 
 function getExpiryLabel(item: Item): { label: string; color: string } {
@@ -20,7 +21,7 @@ function getExpiryLabel(item: Item): { label: string; color: string } {
   return { label: `Expires in ${days}d`, color: "text-green-500" };
 }
 
-export default function ItemCard({ item, onClick }: ItemCardProps) {
+export default function ItemCard({ item, onClick, onAdjust }: ItemCardProps) {
   const pct = quantityPercentage(item.quantity.current, item.quantity.initial);
   const { label, color } = getExpiryLabel(item);
 
@@ -61,6 +62,28 @@ export default function ItemCard({ item, onClick }: ItemCardProps) {
           />
         </div>
       </div>
+
+      {/* Quantity adjust */}
+      {onAdjust && (
+        <div className="flex items-center gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => onAdjust(-1)}
+            disabled={item.quantity.current <= 0}
+            className="w-8 h-8 rounded-full border border-gray-200 text-gray-500 flex items-center justify-center text-lg leading-none hover:border-red-300 hover:text-red-400 disabled:opacity-30 transition-colors"
+          >
+            −
+          </button>
+          <span className="text-sm text-gray-600 flex-1 text-center">
+            {item.quantity.current} {item.quantity.unit}
+          </span>
+          <button
+            onClick={() => onAdjust(1)}
+            className="w-8 h-8 rounded-full border border-gray-200 text-gray-500 flex items-center justify-center text-lg leading-none hover:border-green-400 hover:text-green-500 transition-colors"
+          >
+            +
+          </button>
+        </div>
+      )}
 
       {/* Categories */}
       {item.categories.length > 0 && (
