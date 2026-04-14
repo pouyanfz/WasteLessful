@@ -1,14 +1,14 @@
-import { isExpiringSoon, daysUntilExpiry } from './expiry'
-import { isLowQuantity } from './quantity'
+import { isExpiringSoon, daysUntilExpiry } from "./expiry";
+import { isLowQuantity } from "./quantity";
 
 interface AutoAddOptions {
-  expiresAt: Date | null
-  current: number
-  initial: number
-  notifyDaysBeforeExpiry: number
-  lowQuantityThreshold: number
-  autoAddOnExpiry: boolean
-  autoAddOnLowQuantity: boolean
+  expiresAt: Date | null;
+  current: number;
+  initial: number;
+  notifyDaysBeforeExpiry: number;
+  lowQuantityThreshold: number;
+  autoAddOnExpiry: boolean;
+  autoAddOnLowQuantity: boolean;
 }
 
 /** Returns true if the item should be auto-added to the shopping list. */
@@ -21,17 +21,17 @@ export function shouldAutoAdd(opts: AutoAddOptions): boolean {
     lowQuantityThreshold,
     autoAddOnExpiry,
     autoAddOnLowQuantity,
-  } = opts
+  } = opts;
 
   if (autoAddOnExpiry && expiresAt !== null) {
-    if (isExpiringSoon(expiresAt, notifyDaysBeforeExpiry)) return true
+    if (isExpiringSoon(expiresAt, notifyDaysBeforeExpiry)) return true;
   }
 
   if (autoAddOnLowQuantity) {
-    if (isLowQuantity(current, initial, lowQuantityThreshold)) return true
+    if (isLowQuantity(current, initial, lowQuantityThreshold)) return true;
   }
 
-  return false
+  return false;
 }
 
 /**
@@ -43,12 +43,12 @@ export function linkedItemNote(
   expiresAt: Date | null,
   now = new Date(),
 ): string | null {
-  if (!linkedItemName) return null
+  if (!linkedItemName) return null;
 
   if (expiresAt === null) {
-    return `You planned this for ${linkedItemName}`
+    return `You planned this for ${linkedItemName}`;
   }
 
-  const days = daysUntilExpiry(expiresAt, now)
-  return `You planned this for ${linkedItemName} (expires in ${days} day${days === 1 ? '' : 's'})`
+  const days = daysUntilExpiry(expiresAt, now);
+  return `You planned this for ${linkedItemName} (expires in ${days} day${days === 1 ? "" : "s"})`;
 }

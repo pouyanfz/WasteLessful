@@ -1,7 +1,7 @@
 /** Percentage of original quantity remaining (0–100). */
 export function quantityPercentage(current: number, initial: number): number {
-  if (initial <= 0) return 0
-  return Math.min(100, Math.max(0, (current / initial) * 100))
+  if (initial <= 0) return 0;
+  return Math.min(100, Math.max(0, (current / initial) * 100));
 }
 
 /**
@@ -13,5 +13,5 @@ export function isLowQuantity(
   initial: number,
   threshold: number,
 ): boolean {
-  return quantityPercentage(current, initial) <= threshold
+  return quantityPercentage(current, initial) <= threshold;
 }
