@@ -3,9 +3,34 @@ import type { Item, QuantityUnit } from "../types";
 import type { Group } from "../types";
 import { makeTimestamp } from "../data/mockTimestamp";
 
-const UNITS: QuantityUnit[] = ["kg", "g", "L", "mL", "bottle", "pack", "box", "can"];
-const COLOR_OPTIONS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#a855f7", "#ec4899"];
-const CATEGORY_OPTIONS = ["food", "drink", "dairy", "dry-goods", "condiment", "snack", "cleaning"];
+const UNITS: QuantityUnit[] = [
+  "kg",
+  "g",
+  "L",
+  "mL",
+  "bottle",
+  "pack",
+  "box",
+  "can",
+];
+const COLOR_OPTIONS = [
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#3b82f6",
+  "#a855f7",
+  "#ec4899",
+];
+const CATEGORY_OPTIONS = [
+  "food",
+  "drink",
+  "dairy",
+  "dry-goods",
+  "condiment",
+  "snack",
+  "cleaning",
+];
 
 interface AddItemModalProps {
   defaultGroupId: string;
@@ -16,7 +41,14 @@ interface AddItemModalProps {
   prefill?: { name: string; amount: number; unit: string };
 }
 
-export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, onClose, prefill }: AddItemModalProps) {
+export default function AddItemModal({
+  defaultGroupId,
+  groups,
+  userId,
+  onAdd,
+  onClose,
+  prefill,
+}: AddItemModalProps) {
   const [selectedGroupId, setSelectedGroupId] = useState(defaultGroupId);
   const [name, setName] = useState(prefill?.name ?? "");
   const [categories, setCategories] = useState<string[]>([]);
@@ -32,12 +64,14 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
   });
   const [isCustomUnit, setIsCustomUnit] = useState(!isKnownUnit && !!prefill);
   const [customUnitInput, setCustomUnitInput] = useState("");
-  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(!isKnownUnit && prefill ? prefillUnit : null);
+  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(
+    !isKnownUnit && prefill ? prefillUnit : null,
+  );
   const [expiresAt, setExpiresAt] = useState("");
 
   function toggleCategory(cat: string) {
     setCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
     );
   }
 
@@ -80,7 +114,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
       dates: {
         addedAt: now as never,
         purchasedAt: now as never,
-        expiresAt: expiresAt ? makeTimestamp(new Date(expiresAt)) as never : null,
+        expiresAt: expiresAt
+          ? (makeTimestamp(new Date(expiresAt)) as never)
+          : null,
         lastUsedAt: null,
       },
       notification: { enabled: false, daysBeforeExp: null },
@@ -106,14 +142,21 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
         {/* Title */}
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Add Item</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          >
+            &times;
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {/* Group */}
           {groups.length > 1 && (
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Add to</label>
+              <label className="text-sm font-medium text-gray-700">
+                Add to
+              </label>
               <div className="flex gap-2 flex-wrap">
                 {groups.map((g) => (
                   <button
@@ -148,7 +191,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
 
           {/* Quantity */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Quantity</label>
+            <label className="text-sm font-medium text-gray-700">
+              Quantity
+            </label>
             <div className="flex gap-2">
               <input
                 type="number"
@@ -156,7 +201,11 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                 step="any"
                 value={quantity.current}
                 onChange={(e) =>
-                  setQuantity((q) => ({ ...q, current: Number(e.target.value), initial: Number(e.target.value) }))
+                  setQuantity((q) => ({
+                    ...q,
+                    current: Number(e.target.value),
+                    initial: Number(e.target.value),
+                  }))
                 }
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -168,17 +217,25 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                   } else {
                     setIsCustomUnit(false);
                     setCustomUnitInput("");
-                    if (e.target.value !== confirmedCustomUnit) setConfirmedCustomUnit(null);
-                    setQuantity((q) => ({ ...q, unit: e.target.value as QuantityUnit }));
+                    if (e.target.value !== confirmedCustomUnit)
+                      setConfirmedCustomUnit(null);
+                    setQuantity((q) => ({
+                      ...q,
+                      unit: e.target.value as QuantityUnit,
+                    }));
                   }
                 }}
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
               >
                 {UNITS.map((u) => (
-                  <option key={u} value={u}>{u}</option>
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
                 ))}
                 {confirmedCustomUnit && (
-                  <option value={confirmedCustomUnit}>{confirmedCustomUnit}</option>
+                  <option value={confirmedCustomUnit}>
+                    {confirmedCustomUnit}
+                  </option>
                 )}
                 <option value="__custom__">custom…</option>
               </select>
@@ -189,7 +246,10 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                   type="text"
                   value={customUnitInput}
                   onChange={(e) => setCustomUnitInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), confirmCustomUnit())}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), confirmCustomUnit())
+                  }
                   placeholder="e.g. jar, tray…"
                   autoFocus
                   className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -208,7 +268,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
 
           {/* Expiry */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Expiry date</label>
+            <label className="text-sm font-medium text-gray-700">
+              Expiry date
+            </label>
             <input
               type="date"
               value={expiresAt}
@@ -219,7 +281,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
 
           {/* Categories */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Categories</label>
+            <label className="text-sm font-medium text-gray-700">
+              Categories
+            </label>
             <div className="flex flex-wrap gap-2">
               {CATEGORY_OPTIONS.map((cat) => (
                 <button
@@ -236,21 +300,23 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                 </button>
               ))}
               {/* Custom categories not in the preset list */}
-              {categories.filter((c) => !CATEGORY_OPTIONS.includes(c)).map((cat) => (
-                <span
-                  key={cat}
-                  className="text-xs rounded-full px-3 py-1 border bg-green-500 text-white border-green-500 flex items-center gap-1"
-                >
-                  {cat}
-                  <button
-                    type="button"
-                    onClick={() => removeCategory(cat)}
-                    className="leading-none hover:text-green-200"
+              {categories
+                .filter((c) => !CATEGORY_OPTIONS.includes(c))
+                .map((cat) => (
+                  <span
+                    key={cat}
+                    className="text-xs rounded-full px-3 py-1 border bg-green-500 text-white border-green-500 flex items-center gap-1"
                   >
-                    &times;
-                  </button>
-                </span>
-              ))}
+                    {cat}
+                    <button
+                      type="button"
+                      onClick={() => removeCategory(cat)}
+                      className="leading-none hover:text-green-200"
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
             </div>
             {/* Custom category input */}
             <div className="flex gap-2">
@@ -258,7 +324,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
                 type="text"
                 value={customCategoryInput}
                 onChange={(e) => setCustomCategoryInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomCategory())}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), addCustomCategory())
+                }
                 placeholder="Add custom category…"
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -275,7 +343,9 @@ export default function AddItemModal({ defaultGroupId, groups, userId, onAdd, on
 
           {/* Color tag */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Color tag</label>
+            <label className="text-sm font-medium text-gray-700">
+              Color tag
+            </label>
             <div className="flex gap-2 flex-wrap">
               {COLOR_OPTIONS.map((c) => (
                 <button

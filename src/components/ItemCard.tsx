@@ -18,13 +18,21 @@ function getExpiryLabel(item: Item): { label: string; color: string } {
   }
 
   const days = daysUntilExpiry(item.dates.expiresAt.toDate());
-  if (days < 0) return { label: `Expired ${Math.abs(days)}d ago`, color: "text-red-500" };
+  if (days < 0)
+    return { label: `Expired ${Math.abs(days)}d ago`, color: "text-red-500" };
   if (days === 0) return { label: "Expires today", color: "text-orange-400" };
-  if (days <= 3) return { label: `Expires in ${days}d`, color: "text-orange-400" };
+  if (days <= 3)
+    return { label: `Expires in ${days}d`, color: "text-orange-400" };
   return { label: `Expires in ${days}d`, color: "text-green-500" };
 }
 
-export default function ItemCard({ item, group, showGroupBadge = false, onClick, onAdjust }: ItemCardProps) {
+export default function ItemCard({
+  item,
+  group,
+  showGroupBadge = false,
+  onClick,
+  onAdjust,
+}: ItemCardProps) {
   const pct = quantityPercentage(item.quantity.current, item.quantity.initial);
   const { label, color } = getExpiryLabel(item);
 
@@ -46,11 +54,16 @@ export default function ItemCard({ item, group, showGroupBadge = false, onClick,
               style={{ backgroundColor: item.colorTag }}
             />
           )}
-          <span className="font-medium text-gray-900 truncate">{item.name}</span>
+          <span className="font-medium text-gray-900 truncate">
+            {item.name}
+          </span>
         </div>
         {group && showGroupBadge && (
           <span
-            style={{ backgroundColor: groupBadgeBg(group.color), color: groupBadgeColor(group.color) }}
+            style={{
+              backgroundColor: groupBadgeBg(group.color),
+              color: groupBadgeColor(group.color),
+            }}
             className="text-xs rounded-full px-2 py-0.5 font-medium shrink-0"
           >
             {group.name}
@@ -63,7 +76,8 @@ export default function ItemCard({ item, group, showGroupBadge = false, onClick,
       <div>
         <div className="flex justify-between text-xs text-gray-500 mb-1">
           <span>
-            {item.quantity.current} / {item.quantity.initial} {item.quantity.unit}
+            {item.quantity.current} / {item.quantity.initial}{" "}
+            {item.quantity.unit}
           </span>
           <span>{Math.round(pct)}%</span>
         </div>
@@ -77,7 +91,10 @@ export default function ItemCard({ item, group, showGroupBadge = false, onClick,
 
       {/* Quantity adjust */}
       {onAdjust && (
-        <div className="flex items-center gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="flex items-center gap-2 pt-1"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
             onClick={() => onAdjust(-1)}
             disabled={item.quantity.current <= 0}

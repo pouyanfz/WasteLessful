@@ -40,7 +40,10 @@ export default function GroupTabs({
     setInput("");
     setTimeout(() => {
       inputRef.current?.focus();
-      scrollRef.current?.scrollTo({ left: scrollRef.current.scrollWidth, behavior: "smooth" });
+      scrollRef.current?.scrollTo({
+        left: scrollRef.current.scrollWidth,
+        behavior: "smooth",
+      });
     }, 0);
   }
 
@@ -73,12 +76,17 @@ export default function GroupTabs({
 
   function confirmDelete() {
     if (!pendingDelete) return;
-    onDeleteGroup?.(pendingDelete.groupId, deleteMode === "move" ? moveToId : null);
+    onDeleteGroup?.(
+      pendingDelete.groupId,
+      deleteMode === "move" ? moveToId : null,
+    );
     setPendingDelete(null);
     setManageOpen(false);
   }
 
-  const otherGroups = pendingDelete ? groups.filter((g) => g.id !== pendingDelete.groupId) : [];
+  const otherGroups = pendingDelete
+    ? groups.filter((g) => g.id !== pendingDelete.groupId)
+    : [];
 
   return (
     <>
@@ -90,14 +98,26 @@ export default function GroupTabs({
             className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-green-500 transition-colors border-r border-gray-100"
             title="Manage groups"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
             </svg>
           </button>
 
           {/* Scrollable tabs */}
           <div className="relative flex-1 min-w-0">
-            <div ref={scrollRef} className="flex overflow-x-auto scrollbar-hide">
+            <div
+              ref={scrollRef}
+              className="flex overflow-x-auto scrollbar-hide"
+            >
               {/* All tab */}
               <button
                 onClick={() => onChange(null)}
@@ -117,12 +137,25 @@ export default function GroupTabs({
                   <button
                     key={g.id}
                     onClick={() => onChange(g.id)}
-                    style={isActive && g.color ? { borderColor: g.color, color: g.color } : {}}
+                    style={
+                      isActive && g.color
+                        ? { borderColor: g.color, color: g.color }
+                        : {}
+                    }
                     className={`shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                      isActive && !g.color ? "border-green-500 text-green-600" : isActive ? "" : "border-transparent text-gray-500 hover:text-gray-700"
+                      isActive && !g.color
+                        ? "border-green-500 text-green-600"
+                        : isActive
+                          ? ""
+                          : "border-transparent text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    {g.color && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: g.color }} />}
+                    {g.color && (
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: g.color }}
+                      />
+                    )}
                     {g.name}
                   </button>
                 );
@@ -137,7 +170,16 @@ export default function GroupTabs({
                     : "border-transparent text-gray-400 hover:text-gray-600"
                 }`}
               >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <polyline points="21 8 21 21 3 21 3 8" />
                   <rect x="1" y="3" width="22" height="5" />
                   <line x1="10" y1="12" x2="14" y2="12" />
@@ -158,7 +200,10 @@ export default function GroupTabs({
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") { e.preventDefault(); confirm(); }
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        confirm();
+                      }
                       if (e.key === "Escape") cancel();
                     }}
                     placeholder="Group name"
@@ -211,19 +256,32 @@ export default function GroupTabs({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
-              <h2 className="text-base font-semibold text-gray-800">Manage Groups</h2>
+              <h2 className="text-base font-semibold text-gray-800">
+                Manage Groups
+              </h2>
               <button
                 onClick={() => setManageOpen(false)}
                 className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {groups.length === 0 ? (
-              <p className="text-center text-sm text-gray-400 py-10">No groups yet.</p>
+              <p className="text-center text-sm text-gray-400 py-10">
+                No groups yet.
+              </p>
             ) : (
               <ul className="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto">
                 {groups.map((g, i) => (
@@ -237,7 +295,14 @@ export default function GroupTabs({
                           className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
                           aria-label="Move up"
                         >
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l8 8H4z" /></svg>
+                          <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M12 4l8 8H4z" />
+                          </svg>
                         </button>
                         <button
                           onClick={() => move(i, 1)}
@@ -245,19 +310,38 @@ export default function GroupTabs({
                           className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
                           aria-label="Move down"
                         >
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20l-8-8h16z" /></svg>
+                          <svg
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M12 20l-8-8h16z" />
+                          </svg>
                         </button>
                       </div>
 
                       {/* Color dot — tap to change */}
                       <button
-                        onClick={() => setEditingColorId(editingColorId === g.id ? null : g.id)}
+                        onClick={() =>
+                          setEditingColorId(
+                            editingColorId === g.id ? null : g.id,
+                          )
+                        }
                         className="w-5 h-5 rounded-full shrink-0 transition-all"
-                        style={{ backgroundColor: g.color || "#e5e7eb", boxShadow: editingColorId === g.id ? "0 0 0 2px white, 0 0 0 3.5px #9ca3af" : "none" }}
+                        style={{
+                          backgroundColor: g.color || "#e5e7eb",
+                          boxShadow:
+                            editingColorId === g.id
+                              ? "0 0 0 2px white, 0 0 0 3.5px #9ca3af"
+                              : "none",
+                        }}
                         title="Change color"
                       />
 
-                      <span className="flex-1 text-sm font-medium text-gray-700 truncate">{g.name}</span>
+                      <span className="flex-1 text-sm font-medium text-gray-700 truncate">
+                        {g.name}
+                      </span>
 
                       <button
                         onClick={() => initiateDelete(g)}
@@ -272,19 +356,43 @@ export default function GroupTabs({
                       <div className="flex gap-2 flex-wrap pl-14">
                         {/* No color swatch */}
                         <button
-                          onClick={() => { onUpdateGroupColor?.(g.id, ""); setEditingColorId(null); }}
+                          onClick={() => {
+                            onUpdateGroupColor?.(g.id, "");
+                            setEditingColorId(null);
+                          }}
                           className="w-6 h-6 rounded-full border border-gray-300 bg-white transition-transform hover:scale-110 relative overflow-hidden"
                           title="No color"
-                          style={g.color === "" ? { boxShadow: "0 0 0 2px white, 0 0 0 3.5px #9ca3af" } : {}}
+                          style={
+                            g.color === ""
+                              ? {
+                                  boxShadow:
+                                    "0 0 0 2px white, 0 0 0 3.5px #9ca3af",
+                                }
+                              : {}
+                          }
                         >
-                          <span className="absolute inset-0" style={{ background: "linear-gradient(to bottom right, transparent calc(50% - 0.5px), #d1d5db calc(50% - 0.5px), #d1d5db calc(50% + 0.5px), transparent calc(50% + 0.5px))" }} />
+                          <span
+                            className="absolute inset-0"
+                            style={{
+                              background:
+                                "linear-gradient(to bottom right, transparent calc(50% - 0.5px), #d1d5db calc(50% - 0.5px), #d1d5db calc(50% + 0.5px), transparent calc(50% + 0.5px))",
+                            }}
+                          />
                         </button>
                         {GROUP_COLORS.map((c) => (
                           <button
                             key={c}
-                            onClick={() => { onUpdateGroupColor?.(g.id, c); setEditingColorId(null); }}
+                            onClick={() => {
+                              onUpdateGroupColor?.(g.id, c);
+                              setEditingColorId(null);
+                            }}
                             className="w-6 h-6 rounded-full transition-transform hover:scale-110"
-                            style={{ backgroundColor: c, outline: g.color === c ? `2px solid ${c}` : "none", outlineOffset: "2px" }}
+                            style={{
+                              backgroundColor: c,
+                              outline:
+                                g.color === c ? `2px solid ${c}` : "none",
+                              outlineOffset: "2px",
+                            }}
                             title={c}
                           />
                         ))}
@@ -312,15 +420,21 @@ export default function GroupTabs({
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden">
             <div className="px-5 pt-5 pb-2">
-              <h2 className="text-base font-semibold text-gray-800">Delete "{pendingDelete.groupName}"</h2>
-              <p className="text-sm text-gray-500 mt-1">What should happen to items in this group?</p>
+              <h2 className="text-base font-semibold text-gray-800">
+                Delete "{pendingDelete.groupName}"
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                What should happen to items in this group?
+              </p>
             </div>
 
             <div className="px-5 pb-4 pt-2 flex flex-col gap-2">
               {otherGroups.length > 0 && (
                 <label
                   className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
-                    deleteMode === "move" ? "border-green-400 bg-green-50" : "border-gray-200 hover:border-gray-300"
+                    deleteMode === "move"
+                      ? "border-green-400 bg-green-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => setDeleteMode("move")}
                 >
@@ -331,7 +445,9 @@ export default function GroupTabs({
                     className="mt-0.5 accent-green-500"
                   />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-700">Move items to another group</p>
+                    <p className="text-sm font-medium text-gray-700">
+                      Move items to another group
+                    </p>
                     {deleteMode === "move" && (
                       <select
                         value={moveToId}
@@ -340,7 +456,9 @@ export default function GroupTabs({
                         onClick={(e) => e.stopPropagation()}
                       >
                         {otherGroups.map((g) => (
-                          <option key={g.id} value={g.id}>{g.name}</option>
+                          <option key={g.id} value={g.id}>
+                            {g.name}
+                          </option>
                         ))}
                       </select>
                     )}
@@ -350,7 +468,9 @@ export default function GroupTabs({
 
               <label
                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
-                  deleteMode === "delete" ? "border-red-400 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                  deleteMode === "delete"
+                    ? "border-red-400 bg-red-50"
+                    : "border-gray-200 hover:border-gray-300"
                 }`}
                 onClick={() => setDeleteMode("delete")}
               >
@@ -360,7 +480,9 @@ export default function GroupTabs({
                   onChange={() => setDeleteMode("delete")}
                   className="accent-red-500"
                 />
-                <p className="text-sm font-medium text-gray-700">Delete all items in this group</p>
+                <p className="text-sm font-medium text-gray-700">
+                  Delete all items in this group
+                </p>
               </label>
             </div>
 

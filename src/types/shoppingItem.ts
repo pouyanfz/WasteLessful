@@ -14,7 +14,7 @@ export interface ShoppingList {
 
 export interface ShoppingItem {
   id: string;
-  groupId: string | null;        // inventory group link (for auto-add, restock)
+  groupId: string | null; // inventory group link (for auto-add, restock)
   shoppingListId: string | null; // custom shopping list (mutually exclusive with groupId usage)
   name: string;
   quantity: ShoppingItemQuantity;

@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import type { UserSettings } from "../types";
 import { mockUser } from "../data/mockUsers";
 
-type Section = "account" | "appearance" | "notifications" | "inventory" | "support";
+type Section =
+  | "account"
+  | "appearance"
+  | "notifications"
+  | "inventory"
+  | "support";
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
@@ -23,7 +28,16 @@ function PageShell({
           onClick={onBack}
           className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -64,7 +78,9 @@ function Row({
   children?: React.ReactNode;
 }) {
   return (
-    <div className={`flex items-center justify-between gap-4 px-4 py-3.5 ${!last ? "border-b border-gray-100" : ""}`}>
+    <div
+      className={`flex items-center justify-between gap-4 px-4 py-3.5 ${!last ? "border-b border-gray-100" : ""}`}
+    >
       <div className="min-w-0">
         <p className="text-sm text-gray-800">{label}</p>
         {sublabel && <p className="text-xs text-gray-400 mt-0.5">{sublabel}</p>}
@@ -74,7 +90,13 @@ function Row({
   );
 }
 
-function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
+function Toggle({
+  value,
+  onChange,
+}: {
+  value: boolean;
+  onChange: (v: boolean) => void;
+}) {
   return (
     <button
       onClick={() => onChange(!value)}
@@ -109,9 +131,20 @@ function Stepper({
         disabled={disabled || value <= min}
         className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-green-400 hover:text-green-600 disabled:opacity-30 transition-colors"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14" /></svg>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
+          <path d="M5 12h14" />
+        </svg>
       </button>
-      <span className={`text-sm font-medium w-8 text-center ${disabled ? "text-gray-300" : "text-gray-700"}`}>
+      <span
+        className={`text-sm font-medium w-8 text-center ${disabled ? "text-gray-300" : "text-gray-700"}`}
+      >
         {value}
       </span>
       <button
@@ -119,7 +152,16 @@ function Stepper({
         disabled={disabled || value >= max}
         className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-green-400 hover:text-green-600 disabled:opacity-30 transition-colors"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14" /></svg>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+        >
+          <path d="M12 5v14M5 12h14" />
+        </svg>
       </button>
     </div>
   );
@@ -136,7 +178,16 @@ function AccountSection({ onBack }: { onBack: () => void }) {
     <PageShell title="Account" onBack={onBack}>
       <div className="flex flex-col items-center gap-3 py-6">
         <div className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#9ca3af"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>
@@ -149,7 +200,16 @@ function AccountSection({ onBack }: { onBack: () => void }) {
           disabled
           className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-gray-400 cursor-not-allowed"
         >
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
             <polyline points="10 17 15 12 10 7" />
             <line x1="15" y1="12" x2="3" y2="12" />
@@ -159,7 +219,8 @@ function AccountSection({ onBack }: { onBack: () => void }) {
       </Card>
 
       <Note>
-        Creating an account lets you sync across devices and share groups with family or roommates.
+        Creating an account lets you sync across devices and share groups with
+        family or roommates.
       </Note>
     </PageShell>
   );
@@ -171,7 +232,10 @@ function AppearanceSection({
   onBack,
 }: {
   settings: UserSettings;
-  update: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void;
+  update: <K extends keyof UserSettings>(
+    key: K,
+    value: UserSettings[K],
+  ) => void;
   onBack: () => void;
 }) {
   const themes: { value: UserSettings["theme"]; label: string }[] = [
@@ -203,7 +267,8 @@ function AppearanceSection({
         </Card>
       </div>
       <Note>
-        "System" follows your device's appearance setting. Dark mode will take effect in a future update.
+        "System" follows your device's appearance setting. Dark mode will take
+        effect in a future update.
       </Note>
     </PageShell>
   );
@@ -215,7 +280,10 @@ function NotificationsSection({
   onBack,
 }: {
   settings: UserSettings;
-  update: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void;
+  update: <K extends keyof UserSettings>(
+    key: K,
+    value: UserSettings[K],
+  ) => void;
   onBack: () => void;
 }) {
   return (
@@ -224,7 +292,10 @@ function NotificationsSection({
         <SectionLabel>Expiry</SectionLabel>
         <Card>
           <Row label="Notify when item expires">
-            <Toggle value={settings.notifyOnExpired} onChange={(v) => update("notifyOnExpired", v)} />
+            <Toggle
+              value={settings.notifyOnExpired}
+              onChange={(v) => update("notifyOnExpired", v)}
+            />
           </Row>
           <Row label="Warn me this many days before" last>
             <div className="flex items-center gap-1.5">
@@ -293,7 +364,10 @@ function NotificationsSection({
         <SectionLabel>Other</SectionLabel>
         <Card>
           <Row label="Weekly summary report">
-            <Toggle value={settings.weeklyReport} onChange={(v) => update("weeklyReport", v)} />
+            <Toggle
+              value={settings.weeklyReport}
+              onChange={(v) => update("weeklyReport", v)}
+            />
           </Row>
           <Row label="Group member activity" last>
             <Toggle
@@ -305,7 +379,8 @@ function NotificationsSection({
       </div>
 
       <Note>
-        Push notifications require a signed-in account and will be enabled in a future update.
+        Push notifications require a signed-in account and will be enabled in a
+        future update.
       </Note>
     </PageShell>
   );
@@ -317,7 +392,10 @@ function InventorySection({
   onBack,
 }: {
   settings: UserSettings;
-  update: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void;
+  update: <K extends keyof UserSettings>(
+    key: K,
+    value: UserSettings[K],
+  ) => void;
   onBack: () => void;
 }) {
   return (
@@ -352,7 +430,11 @@ function InventorySection({
         <Card>
           <Row
             label="Auto-delete archived items after"
-            sublabel={settings.archiveRetentionDays === null ? "Items stay forever" : `Deleted after ${settings.archiveRetentionDays} days`}
+            sublabel={
+              settings.archiveRetentionDays === null
+                ? "Items stay forever"
+                : `Deleted after ${settings.archiveRetentionDays} days`
+            }
           >
             <div className="flex items-center gap-2 shrink-0">
               {settings.archiveRetentionDays !== null && (
@@ -374,7 +456,11 @@ function InventorySection({
           </Row>
           <Row
             label="Max items in archive"
-            sublabel={settings.archiveMaxItems === null ? "No limit" : `Oldest removed beyond ${settings.archiveMaxItems}`}
+            sublabel={
+              settings.archiveMaxItems === null
+                ? "No limit"
+                : `Oldest removed beyond ${settings.archiveMaxItems}`
+            }
             last
           >
             <div className="flex items-center gap-2 shrink-0">
@@ -404,10 +490,16 @@ function SupportSection({ onBack }: { onBack: () => void }) {
     <PageShell title="Support" onBack={onBack}>
       <Card>
         {[
-          { label: "Send feedback", href: "https://github.com/pouyanfz/WasteLess" },
-          { label: "Report a bug", href: "https://github.com/pouyanfz/WasteLess/issues" },
+          {
+            label: "Send feedback",
+            href: "https://github.com/pouyanfz/WasteLess",
+          },
+          {
+            label: "Report a bug",
+            href: "https://github.com/pouyanfz/WasteLess/issues",
+          },
           { label: "Privacy policy", href: "#" },
-          { label: "Contact me", href: "mailto:pouyan.fz@gmail.com" }
+          { label: "Contact me", href: "mailto:pouyan.fz@gmail.com" },
         ].map((link, i, arr) => (
           <a
             key={link.label}
@@ -417,7 +509,16 @@ function SupportSection({ onBack }: { onBack: () => void }) {
             className={`flex items-center justify-between px-4 py-3.5 text-sm text-gray-800 hover:bg-gray-50 transition-colors ${i < arr.length - 1 ? "border-b border-gray-100" : ""}`}
           >
             {link.label}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </a>
@@ -446,7 +547,16 @@ const SECTIONS: {
     label: "Account",
     color: "bg-blue-500",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
@@ -458,19 +568,38 @@ const SECTIONS: {
     label: "Appearance",
     color: "bg-purple-500",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="12" cy="12" r="3" />
         <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
       </svg>
     ),
-    subtitle: (s) => `Theme: ${s.theme.charAt(0).toUpperCase() + s.theme.slice(1)}`,
+    subtitle: (s) =>
+      `Theme: ${s.theme.charAt(0).toUpperCase() + s.theme.slice(1)}`,
   },
   {
     id: "notifications",
     label: "Notifications",
     color: "bg-orange-500",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
         <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </svg>
@@ -482,7 +611,16 @@ const SECTIONS: {
     label: "Inventory",
     color: "bg-green-500",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
       </svg>
     ),
@@ -496,7 +634,16 @@ const SECTIONS: {
     label: "Support",
     color: "bg-gray-400",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="12" cy="12" r="10" />
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
         <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -513,15 +660,41 @@ export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<Section | null>(null);
   const [settings, setSettings] = useState<UserSettings>(mockUser.settings);
 
-  function update<K extends keyof UserSettings>(key: K, value: UserSettings[K]) {
+  function update<K extends keyof UserSettings>(
+    key: K,
+    value: UserSettings[K],
+  ) {
     setSettings((prev) => ({ ...prev, [key]: value }));
   }
 
-  if (activeSection === "account") return <AccountSection onBack={() => setActiveSection(null)} />;
-  if (activeSection === "appearance") return <AppearanceSection settings={settings} update={update} onBack={() => setActiveSection(null)} />;
-  if (activeSection === "notifications") return <NotificationsSection settings={settings} update={update} onBack={() => setActiveSection(null)} />;
-  if (activeSection === "inventory") return <InventorySection settings={settings} update={update} onBack={() => setActiveSection(null)} />;
-  if (activeSection === "support") return <SupportSection onBack={() => setActiveSection(null)} />;
+  if (activeSection === "account")
+    return <AccountSection onBack={() => setActiveSection(null)} />;
+  if (activeSection === "appearance")
+    return (
+      <AppearanceSection
+        settings={settings}
+        update={update}
+        onBack={() => setActiveSection(null)}
+      />
+    );
+  if (activeSection === "notifications")
+    return (
+      <NotificationsSection
+        settings={settings}
+        update={update}
+        onBack={() => setActiveSection(null)}
+      />
+    );
+  if (activeSection === "inventory")
+    return (
+      <InventorySection
+        settings={settings}
+        update={update}
+        onBack={() => setActiveSection(null)}
+      />
+    );
+  if (activeSection === "support")
+    return <SupportSection onBack={() => setActiveSection(null)} />;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -530,7 +703,16 @@ export default function SettingsPage() {
           onClick={() => navigate(-1)}
           className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -548,18 +730,33 @@ export default function SettingsPage() {
               }`}
             >
               {/* Icon */}
-              <div className={`w-9 h-9 rounded-xl ${section.color} flex items-center justify-center shrink-0`}>
+              <div
+                className={`w-9 h-9 rounded-xl ${section.color} flex items-center justify-center shrink-0`}
+              >
                 {section.icon}
               </div>
 
               {/* Label + subtitle */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">{section.label}</p>
-                <p className="text-xs text-gray-400 truncate">{section.subtitle(settings)}</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {section.label}
+                </p>
+                <p className="text-xs text-gray-400 truncate">
+                  {section.subtitle(settings)}
+                </p>
               </div>
 
               {/* Chevron */}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#d1d5db"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>

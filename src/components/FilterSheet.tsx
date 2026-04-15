@@ -23,7 +23,12 @@ export const EMPTY_FILTERS: Filters = {
 };
 
 export function activeFilterCount(f: Filters): number {
-  return f.expiryStatus.length + f.categories.length + f.colors.length + (f.lowQuantity ? 1 : 0);
+  return (
+    f.expiryStatus.length +
+    f.categories.length +
+    f.colors.length +
+    (f.lowQuantity ? 1 : 0)
+  );
 }
 
 function getExpiryStatus(item: Item, notifyDays: number): ExpiryStatus {
@@ -38,9 +43,22 @@ export function applyFilters(items: Item[], f: Filters): Item[] {
   const { notifyDaysBeforeExpiry, lowQuantityThreshold } = mockUser.settings;
 
   const filtered = items.filter((item) => {
-    if (f.lowQuantity && !isLowQuantity(item.quantity.current, item.quantity.initial, lowQuantityThreshold)) return false;
-    if (f.categories.length > 0 && !f.categories.some((c) => item.categories.includes(c))) return false;
-    if (f.colors.length > 0 && !f.colors.includes(item.colorTag ?? "none")) return false;
+    if (
+      f.lowQuantity &&
+      !isLowQuantity(
+        item.quantity.current,
+        item.quantity.initial,
+        lowQuantityThreshold,
+      )
+    )
+      return false;
+    if (
+      f.categories.length > 0 &&
+      !f.categories.some((c) => item.categories.includes(c))
+    )
+      return false;
+    if (f.colors.length > 0 && !f.colors.includes(item.colorTag ?? "none"))
+      return false;
     if (f.expiryStatus.length > 0) {
       const status = getExpiryStatus(item, notifyDaysBeforeExpiry);
       if (!f.expiryStatus.includes(status)) return false;
@@ -54,30 +72,57 @@ export function applyFilters(items: Item[], f: Filters): Item[] {
       case "name":
         return mul * a.name.localeCompare(b.name);
       case "quantity": {
-        const pa = a.quantity.initial > 0 ? a.quantity.current / a.quantity.initial : 0;
-        const pb = b.quantity.initial > 0 ? b.quantity.current / b.quantity.initial : 0;
+        const pa =
+          a.quantity.initial > 0 ? a.quantity.current / a.quantity.initial : 0;
+        const pb =
+          b.quantity.initial > 0 ? b.quantity.current / b.quantity.initial : 0;
         return mul * (pa - pb);
       }
       case "added":
-        return mul * (a.dates.addedAt.toDate().getTime() - b.dates.addedAt.toDate().getTime());
+        return (
+          mul *
+          (a.dates.addedAt.toDate().getTime() -
+            b.dates.addedAt.toDate().getTime())
+        );
       case "expiry":
       default: {
         // Items without expiry always go to the end regardless of direction
         if (!a.dates.expiresAt && !b.dates.expiresAt) return 0;
         if (!a.dates.expiresAt) return 1;
         if (!b.dates.expiresAt) return -1;
-        return mul * (a.dates.expiresAt.toDate().getTime() - b.dates.expiresAt.toDate().getTime());
+        return (
+          mul *
+          (a.dates.expiresAt.toDate().getTime() -
+            b.dates.expiresAt.toDate().getTime())
+        );
       }
     }
   });
 }
 
-const EXPIRY_OPTIONS: { value: ExpiryStatus; label: string; color: string }[] = [
-  { value: "expired", label: "Expired", color: "bg-red-100 text-red-600 border-red-200" },
-  { value: "expiringSoon", label: "Expiring soon", color: "bg-orange-100 text-orange-600 border-orange-200" },
-  { value: "fresh", label: "Fresh", color: "bg-green-100 text-green-600 border-green-200" },
-  { value: "noExpiry", label: "No expiry", color: "bg-gray-100 text-gray-500 border-gray-200" },
-];
+const EXPIRY_OPTIONS: { value: ExpiryStatus; label: string; color: string }[] =
+  [
+    {
+      value: "expired",
+      label: "Expired",
+      color: "bg-red-100 text-red-600 border-red-200",
+    },
+    {
+      value: "expiringSoon",
+      label: "Expiring soon",
+      color: "bg-orange-100 text-orange-600 border-orange-200",
+    },
+    {
+      value: "fresh",
+      label: "Fresh",
+      color: "bg-green-100 text-green-600 border-green-200",
+    },
+    {
+      value: "noExpiry",
+      label: "No expiry",
+      color: "bg-gray-100 text-gray-500 border-gray-200",
+    },
+  ];
 
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: "expiry", label: "Expiry" },
@@ -94,7 +139,13 @@ interface FilterSheetProps {
   onClose: () => void;
 }
 
-export default function FilterSheet({ filters, availableCategories, availableColors, onChange, onClose }: FilterSheetProps) {
+export default function FilterSheet({
+  filters,
+  availableCategories,
+  availableColors,
+  onChange,
+  onClose,
+}: FilterSheetProps) {
   function toggleExpiry(val: ExpiryStatus) {
     onChange({
       ...filters,
@@ -127,7 +178,13 @@ export default function FilterSheet({ filters, availableCategories, availableCol
   }
 
   function toggleSortDir() {
-    onChange({ ...filters, sort: { ...filters.sort, dir: filters.sort.dir === "asc" ? "desc" : "asc" } });
+    onChange({
+      ...filters,
+      sort: {
+        ...filters.sort,
+        dir: filters.sort.dir === "asc" ? "desc" : "asc",
+      },
+    });
   }
 
   const count = activeFilterCount(filters);
@@ -153,7 +210,12 @@ export default function FilterSheet({ filters, availableCategories, availableCol
                 Clear filters
               </button>
             )}
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            >
+              &times;
+            </button>
           </div>
         </div>
 
@@ -167,14 +229,32 @@ export default function FilterSheet({ filters, availableCategories, availableCol
             >
               {filters.sort.dir === "asc" ? (
                 <>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M12 19V5M5 12l7-7 7 7" />
                   </svg>
                   Asc
                 </>
               ) : (
                 <>
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <path d="M12 5v14M19 12l-7 7-7-7" />
                   </svg>
                   Desc
@@ -212,7 +292,9 @@ export default function FilterSheet({ filters, availableCategories, availableCol
                   key={opt.value}
                   onClick={() => toggleExpiry(opt.value)}
                   className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
-                    active ? opt.color + " ring-2 ring-offset-1 ring-current" : "bg-white text-gray-500 border-gray-200"
+                    active
+                      ? opt.color + " ring-2 ring-offset-1 ring-current"
+                      : "bg-white text-gray-500 border-gray-200"
                   }`}
                 >
                   {opt.label}
@@ -225,11 +307,17 @@ export default function FilterSheet({ filters, availableCategories, availableCol
         {/* Low quantity */}
         <section className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-700">Low quantity only</p>
-            <p className="text-xs text-gray-400">Items below {mockUser.settings.lowQuantityThreshold}% remaining</p>
+            <p className="text-sm font-medium text-gray-700">
+              Low quantity only
+            </p>
+            <p className="text-xs text-gray-400">
+              Items below {mockUser.settings.lowQuantityThreshold}% remaining
+            </p>
           </div>
           <button
-            onClick={() => onChange({ ...filters, lowQuantity: !filters.lowQuantity })}
+            onClick={() =>
+              onChange({ ...filters, lowQuantity: !filters.lowQuantity })
+            }
             className={`w-12 h-7 rounded-full transition-colors relative ${
               filters.lowQuantity ? "bg-green-500" : "bg-gray-200"
             }`}
@@ -258,13 +346,21 @@ export default function FilterSheet({ filters, availableCategories, availableCol
                     className={`w-9 h-9 rounded-full flex items-center justify-center transition-transform hover:scale-110 ${
                       active ? "scale-110" : ""
                     } ${isNone ? "bg-gray-100 border border-gray-300" : ""}`}
-                    style={!isNone ? {
-                      backgroundColor: color,
-                      outline: active ? `2px solid ${color}` : "none",
-                      outlineOffset: "2px",
-                    } : undefined}
+                    style={
+                      !isNone
+                        ? {
+                            backgroundColor: color,
+                            outline: active ? `2px solid ${color}` : "none",
+                            outlineOffset: "2px",
+                          }
+                        : undefined
+                    }
                   >
-                    {isNone && <span className="text-gray-400 text-lg leading-none">∅</span>}
+                    {isNone && (
+                      <span className="text-gray-400 text-lg leading-none">
+                        ∅
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -302,7 +398,9 @@ export default function FilterSheet({ filters, availableCategories, availableCol
           onClick={onClose}
           className="bg-green-500 text-white rounded-xl py-3 font-medium text-sm hover:bg-green-600 transition-colors mt-auto"
         >
-          {count > 0 ? `Show results (${count} filter${count > 1 ? "s" : ""} active)` : "Done"}
+          {count > 0
+            ? `Show results (${count} filter${count > 1 ? "s" : ""} active)`
+            : "Done"}
         </button>
       </div>
     </div>

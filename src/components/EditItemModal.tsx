@@ -3,9 +3,34 @@ import type { Item, QuantityUnit } from "../types";
 import type { Group } from "../types";
 import { makeTimestamp } from "../data/mockTimestamp";
 
-const UNITS: QuantityUnit[] = ["kg", "g", "L", "mL", "bottle", "pack", "box", "can"];
-const COLOR_OPTIONS = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#a855f7", "#ec4899"];
-const CATEGORY_OPTIONS = ["food", "drink", "dairy", "dry-goods", "condiment", "snack", "cleaning"];
+const UNITS: QuantityUnit[] = [
+  "kg",
+  "g",
+  "L",
+  "mL",
+  "bottle",
+  "pack",
+  "box",
+  "can",
+];
+const COLOR_OPTIONS = [
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#3b82f6",
+  "#a855f7",
+  "#ec4899",
+];
+const CATEGORY_OPTIONS = [
+  "food",
+  "drink",
+  "dairy",
+  "dry-goods",
+  "condiment",
+  "snack",
+  "cleaning",
+];
 
 interface EditItemModalProps {
   item: Item;
@@ -21,7 +46,13 @@ function toDateInputValue(ts: { toDate: () => Date } | null): string {
   return d.toISOString().split("T")[0];
 }
 
-export default function EditItemModal({ item, groups, onSave, onDelete, onClose }: EditItemModalProps) {
+export default function EditItemModal({
+  item,
+  groups,
+  onSave,
+  onDelete,
+  onClose,
+}: EditItemModalProps) {
   const [selectedGroupId, setSelectedGroupId] = useState(item.groupId);
   const [name, setName] = useState(item.name);
   const [categories, setCategories] = useState<string[]>(item.categories);
@@ -29,22 +60,29 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
   const [colorTag, setColorTag] = useState<string | null>(item.colorTag);
   const [notes, setNotes] = useState(item.notes ?? "");
   const [quantity, setQuantity] = useState(item.quantity);
-  const initialCustomUnit = UNITS.includes(item.quantity.unit) ? null : item.quantity.unit;
+  const initialCustomUnit = UNITS.includes(item.quantity.unit)
+    ? null
+    : item.quantity.unit;
   const [isCustomUnit, setIsCustomUnit] = useState(false);
   const [customUnitInput, setCustomUnitInput] = useState("");
-  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(initialCustomUnit);
-  const [expiresAt, setExpiresAt] = useState(toDateInputValue(item.dates.expiresAt));
+  const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(
+    initialCustomUnit,
+  );
+  const [expiresAt, setExpiresAt] = useState(
+    toDateInputValue(item.dates.expiresAt),
+  );
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   function toggleCategory(cat: string) {
     setCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
     );
   }
 
   function addCustomCategory() {
     const val = customCategoryInput.trim().toLowerCase();
-    if (val && !categories.includes(val)) setCategories((prev) => [...prev, val]);
+    if (val && !categories.includes(val))
+      setCategories((prev) => [...prev, val]);
     setCustomCategoryInput("");
   }
 
@@ -76,7 +114,9 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
       quantity,
       dates: {
         ...item.dates,
-        expiresAt: expiresAt ? makeTimestamp(new Date(expiresAt)) as never : null,
+        expiresAt: expiresAt
+          ? (makeTimestamp(new Date(expiresAt)) as never)
+          : null,
       },
       updatedAt: makeTimestamp(new Date()) as never,
     };
@@ -97,7 +137,12 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Edit Item</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          >
+            &times;
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -138,7 +183,9 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
 
           {/* Quantity */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Quantity</label>
+            <label className="text-sm font-medium text-gray-700">
+              Quantity
+            </label>
             <div className="flex gap-2">
               <input
                 type="number"
@@ -146,7 +193,10 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
                 step="any"
                 value={quantity.current}
                 onChange={(e) =>
-                  setQuantity((q) => ({ ...q, current: Number(e.target.value) }))
+                  setQuantity((q) => ({
+                    ...q,
+                    current: Number(e.target.value),
+                  }))
                 }
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -158,15 +208,25 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
                   } else {
                     setIsCustomUnit(false);
                     setCustomUnitInput("");
-                    if (e.target.value !== confirmedCustomUnit) setConfirmedCustomUnit(null);
-                    setQuantity((q) => ({ ...q, unit: e.target.value as QuantityUnit }));
+                    if (e.target.value !== confirmedCustomUnit)
+                      setConfirmedCustomUnit(null);
+                    setQuantity((q) => ({
+                      ...q,
+                      unit: e.target.value as QuantityUnit,
+                    }));
                   }
                 }}
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
               >
-                {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
+                {UNITS.map((u) => (
+                  <option key={u} value={u}>
+                    {u}
+                  </option>
+                ))}
                 {confirmedCustomUnit && (
-                  <option value={confirmedCustomUnit}>{confirmedCustomUnit}</option>
+                  <option value={confirmedCustomUnit}>
+                    {confirmedCustomUnit}
+                  </option>
                 )}
                 <option value="__custom__">custom…</option>
               </select>
@@ -177,7 +237,10 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
                   type="text"
                   value={customUnitInput}
                   onChange={(e) => setCustomUnitInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), confirmCustomUnit())}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    (e.preventDefault(), confirmCustomUnit())
+                  }
                   placeholder="e.g. jar, tray…"
                   autoFocus
                   className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -196,7 +259,9 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
 
           {/* Expiry */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Expiry date</label>
+            <label className="text-sm font-medium text-gray-700">
+              Expiry date
+            </label>
             <input
               type="date"
               value={expiresAt}
@@ -207,7 +272,9 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
 
           {/* Categories */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Categories</label>
+            <label className="text-sm font-medium text-gray-700">
+              Categories
+            </label>
             <div className="flex flex-wrap gap-2">
               {CATEGORY_OPTIONS.map((cat) => (
                 <button
@@ -223,22 +290,32 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
                   {cat}
                 </button>
               ))}
-              {categories.filter((c) => !CATEGORY_OPTIONS.includes(c)).map((cat) => (
-                <span
-                  key={cat}
-                  className="text-xs rounded-full px-3 py-1 border bg-green-500 text-white border-green-500 flex items-center gap-1"
-                >
-                  {cat}
-                  <button type="button" onClick={() => removeCategory(cat)} className="leading-none hover:text-green-200">&times;</button>
-                </span>
-              ))}
+              {categories
+                .filter((c) => !CATEGORY_OPTIONS.includes(c))
+                .map((cat) => (
+                  <span
+                    key={cat}
+                    className="text-xs rounded-full px-3 py-1 border bg-green-500 text-white border-green-500 flex items-center gap-1"
+                  >
+                    {cat}
+                    <button
+                      type="button"
+                      onClick={() => removeCategory(cat)}
+                      className="leading-none hover:text-green-200"
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
             </div>
             <div className="flex gap-2">
               <input
                 type="text"
                 value={customCategoryInput}
                 onChange={(e) => setCustomCategoryInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCustomCategory())}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.preventDefault(), addCustomCategory())
+                }
                 placeholder="Add custom category…"
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
@@ -255,7 +332,9 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
 
           {/* Color tag */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Color tag</label>
+            <label className="text-sm font-medium text-gray-700">
+              Color tag
+            </label>
             <div className="flex gap-2 flex-wrap">
               {COLOR_OPTIONS.map((c) => (
                 <button
@@ -263,7 +342,11 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
                   type="button"
                   onClick={() => setColorTag(colorTag === c ? null : c)}
                   className="w-7 h-7 rounded-full transition-transform hover:scale-110"
-                  style={{ backgroundColor: c, outline: colorTag === c ? `2px solid ${c}` : "none", outlineOffset: "2px" }}
+                  style={{
+                    backgroundColor: c,
+                    outline: colorTag === c ? `2px solid ${c}` : "none",
+                    outlineOffset: "2px",
+                  }}
                 />
               ))}
             </div>
@@ -295,7 +378,10 @@ export default function EditItemModal({ item, groups, onSave, onDelete, onClose 
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => { onDelete(item.id); onClose(); }}
+                onClick={() => {
+                  onDelete(item.id);
+                  onClose();
+                }}
                 className="flex-1 bg-red-500 text-white rounded-xl py-3 font-medium text-sm hover:bg-red-600 transition-colors"
               >
                 Confirm Delete

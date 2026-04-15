@@ -25,12 +25,27 @@ const AppDataContext = createContext<AppData | null>(null);
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Item[]>(mockItems);
   const [groups, setGroups] = useState<Group[]>(mockGroups);
-  const [shoppingItems, setShoppingItems] = useState<ShoppingItem[]>(mockShoppingItems);
-  const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>(mockShoppingLists);
+  const [shoppingItems, setShoppingItems] =
+    useState<ShoppingItem[]>(mockShoppingItems);
+  const [shoppingLists, setShoppingLists] =
+    useState<ShoppingList[]>(mockShoppingLists);
   const [recipes, setRecipes] = useState<Recipe[]>(mockRecipes);
 
   return (
-    <AppDataContext.Provider value={{ items, setItems, groups, setGroups, shoppingItems, setShoppingItems, shoppingLists, setShoppingLists, recipes, setRecipes }}>
+    <AppDataContext.Provider
+      value={{
+        items,
+        setItems,
+        groups,
+        setGroups,
+        shoppingItems,
+        setShoppingItems,
+        shoppingLists,
+        setShoppingLists,
+        recipes,
+        setRecipes,
+      }}
+    >
       {children}
     </AppDataContext.Provider>
   );

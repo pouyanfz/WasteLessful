@@ -10,7 +10,11 @@ import ItemCard from "../components/ItemCard";
 import AddItemModal from "../components/AddItemModal";
 import EditItemModal from "../components/EditItemModal";
 import GroupTabs from "../components/GroupTabs";
-import FilterSheet, { applyFilters, activeFilterCount, EMPTY_FILTERS } from "../components/FilterSheet";
+import FilterSheet, {
+  applyFilters,
+  activeFilterCount,
+  EMPTY_FILTERS,
+} from "../components/FilterSheet";
 import type { Filters } from "../components/FilterSheet";
 
 const STORAGE_KEY = "activeGroupId";
@@ -27,7 +31,9 @@ function saveActiveGroupId(id: string | null) {
 }
 
 function loadViewMode(): "columns" | "single" {
-  return localStorage.getItem(VIEW_MODE_KEY) === "single" ? "single" : "columns";
+  return localStorage.getItem(VIEW_MODE_KEY) === "single"
+    ? "single"
+    : "columns";
 }
 
 interface GroupColumnProps {
@@ -47,7 +53,16 @@ function GearButton({ onClick }: { onClick: () => void }) {
       className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:border-green-400 hover:text-green-600 transition-colors shrink-0"
       title="Settings"
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="12" cy="12" r="3" />
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </svg>
@@ -74,8 +89,14 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") { e.preventDefault(); confirm(); }
-            if (e.key === "Escape") { setAdding(false); setInput(""); }
+            if (e.key === "Enter") {
+              e.preventDefault();
+              confirm();
+            }
+            if (e.key === "Escape") {
+              setAdding(false);
+              setInput("");
+            }
           }}
           placeholder="Group name"
           autoFocus
@@ -90,7 +111,10 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
             Create
           </button>
           <button
-            onClick={() => { setAdding(false); setInput(""); }}
+            onClick={() => {
+              setAdding(false);
+              setInput("");
+            }}
             className="flex-1 border border-gray-200 text-gray-500 rounded-xl py-2.5 text-sm hover:bg-gray-50 transition-colors"
           >
             Cancel
@@ -111,7 +135,15 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
   );
 }
 
-function GroupColumn({ title, items, filterCount, onItemClick, onAddClick, onMoveLeft, onMoveRight }: GroupColumnProps) {
+function GroupColumn({
+  title,
+  items,
+  filterCount,
+  onItemClick,
+  onAddClick,
+  onMoveLeft,
+  onMoveRight,
+}: GroupColumnProps) {
   return (
     <div className="w-72 shrink-0 flex flex-col group/col">
       {/* Column header */}
@@ -123,7 +155,16 @@ function GroupColumn({ title, items, filterCount, onItemClick, onAddClick, onMov
           className="w-6 h-6 rounded flex items-center justify-center text-gray-300 hover:text-gray-600 disabled:opacity-0 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0"
           title="Move left"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
@@ -137,7 +178,16 @@ function GroupColumn({ title, items, filterCount, onItemClick, onAddClick, onMov
           className="w-6 h-6 rounded flex items-center justify-center text-gray-300 hover:text-gray-600 disabled:opacity-0 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0"
           title="Move right"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
@@ -157,7 +207,11 @@ function GroupColumn({ title, items, filterCount, onItemClick, onAddClick, onMov
           </p>
         ) : (
           items.map((item) => (
-            <ItemCard key={item.id} item={item} onClick={() => onItemClick(item)} />
+            <ItemCard
+              key={item.id}
+              item={item}
+              onClick={() => onItemClick(item)}
+            />
           ))
         )}
       </div>
@@ -178,28 +232,43 @@ function ArchivedItemCard({
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const archivedMs = item.archivedAt ? Date.now() - item.archivedAt.toDate().getTime() : null;
-  const archivedDays = archivedMs !== null ? Math.floor(archivedMs / 86400000) : null;
+  const archivedMs = item.archivedAt
+    ? Date.now() - item.archivedAt.toDate().getTime()
+    : null;
+  const archivedDays =
+    archivedMs !== null ? Math.floor(archivedMs / 86400000) : null;
   const archivedLabel =
-    archivedDays === null ? "" :
-    archivedDays === 0 ? "Archived today" :
-    archivedDays === 1 ? "Archived yesterday" :
-    `Archived ${archivedDays}d ago`;
+    archivedDays === null
+      ? ""
+      : archivedDays === 0
+        ? "Archived today"
+        : archivedDays === 1
+          ? "Archived yesterday"
+          : `Archived ${archivedDays}d ago`;
 
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {item.colorTag && (
-            <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.colorTag }} />
+            <span
+              className="w-3 h-3 rounded-full shrink-0"
+              style={{ backgroundColor: item.colorTag }}
+            />
           )}
-          <span className="font-medium text-gray-700 truncate">{item.name}</span>
+          <span className="font-medium text-gray-700 truncate">
+            {item.name}
+          </span>
         </div>
         <span className="text-xs text-gray-400 shrink-0">{archivedLabel}</span>
       </div>
       <div className="flex items-center gap-2 text-xs text-gray-400">
-        <span className="bg-gray-100 rounded-full px-2 py-0.5">{groupName}</span>
-        <span>{item.quantity.current} {item.quantity.unit}</span>
+        <span className="bg-gray-100 rounded-full px-2 py-0.5">
+          {groupName}
+        </span>
+        <span>
+          {item.quantity.current} {item.quantity.unit}
+        </span>
       </div>
       {confirmDelete ? (
         <div className="flex gap-2">
@@ -255,21 +324,40 @@ function AutoAddPromptSheet({
 }) {
   const allDests = [
     ...groups.map((g) => ({ id: g.id, name: g.name, color: g.color })),
-    ...shoppingLists.map((l) => ({ id: l.id, name: l.name, color: null as string | null })),
+    ...shoppingLists.map((l) => ({
+      id: l.id,
+      name: l.name,
+      color: null as string | null,
+    })),
   ];
   const [destId, setDestId] = useState(allDests[0]?.id ?? "");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40" onClick={onDismiss}>
-      <div className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40"
+      onClick={onDismiss}
+    >
+      <div
+        className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
-              {reason === "empty" ? `You're out of ${item.name}` : `${item.name} is running low`}
+              {reason === "empty"
+                ? `You're out of ${item.name}`
+                : `${item.name} is running low`}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">Add it to your shopping list?</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Add it to your shopping list?
+            </p>
           </div>
-          <button onClick={onDismiss} className="text-gray-400 hover:text-gray-600 text-2xl leading-none shrink-0">&times;</button>
+          <button
+            onClick={onDismiss}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none shrink-0"
+          >
+            &times;
+          </button>
         </div>
 
         {allDests.length > 1 && (
@@ -278,10 +366,21 @@ function AutoAddPromptSheet({
               <button
                 key={d.id}
                 onClick={() => setDestId(d.id)}
-                style={d.color && destId === d.id ? { backgroundColor: groupBadgeBg(d.color), color: d.color, borderColor: `${d.color}60` } : {}}
+                style={
+                  d.color && destId === d.id
+                    ? {
+                        backgroundColor: groupBadgeBg(d.color),
+                        color: d.color,
+                        borderColor: `${d.color}60`,
+                      }
+                    : {}
+                }
                 className={`text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${
-                  destId === d.id && !d.color ? "bg-green-500 text-white border-green-500" :
-                  destId !== d.id ? "bg-white text-gray-500 border-gray-200 hover:border-green-400" : ""
+                  destId === d.id && !d.color
+                    ? "bg-green-500 text-white border-green-500"
+                    : destId !== d.id
+                      ? "bg-white text-gray-500 border-gray-200 hover:border-green-400"
+                      : ""
                 }`}
               >
                 {d.name}
@@ -291,7 +390,9 @@ function AutoAddPromptSheet({
         )}
 
         <button
-          onClick={() => { if (destId) onAdd(destId); }}
+          onClick={() => {
+            if (destId) onAdd(destId);
+          }}
           disabled={!destId}
           className="w-full py-3 rounded-xl bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors disabled:opacity-40"
         >
@@ -312,10 +413,10 @@ function AutoAddPromptSheet({
 
 function sortLabel(by: string, dir: string): string {
   const labels: Record<string, [string, string]> = {
-    expiry:   ["Expiry ↑",   "Expiry ↓"],
-    name:     ["Name A→Z",   "Name Z→A"],
+    expiry: ["Expiry ↑", "Expiry ↓"],
+    name: ["Name A→Z", "Name Z→A"],
     quantity: ["Qty low→high", "Qty high→low"],
-    added:    ["Added oldest", "Added newest"],
+    added: ["Added oldest", "Added newest"],
   };
   return (labels[by] ?? ["?", "?"])[dir === "asc" ? 0 : 1];
 }
@@ -325,16 +426,37 @@ function sortLabel(by: string, dir: string): string {
 export default function ItemsPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { items, setItems, groups, setGroups, shoppingItems, setShoppingItems, shoppingLists } = useAppData();
-  const [activeGroupId, setActiveGroupId] = useState<string | null>(loadActiveGroupId);
-  const [autoAddPrompt, setAutoAddPrompt] = useState<{ item: Item; reason: "empty" | "low" } | null>(null);
+  const {
+    items,
+    setItems,
+    groups,
+    setGroups,
+    shoppingItems,
+    setShoppingItems,
+    shoppingLists,
+  } = useAppData();
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(
+    loadActiveGroupId,
+  );
+  const [autoAddPrompt, setAutoAddPrompt] = useState<{
+    item: Item;
+    reason: "empty" | "low";
+  } | null>(null);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addToGroupId, setAddToGroupId] = useState<string>(() => groups[0]?.id ?? "");
-  const [addModalPrefill, setAddModalPrefill] = useState<{ name: string; amount: number; unit: string } | null>(null);
+  const [addToGroupId, setAddToGroupId] = useState<string>(
+    () => groups[0]?.id ?? "",
+  );
+  const [addModalPrefill, setAddModalPrefill] = useState<{
+    name: string;
+    amount: number;
+    unit: string;
+  } | null>(null);
   const [showFilterSheet, setShowFilterSheet] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
-  const [desktopView, setDesktopView] = useState<"columns" | "single">(loadViewMode);
+  const [desktopView, setDesktopView] = useState<"columns" | "single">(
+    loadViewMode,
+  );
   const [search, setSearch] = useState("");
 
   function toggleDesktopView() {
@@ -375,12 +497,20 @@ export default function ItemsPage() {
 
   function handleDelete(id: string) {
     const now = makeTimestamp(new Date()) as never;
-    setItems((prev) => prev.map((i) => i.id === id ? { ...i, isArchived: true, archivedAt: now } : i));
+    setItems((prev) =>
+      prev.map((i) =>
+        i.id === id ? { ...i, isArchived: true, archivedAt: now } : i,
+      ),
+    );
     setEditingItem(null);
   }
 
   function handleRestore(id: string) {
-    setItems((prev) => prev.map((i) => i.id === id ? { ...i, isArchived: false, archivedAt: null } : i));
+    setItems((prev) =>
+      prev.map((i) =>
+        i.id === id ? { ...i, isArchived: false, archivedAt: null } : i,
+      ),
+    );
   }
 
   function handlePermanentDelete(id: string) {
@@ -389,7 +519,14 @@ export default function ItemsPage() {
 
   // Open AddItemModal pre-filled when navigated from shopping list
   useEffect(() => {
-    const state = location.state as { prefillItem?: { name: string; amount: number; unit: string; groupId: string | null } } | null;
+    const state = location.state as {
+      prefillItem?: {
+        name: string;
+        amount: number;
+        unit: string;
+        groupId: string | null;
+      };
+    } | null;
     if (state?.prefillItem) {
       const { name, amount, unit, groupId } = state.prefillItem;
       setAddToGroupId(groupId ?? groups[0]?.id ?? "");
@@ -410,14 +547,20 @@ export default function ItemsPage() {
   }
 
   function handleUpdateGroupColor(groupId: string, color: string) {
-    setGroups((prev) => prev.map((g) => g.id === groupId ? { ...g, color } : g));
+    setGroups((prev) =>
+      prev.map((g) => (g.id === groupId ? { ...g, color } : g)),
+    );
   }
 
   function handleDeleteGroup(groupId: string, moveToGroupId: string | null) {
     setItems((prev) =>
       moveToGroupId
-        ? prev.map((item) => item.groupId === groupId ? { ...item, groupId: moveToGroupId } : item)
-        : prev.filter((item) => item.groupId !== groupId)
+        ? prev.map((item) =>
+            item.groupId === groupId
+              ? { ...item, groupId: moveToGroupId }
+              : item,
+          )
+        : prev.filter((item) => item.groupId !== groupId),
     );
     setGroups((prev) => prev.filter((g) => g.id !== groupId));
     if (activeGroupId === groupId) handleTabChange(null);
@@ -428,21 +571,37 @@ export default function ItemsPage() {
     if (!current) return;
 
     const next = Math.max(0, current.quantity.current + delta);
-    const newInitial = next > current.quantity.initial ? next : current.quantity.initial;
-    setItems((prev) => prev.map((i) =>
-      i.id === id ? { ...i, quantity: { ...i.quantity, current: next, initial: newInitial } } : i
-    ));
+    const newInitial =
+      next > current.quantity.initial ? next : current.quantity.initial;
+    setItems((prev) =>
+      prev.map((i) =>
+        i.id === id
+          ? {
+              ...i,
+              quantity: { ...i.quantity, current: next, initial: newInitial },
+            }
+          : i,
+      ),
+    );
 
     // Only check when reducing and item is not already on the shopping list
     if (delta < 0) {
-      const alreadyOnList = shoppingItems.some((s) => s.linkedItemId === id && s.status === "toBuy");
+      const alreadyOnList = shoppingItems.some(
+        (s) => s.linkedItemId === id && s.status === "toBuy",
+      );
       if (!alreadyOnList) {
         if (next === 0) {
           setAutoAddPrompt({ item: current, reason: "empty" });
         } else if (mockUser.settings.autoAddToShoppingListOnLowQuantity) {
-          const prevPct = quantityPercentage(current.quantity.current, current.quantity.initial);
+          const prevPct = quantityPercentage(
+            current.quantity.current,
+            current.quantity.initial,
+          );
           const newPct = quantityPercentage(next, newInitial);
-          if (prevPct > mockUser.settings.lowQuantityThreshold && newPct <= mockUser.settings.lowQuantityThreshold) {
+          if (
+            prevPct > mockUser.settings.lowQuantityThreshold &&
+            newPct <= mockUser.settings.lowQuantityThreshold
+          ) {
             setAutoAddPrompt({ item: current, reason: "low" });
           }
         }
@@ -460,7 +619,10 @@ export default function ItemsPage() {
       groupId: isGroup ? destId : null,
       shoppingListId: isGroup ? null : destId,
       name: item.name,
-      quantity: { amount: Math.max(item.quantity.current, 1), unit: item.quantity.unit },
+      quantity: {
+        amount: Math.max(item.quantity.current, 1),
+        unit: item.quantity.unit,
+      },
       linkedRecipeId: null,
       linkedItemId: item.id,
       linkedItemName: item.name,
@@ -485,17 +647,24 @@ export default function ItemsPage() {
   const isArchiveView = activeGroupId === "archived";
 
   // --- Archived items (sorted by most recently archived) ---
-  const archivedItems = useMemo(() =>
-    items
-      .filter((i) => i.isArchived)
-      .sort((a, b) => (b.archivedAt?.toDate().getTime() ?? 0) - (a.archivedAt?.toDate().getTime() ?? 0)),
-    [items]
+  const archivedItems = useMemo(
+    () =>
+      items
+        .filter((i) => i.isArchived)
+        .sort(
+          (a, b) =>
+            (b.archivedAt?.toDate().getTime() ?? 0) -
+            (a.archivedAt?.toDate().getTime() ?? 0),
+        ),
+    [items],
   );
 
   // --- Mobile: single tab view ---
   const tabItems = useMemo(() => {
     if (isArchiveView) return [];
-    const base = activeGroupId ? items.filter((i) => i.groupId === activeGroupId) : items;
+    const base = activeGroupId
+      ? items.filter((i) => i.groupId === activeGroupId)
+      : items;
     return base.filter((i) => !i.isArchived);
   }, [items, activeGroupId, isArchiveView]);
 
@@ -522,13 +691,17 @@ export default function ItemsPage() {
   // --- Desktop: per-group filtered items (excludes archived) ---
   const allCategories = useMemo(() => {
     const cats = new Set<string>();
-    items.filter((i) => !i.isArchived).forEach((i) => i.categories.forEach((c) => cats.add(c)));
+    items
+      .filter((i) => !i.isArchived)
+      .forEach((i) => i.categories.forEach((c) => cats.add(c)));
     return Array.from(cats).sort();
   }, [items]);
 
   const allColors = useMemo(() => {
     const colors = new Set<string>();
-    items.filter((i) => !i.isArchived).forEach((i) => colors.add(i.colorTag ?? "none"));
+    items
+      .filter((i) => !i.isArchived)
+      .forEach((i) => colors.add(i.colorTag ?? "none"));
     return Array.from(colors);
   }, [items]);
 
@@ -537,16 +710,32 @@ export default function ItemsPage() {
     return groups.map((g) => ({
       group: g,
       items: applyFilters(
-        items.filter((i) => i.groupId === g.id && !i.isArchived && (!q || i.name.toLowerCase().includes(q))),
-        filters
+        items.filter(
+          (i) =>
+            i.groupId === g.id &&
+            !i.isArchived &&
+            (!q || i.name.toLowerCase().includes(q)),
+        ),
+        filters,
       ),
     }));
   }, [groups, items, filters, search]);
 
   const searchBar = (
     <div className="relative">
-      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      <svg
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
       </svg>
       <input
         type="text"
@@ -560,7 +749,18 @@ export default function ItemsPage() {
           onClick={() => setSearch("")}
           className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
         </button>
       )}
     </div>
@@ -582,7 +782,16 @@ export default function ItemsPage() {
                 onClick={() => setShowFilterSheet(true)}
                 className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:border-green-400 transition-colors"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <line x1="4" y1="6" x2="20" y2="6" />
                   <line x1="8" y1="12" x2="16" y2="12" />
                   <line x1="11" y1="18" x2="13" y2="18" />
@@ -609,20 +818,44 @@ export default function ItemsPage() {
           {/* View toggle */}
           <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1">
             <button
-              onClick={() => { setDesktopView("single"); localStorage.setItem(VIEW_MODE_KEY, "single"); }}
+              onClick={() => {
+                setDesktopView("single");
+                localStorage.setItem(VIEW_MODE_KEY, "single");
+              }}
               title="Single column"
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === "single" ? "bg-white shadow text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="5" y="3" width="14" height="18" rx="2" />
               </svg>
             </button>
             <button
-              onClick={() => { setDesktopView("columns"); localStorage.setItem(VIEW_MODE_KEY, "columns"); }}
+              onClick={() => {
+                setDesktopView("columns");
+                localStorage.setItem(VIEW_MODE_KEY, "columns");
+              }}
               title="Columns"
               className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === "columns" ? "bg-white shadow text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <rect x="3" y="3" width="7" height="18" rx="1" />
                 <rect x="14" y="3" width="7" height="18" rx="1" />
               </svg>
@@ -645,7 +878,16 @@ export default function ItemsPage() {
               onClick={() => setShowFilterSheet(true)}
               className="relative flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm text-gray-600 hover:border-green-400 transition-colors"
             >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <line x1="4" y1="6" x2="20" y2="6" />
                 <line x1="8" y1="12" x2="16" y2="12" />
                 <line x1="11" y1="18" x2="13" y2="18" />
@@ -678,30 +920,65 @@ export default function ItemsPage() {
           <div className="px-4 pt-3 max-w-lg mx-auto">{searchBar}</div>
         )}
         {/* Sort indicator */}
-        {!isArchiveView && !(filters.sort.by === "expiry" && filters.sort.dir === "asc") && (
-          <div className="px-4 pt-2 max-w-lg mx-auto flex">
-            <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-                <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-              </svg>
-              {sortLabel(filters.sort.by, filters.sort.dir)}
-              <button onClick={() => setFilters((f) => ({ ...f, sort: EMPTY_FILTERS.sort }))} className="ml-0.5 text-gray-400 hover:text-gray-600">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-              </button>
-            </span>
-          </div>
-        )}
+        {!isArchiveView &&
+          !(filters.sort.by === "expiry" && filters.sort.dir === "asc") && (
+            <div className="px-4 pt-2 max-w-lg mx-auto flex">
+              <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg>
+                {sortLabel(filters.sort.by, filters.sort.dir)}
+                <button
+                  onClick={() =>
+                    setFilters((f) => ({ ...f, sort: EMPTY_FILTERS.sort }))
+                  }
+                  className="ml-0.5 text-gray-400 hover:text-gray-600"
+                >
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </span>
+            </div>
+          )}
         <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto pb-24">
           {isArchiveView ? (
             archivedItems.length === 0 ? (
-              <p className="text-center text-gray-400 mt-12">Archive is empty.</p>
+              <p className="text-center text-gray-400 mt-12">
+                Archive is empty.
+              </p>
             ) : (
               archivedItems.map((item) => (
                 <ArchivedItemCard
                   key={item.id}
                   item={item}
-                  groupName={groups.find((g) => g.id === item.groupId)?.name ?? "Unknown group"}
+                  groupName={
+                    groups.find((g) => g.id === item.groupId)?.name ??
+                    "Unknown group"
+                  }
                   onRestore={() => handleRestore(item.id)}
                   onDelete={() => handlePermanentDelete(item.id)}
                 />
@@ -709,11 +986,20 @@ export default function ItemsPage() {
             )
           ) : visibleItems.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">
-              {filterCount > 0 ? "No items match your filters." : "No items yet. Add one!"}
+              {filterCount > 0
+                ? "No items match your filters."
+                : "No items yet. Add one!"}
             </p>
           ) : (
             visibleItems.map((item) => (
-              <ItemCard key={item.id} item={item} group={groups.find((g) => g.id === item.groupId)} showGroupBadge={activeGroupId === null} onClick={() => setEditingItem(item)} onAdjust={(d) => handleAdjust(item.id, d)} />
+              <ItemCard
+                key={item.id}
+                item={item}
+                group={groups.find((g) => g.id === item.groupId)}
+                showGroupBadge={activeGroupId === null}
+                onClick={() => setEditingItem(item)}
+                onAdjust={(d) => handleAdjust(item.id, d)}
+              />
             ))
           )}
         </main>
@@ -736,7 +1022,9 @@ export default function ItemsPage() {
               onItemClick={setEditingItem}
               onAddClick={() => openAddModal(group.id)}
               onMoveLeft={i > 0 ? () => moveGroup(i, -1) : undefined}
-              onMoveRight={i < groups.length - 1 ? () => moveGroup(i, 1) : undefined}
+              onMoveRight={
+                i < groups.length - 1 ? () => moveGroup(i, 1) : undefined
+              }
             />
           ))}
           <AddGroupColumn onAdd={handleAddGroup} />
@@ -760,30 +1048,65 @@ export default function ItemsPage() {
             <div className="px-6 pt-4 max-w-xl mx-auto">{searchBar}</div>
           )}
           {/* Sort indicator */}
-          {!isArchiveView && !(filters.sort.by === "expiry" && filters.sort.dir === "asc") && (
-            <div className="px-6 pt-2 max-w-xl mx-auto flex">
-              <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-                  <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
-                </svg>
-                {sortLabel(filters.sort.by, filters.sort.dir)}
-                <button onClick={() => setFilters((f) => ({ ...f, sort: EMPTY_FILTERS.sort }))} className="ml-0.5 text-gray-400 hover:text-gray-600">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
-              </span>
-            </div>
-          )}
+          {!isArchiveView &&
+            !(filters.sort.by === "expiry" && filters.sort.dir === "asc") && (
+              <div className="px-6 pt-2 max-w-xl mx-auto flex">
+                <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
+                  <svg
+                    width="11"
+                    height="11"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                  {sortLabel(filters.sort.by, filters.sort.dir)}
+                  <button
+                    onClick={() =>
+                      setFilters((f) => ({ ...f, sort: EMPTY_FILTERS.sort }))
+                    }
+                    className="ml-0.5 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                  </button>
+                </span>
+              </div>
+            )}
           <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto pb-24">
             {isArchiveView ? (
               archivedItems.length === 0 ? (
-                <p className="text-center text-gray-400 mt-12">Archive is empty.</p>
+                <p className="text-center text-gray-400 mt-12">
+                  Archive is empty.
+                </p>
               ) : (
                 archivedItems.map((item) => (
                   <ArchivedItemCard
                     key={item.id}
                     item={item}
-                    groupName={groups.find((g) => g.id === item.groupId)?.name ?? "Unknown group"}
+                    groupName={
+                      groups.find((g) => g.id === item.groupId)?.name ??
+                      "Unknown group"
+                    }
                     onRestore={() => handleRestore(item.id)}
                     onDelete={() => handlePermanentDelete(item.id)}
                   />
@@ -791,11 +1114,20 @@ export default function ItemsPage() {
               )
             ) : visibleItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
-                {filterCount > 0 ? "No items match your filters." : "No items yet. Add one!"}
+                {filterCount > 0
+                  ? "No items match your filters."
+                  : "No items yet. Add one!"}
               </p>
             ) : (
               visibleItems.map((item) => (
-                <ItemCard key={item.id} item={item} group={groups.find((g) => g.id === item.groupId)} showGroupBadge={activeGroupId === null} onClick={() => setEditingItem(item)} onAdjust={(d) => handleAdjust(item.id, d)} />
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  group={groups.find((g) => g.id === item.groupId)}
+                  showGroupBadge={activeGroupId === null}
+                  onClick={() => setEditingItem(item)}
+                  onAdjust={(d) => handleAdjust(item.id, d)}
+                />
               ))
             )}
           </main>
@@ -808,7 +1140,10 @@ export default function ItemsPage() {
           groups={groups}
           userId="user-1"
           onAdd={handleAdd}
-          onClose={() => { setShowAddModal(false); setAddModalPrefill(null); }}
+          onClose={() => {
+            setShowAddModal(false);
+            setAddModalPrefill(null);
+          }}
           prefill={addModalPrefill ?? undefined}
         />
       )}
@@ -826,8 +1161,12 @@ export default function ItemsPage() {
       {showFilterSheet && (
         <FilterSheet
           filters={filters}
-          availableCategories={desktopView === "columns" ? allCategories : availableCategories}
-          availableColors={desktopView === "columns" ? allColors : availableColors}
+          availableCategories={
+            desktopView === "columns" ? allCategories : availableCategories
+          }
+          availableColors={
+            desktopView === "columns" ? allColors : availableColors
+          }
           onChange={setFilters}
           onClose={() => setShowFilterSheet(false)}
         />
