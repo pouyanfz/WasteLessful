@@ -1,20 +1,20 @@
-import type { User } from '../types'
-import { daysAgo } from './mockTimestamp'
+import type { User } from "../types";
+import { daysAgo } from "./mockTimestamp";
 
 // Cast needed because mock timestamps don't implement full Firestore Timestamp
 export const mockUsers: User[] = [
   {
-    uid: 'user-1',
-    displayName: 'Alice',
-    email: 'alice@example.com',
+    uid: "user-1",
+    displayName: "Alice",
+    email: "alice@example.com",
     isAnonymous: false,
     photoURL: null,
-    groupIds: ['group-1', 'group-2'],
-    activeGroupId: 'group-1',
+    groupIds: ["group-1", "group-2"],
+    activeGroupId: "group-1",
     createdAt: daysAgo(30) as never,
     updatedAt: daysAgo(1) as never,
     settings: {
-      theme: 'system',
+      theme: "system",
       notifyDaysBeforeExpiry: 3,
       notifyOnExpired: true,
       notifyOnLowQuantity: true,
@@ -24,20 +24,22 @@ export const mockUsers: User[] = [
       autoAddToShoppingListOnExpiry: true,
       autoAddToShoppingListOnLowQuantity: false,
       getGroupNotifications: true,
+      archiveRetentionDays: null,
+      archiveMaxItems: null,
     },
   },
   {
-    uid: 'user-2',
-    displayName: 'Bob',
+    uid: "user-2",
+    displayName: "Bob",
     email: null,
     isAnonymous: true,
     photoURL: null,
-    groupIds: ['group-1'],
-    activeGroupId: 'group-1',
+    groupIds: ["group-1"],
+    activeGroupId: "group-1",
     createdAt: daysAgo(5) as never,
     updatedAt: daysAgo(5) as never,
     settings: {
-      theme: 'light',
+      theme: "light",
       notifyDaysBeforeExpiry: 7,
       notifyOnExpired: true,
       notifyOnLowQuantity: false,
@@ -47,8 +49,10 @@ export const mockUsers: User[] = [
       autoAddToShoppingListOnExpiry: false,
       autoAddToShoppingListOnLowQuantity: false,
       getGroupNotifications: false,
+      archiveRetentionDays: 30,
+      archiveMaxItems: 50,
     },
   },
-]
+];
 
-export const mockUser = mockUsers[0]
+export const mockUser = mockUsers[0];

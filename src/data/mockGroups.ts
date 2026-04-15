@@ -1,23 +1,25 @@
-import type { Group } from '../types'
-import { daysAgo, daysFromNow } from './mockTimestamp'
+import type { Group } from "../types";
+import { daysAgo, daysFromNow } from "./mockTimestamp";
 
 export const mockGroups: Group[] = [
   {
-    id: 'group-1',
-    name: 'Home',
-    ownerId: 'user-1',
-    memberIds: ['user-1', 'user-2'],
-    inviteCode: 'HOME-1234',
+    id: "group-1",
+    name: "Home",
+    color: "#3b82f6",
+    ownerId: "user-1",
+    memberIds: ["user-1", "user-2"],
+    inviteCode: "HOME-1234",
     inviteCodeExpiresAt: daysFromNow(7) as never,
     updatedAt: daysAgo(1) as never,
   },
   {
-    id: 'group-2',
-    name: 'Office',
-    ownerId: 'user-1',
-    memberIds: ['user-1'],
-    inviteCode: 'OFFI-5678',
+    id: "group-2",
+    name: "Office",
+    color: "#10b981",
+    ownerId: "user-1",
+    memberIds: ["user-1"],
+    inviteCode: "OFFI-5678",
     inviteCodeExpiresAt: null,
     updatedAt: daysAgo(3) as never,
   },
-]
+];

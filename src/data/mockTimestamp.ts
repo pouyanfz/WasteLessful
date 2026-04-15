@@ -6,16 +6,16 @@ export function makeTimestamp(date: Date) {
     toMillis: () => date.getTime(),
     seconds: Math.floor(date.getTime() / 1000),
     nanoseconds: 0,
-  }
+  };
 }
 
 export function daysFromNow(n: number) {
-  const d = new Date()
-  d.setDate(d.getDate() + n)
-  d.setHours(0, 0, 0, 0)
-  return makeTimestamp(d)
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  d.setHours(0, 0, 0, 0);
+  return makeTimestamp(d);
 }
 
 export function daysAgo(n: number) {
-  return daysFromNow(-n)
+  return daysFromNow(-n);
 }
