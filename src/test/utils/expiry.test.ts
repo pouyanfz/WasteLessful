@@ -4,7 +4,7 @@ import {
   isExpired,
   isExpiringSoon,
   daysSinceAdded,
-} from "./expiry";
+} from "../../utils/expiry";
 
 const today = new Date("2026-04-08");
 

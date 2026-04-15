@@ -12,7 +12,7 @@ interface AutoAddOptions {
 }
 
 /** Returns true if the item should be auto-added to the shopping list. */
-export function shouldAutoAdd(opts: AutoAddOptions): boolean {
+export function shouldAutoAdd(opts: AutoAddOptions, now = new Date()): boolean {
   const {
     expiresAt,
     current,
@@ -24,7 +24,7 @@ export function shouldAutoAdd(opts: AutoAddOptions): boolean {
   } = opts;
 
   if (autoAddOnExpiry && expiresAt !== null) {
-    if (isExpiringSoon(expiresAt, notifyDaysBeforeExpiry)) return true;
+    if (isExpiringSoon(expiresAt, notifyDaysBeforeExpiry, now)) return true;
   }
 
   if (autoAddOnLowQuantity) {

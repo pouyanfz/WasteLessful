@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { quantityPercentage, isLowQuantity } from "./quantity";
+import { quantityPercentage, isLowQuantity } from "../../utils/quantity";
 
 describe("quantityPercentage", () => {
   it("returns 100 when full", () => {

@@ -80,7 +80,8 @@ function AddIngredientSheet({
       shoppingItemId: null,
       haveIt,
     };
-    onAdd(ingredient, haveIt ? null : addToList ? destTab : null);
+    const addToListDestination = !haveIt && addToList && destTab ? destTab : null;
+    onAdd(ingredient, addToListDestination);
     onClose();
   }
 
@@ -262,7 +263,7 @@ function RecipeDetailSheet({
   recipe: Recipe;
   shoppingItems: ShoppingItem[];
   shoppingLists: ShoppingList[];
-  groups: { id: string; name: string }[];
+  groups: { id: string; name: string; color: string }[];
   onUpdate: (updated: Recipe) => void;
   onDelete: (id: string) => void;
   onAddToShoppingList: (

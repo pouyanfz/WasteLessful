@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { makeTimestamp } from "../data/mockTimestamp";
-import type { ShoppingItem, ShoppingList } from "../types";
+import type { Group, ShoppingItem, ShoppingList } from "../types";
 import { useAppData } from "../context/AppDataContext";
 import { groupBadgeBg } from "../data/groupColors";
 
@@ -18,7 +18,7 @@ function TabStrip({
   onAddList,
 }: {
   lists: ShoppingList[];
-  groups: typeof mockGroups;
+  groups: Group[];
   activeTab: string;
   onChange: (tab: string) => void;
   onManage: () => void;
@@ -182,7 +182,7 @@ function ManageListsModal({
   onClose,
 }: {
   lists: ShoppingList[];
-  groups: typeof mockGroups;
+  groups: Group[];
   onReorder: (lists: ShoppingList[]) => void;
   onDelete: (id: string) => void;
   onClose: () => void;
@@ -334,7 +334,7 @@ function EditShoppingItemSheet({
 }: {
   item: ShoppingItem;
   lists: ShoppingList[];
-  groups: typeof mockGroups;
+  groups: Group[];
   onSave: (updated: ShoppingItem) => void;
   onDelete: (id: string) => void;
   onAddToInventory: (item: ShoppingItem) => void;
@@ -879,6 +879,7 @@ export default function ShoppingListPage() {
       linkedItemName: null,
       status: "toBuy",
       autoAdded: false,
+      addedToInventory: false,
       addedBy: "user-1",
       boughtBy: null,
       addedAt: now,
@@ -916,12 +917,12 @@ export default function ShoppingListPage() {
   // Add form: show destination selector only on "All" tab
   const showDestSelector = activeTab === "all";
   const [addDestTab, setAddDestTab] = useState<string>(
-    lists[0]?.id ?? groups[0]?.id ?? "all",
+    lists[0]?.id ?? groups[0]?.id ?? "",
   );
 
   function handleAddFromAll(e: React.FormEvent) {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!newName.trim() || !addDestTab) return;
     const resolvedUnit = isCustomAddUnit
       ? customAddUnit.trim() || newUnit
       : newUnit;
@@ -938,6 +939,7 @@ export default function ShoppingListPage() {
       linkedItemName: null,
       status: "toBuy",
       autoAdded: false,
+      addedToInventory: false,
       addedBy: "user-1",
       boughtBy: null,
       addedAt: now,

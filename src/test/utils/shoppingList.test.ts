@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { shouldAutoAdd, linkedItemNote } from "./shoppingList";
+import { shouldAutoAdd, linkedItemNote } from "../../utils/shoppingList";
 
 const today = new Date("2026-04-08");
 
@@ -20,21 +20,20 @@ describe("shouldAutoAdd", () => {
   };
 
   it("returns true when item is expiring soon and autoAddOnExpiry is true", () => {
-    expect(shouldAutoAdd({ ...base, expiresAt: daysFromToday(2) })).toBe(true);
+    expect(shouldAutoAdd({ ...base, expiresAt: daysFromToday(2) }, today)).toBe(true);
   });
 
   it("returns false when item is expiring soon but autoAddOnExpiry is false", () => {
     expect(
-      shouldAutoAdd({
-        ...base,
-        expiresAt: daysFromToday(2),
-        autoAddOnExpiry: false,
-      }),
+      shouldAutoAdd(
+        { ...base, expiresAt: daysFromToday(2), autoAddOnExpiry: false },
+        today,
+      ),
     ).toBe(false);
   });
 
   it("returns false when item is not expiring soon", () => {
-    expect(shouldAutoAdd({ ...base, expiresAt: daysFromToday(10) })).toBe(
+    expect(shouldAutoAdd({ ...base, expiresAt: daysFromToday(10) }, today)).toBe(
       false,
     );
   });
