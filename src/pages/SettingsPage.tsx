@@ -1,14 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import type { UserSettings } from "../types";
-import { mockUser } from "../data/mockUsers";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import type { UserSettings } from '../types'
+import { useAuth } from '../context/AuthContext'
+import { useAppData } from '../context/AppDataContext'
+import SignInModal from '../components/SignInModal'
 
 type Section =
-  | "account"
-  | "appearance"
-  | "notifications"
-  | "inventory"
-  | "support";
+  | 'account'
+  | 'appearance'
+  | 'notifications'
+  | 'inventory'
+  | 'support'
 
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
@@ -17,9 +19,9 @@ function PageShell({
   onBack,
   children,
 }: {
-  title: string;
-  onBack: () => void;
-  children: React.ReactNode;
+  title: string
+  onBack: () => void
+  children: React.ReactNode
 }) {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -47,7 +49,7 @@ function PageShell({
         {children}
       </div>
     </div>
-  );
+  )
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -55,7 +57,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-1 mb-2">
       {children}
     </p>
-  );
+  )
 }
 
 function Card({ children }: { children: React.ReactNode }) {
@@ -63,7 +65,7 @@ function Card({ children }: { children: React.ReactNode }) {
     <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
       {children}
     </div>
-  );
+  )
 }
 
 function Row({
@@ -72,14 +74,14 @@ function Row({
   last = false,
   children,
 }: {
-  label: string;
-  sublabel?: string;
-  last?: boolean;
-  children?: React.ReactNode;
+  label: string
+  sublabel?: string
+  last?: boolean
+  children?: React.ReactNode
 }) {
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-3.5 ${!last ? "border-b border-gray-100" : ""}`}
+      className={`flex items-center justify-between gap-4 px-4 py-3.5 ${!last ? 'border-b border-gray-100' : ''}`}
     >
       <div className="min-w-0">
         <p className="text-sm text-gray-800">{label}</p>
@@ -87,26 +89,26 @@ function Row({
       </div>
       {children}
     </div>
-  );
+  )
 }
 
 function Toggle({
   value,
   onChange,
 }: {
-  value: boolean;
-  onChange: (v: boolean) => void;
+  value: boolean
+  onChange: (v: boolean) => void
 }) {
   return (
     <button
       onClick={() => onChange(!value)}
-      className={`w-12 h-7 rounded-full transition-colors relative shrink-0 ${value ? "bg-green-500" : "bg-gray-200"}`}
+      className={`w-12 h-7 rounded-full transition-colors relative shrink-0 ${value ? 'bg-green-500' : 'bg-gray-200'}`}
     >
       <span
-        className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${value ? "left-6" : "left-1"}`}
+        className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${value ? 'left-6' : 'left-1'}`}
       />
     </button>
-  );
+  )
 }
 
 function Stepper({
@@ -117,12 +119,12 @@ function Stepper({
   onChange,
   disabled = false,
 }: {
-  value: number;
-  min: number;
-  max: number;
-  step?: number;
-  onChange: (v: number) => void;
-  disabled?: boolean;
+  value: number
+  min: number
+  max: number
+  step?: number
+  onChange: (v: number) => void
+  disabled?: boolean
 }) {
   return (
     <div className="flex items-center gap-2 shrink-0">
@@ -143,7 +145,7 @@ function Stepper({
         </svg>
       </button>
       <span
-        className={`text-sm font-medium w-8 text-center ${disabled ? "text-gray-300" : "text-gray-700"}`}
+        className={`text-sm font-medium w-8 text-center ${disabled ? 'text-gray-300' : 'text-gray-700'}`}
       >
         {value}
       </span>
@@ -164,66 +166,228 @@ function Stepper({
         </svg>
       </button>
     </div>
-  );
+  )
 }
 
 function Note({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs text-gray-400 px-1">{children}</p>;
+  return <p className="text-xs text-gray-400 px-1">{children}</p>
 }
 
 // ─── Sub-pages ────────────────────────────────────────────────────────────────
 
 function AccountSection({ onBack }: { onBack: () => void }) {
+  const { firebaseUser, signOut, deleteAccount, updateDisplayName } = useAuth()
+  const { userDoc } = useAppData()
+  const [showSignIn, setShowSignIn] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const isAnon = firebaseUser?.isAnonymous ?? true
+  const displayName =
+    userDoc?.displayName ?? firebaseUser?.displayName ?? 'Guest'
+  const email = userDoc?.email ?? firebaseUser?.email ?? null
+  const photo = userDoc?.photoURL ?? firebaseUser?.photoURL ?? null
+
+  async function handleSaveName() {
+    const trimmed = nameInput.trim()
+    if (!trimmed) return
+    setBusy(true)
+    await updateDisplayName(trimmed)
+    setEditingName(false)
+    setBusy(false)
+  }
+
+  async function handleSignOut() {
+    setBusy(true)
+    await signOut()
+    setBusy(false)
+    onBack()
+  }
+
+  async function handleDelete() {
+    setBusy(true)
+    await deleteAccount()
+    setBusy(false)
+    onBack()
+  }
+
   return (
     <PageShell title="Account" onBack={onBack}>
-      <div className="flex flex-col items-center gap-3 py-6">
-        <div className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
-          <svg
-            width="36"
-            height="36"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#9ca3af"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
+      {/* Avatar + name */}
+      <div className="flex flex-col items-center gap-3 py-4">
+        {photo ? (
+          <img
+            src={photo}
+            alt={displayName}
+            className="w-20 h-20 rounded-full object-cover border border-gray-200"
+          />
+        ) : (
+          <div className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-2xl font-semibold text-gray-400">
+            {isAnon ? (
+              <svg
+                width="36"
+                height="36"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#9ca3af"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            ) : (
+              displayName.charAt(0).toUpperCase()
+            )}
+          </div>
+        )}
+        <div className="text-center">
+          <p className="text-sm font-semibold text-gray-800">
+            {isAnon ? 'Guest' : displayName}
+          </p>
+          {email && <p className="text-xs text-gray-400 mt-0.5">{email}</p>}
+          {isAnon && (
+            <p className="text-xs text-gray-400 mt-0.5">
+              Data saved on this device only
+            </p>
+          )}
         </div>
-        <p className="text-sm font-medium text-gray-500">Using as guest</p>
       </div>
 
-      <Card>
-        <button
-          disabled
-          className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-gray-400 cursor-not-allowed"
-        >
-          <svg
-            width="17"
-            height="17"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-            <polyline points="10 17 15 12 10 7" />
-            <line x1="15" y1="12" x2="3" y2="12" />
-          </svg>
-          Sign in — coming in Phase 5
-        </button>
-      </Card>
+      {isAnon ? (
+        <>
+          <Card>
+            <button
+              onClick={() => setShowSignIn(true)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-green-600 hover:bg-gray-50 transition-colors"
+            >
+              <svg
+                width="17"
+                height="17"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                <polyline points="10 17 15 12 10 7" />
+                <line x1="15" y1="12" x2="3" y2="12" />
+              </svg>
+              Sign in / Create account
+            </button>
+          </Card>
+          <Note>
+            Sign in to sync your data across devices and share groups with
+            family or roommates. Your existing items will be kept.
+          </Note>
+        </>
+      ) : (
+        <>
+          {/* Display name editor */}
+          <div>
+            <SectionLabel>Display name</SectionLabel>
+            <Card>
+              {editingName ? (
+                <div className="px-4 py-3 flex items-center gap-2">
+                  <input
+                    autoFocus
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveName()
+                      if (e.key === 'Escape') setEditingName(false)
+                    }}
+                    placeholder="Your name"
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                  />
+                  <button
+                    onClick={handleSaveName}
+                    disabled={busy || !nameInput.trim()}
+                    className="px-3 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 disabled:opacity-40 transition-colors"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={() => setEditingName(false)}
+                    className="px-3 py-2 text-sm text-gray-400 hover:text-gray-600"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    setNameInput(displayName)
+                    setEditingName(true)
+                  }}
+                  className="w-full flex items-center justify-between px-4 py-3.5 text-sm hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-gray-800">{displayName}</span>
+                  <span className="text-xs text-green-600">Edit</span>
+                </button>
+              )}
+            </Card>
+            <Note>This is how others will see you in shared groups.</Note>
+          </div>
 
-      <Note>
-        Creating an account lets you sync across devices and share groups with
-        family or roommates.
-      </Note>
+          <Card>
+            <button
+              onClick={handleSignOut}
+              disabled={busy}
+              className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              Sign out
+            </button>
+          </Card>
+
+          <Card>
+            {!showDeleteConfirm ? (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors"
+              >
+                Delete account
+              </button>
+            ) : (
+              <div className="px-4 py-4 flex flex-col gap-3">
+                <p className="text-sm text-gray-700 font-medium">
+                  Delete your account?
+                </p>
+                <p className="text-xs text-gray-400">
+                  This cannot be undone. Your data will be removed.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDelete}
+                    disabled={busy}
+                    className="flex-1 bg-red-500 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-red-600 disabled:opacity-50 transition-colors"
+                  >
+                    {busy ? 'Deleting…' : 'Yes, delete'}
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    className="flex-1 border border-gray-200 text-gray-500 rounded-xl py-2.5 text-sm hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </Card>
+        </>
+      )}
+
+      {showSignIn && (
+        <SignInModal isUpgrade={true} onClose={() => setShowSignIn(false)} />
+      )}
     </PageShell>
-  );
+  )
 }
 
 function AppearanceSection({
@@ -231,18 +395,15 @@ function AppearanceSection({
   update,
   onBack,
 }: {
-  settings: UserSettings;
-  update: <K extends keyof UserSettings>(
-    key: K,
-    value: UserSettings[K],
-  ) => void;
-  onBack: () => void;
+  settings: UserSettings
+  update: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void
+  onBack: () => void
 }) {
-  const themes: { value: UserSettings["theme"]; label: string }[] = [
-    { value: "light", label: "Light" },
-    { value: "dark", label: "Dark" },
-    { value: "system", label: "System" },
-  ];
+  const themes: { value: UserSettings['theme']; label: string }[] = [
+    { value: 'light', label: 'Light' },
+    { value: 'dark', label: 'Dark' },
+    { value: 'system', label: 'System' },
+  ]
 
   return (
     <PageShell title="Appearance" onBack={onBack}>
@@ -253,11 +414,11 @@ function AppearanceSection({
             {themes.map((t) => (
               <button
                 key={t.value}
-                onClick={() => update("theme", t.value)}
+                onClick={() => update('theme', t.value)}
                 className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${
                   settings.theme === t.value
-                    ? "bg-green-500 text-white shadow-sm"
-                    : "text-gray-500 hover:bg-gray-50"
+                    ? 'bg-green-500 text-white shadow-sm'
+                    : 'text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 {t.label}
@@ -271,7 +432,7 @@ function AppearanceSection({
         effect in a future update.
       </Note>
     </PageShell>
-  );
+  )
 }
 
 function NotificationsSection({
@@ -279,12 +440,9 @@ function NotificationsSection({
   update,
   onBack,
 }: {
-  settings: UserSettings;
-  update: <K extends keyof UserSettings>(
-    key: K,
-    value: UserSettings[K],
-  ) => void;
-  onBack: () => void;
+  settings: UserSettings
+  update: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void
+  onBack: () => void
 }) {
   return (
     <PageShell title="Notifications" onBack={onBack}>
@@ -294,7 +452,7 @@ function NotificationsSection({
           <Row label="Notify when item expires">
             <Toggle
               value={settings.notifyOnExpired}
-              onChange={(v) => update("notifyOnExpired", v)}
+              onChange={(v) => update('notifyOnExpired', v)}
             />
           </Row>
           <Row label="Warn me this many days before" last>
@@ -303,7 +461,7 @@ function NotificationsSection({
                 value={settings.notifyDaysBeforeExpiry}
                 min={1}
                 max={30}
-                onChange={(v) => update("notifyDaysBeforeExpiry", v)}
+                onChange={(v) => update('notifyDaysBeforeExpiry', v)}
               />
               <span className="text-xs text-gray-400">days</span>
             </div>
@@ -317,7 +475,7 @@ function NotificationsSection({
           <Row label="Notify when low quantity">
             <Toggle
               value={settings.notifyOnLowQuantity}
-              onChange={(v) => update("notifyOnLowQuantity", v)}
+              onChange={(v) => update('notifyOnLowQuantity', v)}
             />
           </Row>
           <Row label="Low quantity threshold" last>
@@ -327,7 +485,7 @@ function NotificationsSection({
                 min={5}
                 max={75}
                 step={5}
-                onChange={(v) => update("lowQuantityThreshold", v)}
+                onChange={(v) => update('lowQuantityThreshold', v)}
                 disabled={!settings.notifyOnLowQuantity}
               />
               <span className="text-xs text-gray-400">%</span>
@@ -342,7 +500,7 @@ function NotificationsSection({
           <Row label="Nudge me if an item goes unused">
             <Toggle
               value={settings.notifyUnusedAfterDays !== null}
-              onChange={(v) => update("notifyUnusedAfterDays", v ? 14 : null)}
+              onChange={(v) => update('notifyUnusedAfterDays', v ? 14 : null)}
             />
           </Row>
           <Row label="After this many days" last>
@@ -351,7 +509,7 @@ function NotificationsSection({
                 value={settings.notifyUnusedAfterDays ?? 14}
                 min={1}
                 max={90}
-                onChange={(v) => update("notifyUnusedAfterDays", v)}
+                onChange={(v) => update('notifyUnusedAfterDays', v)}
                 disabled={settings.notifyUnusedAfterDays === null}
               />
               <span className="text-xs text-gray-400">days</span>
@@ -366,13 +524,13 @@ function NotificationsSection({
           <Row label="Weekly summary report">
             <Toggle
               value={settings.weeklyReport}
-              onChange={(v) => update("weeklyReport", v)}
+              onChange={(v) => update('weeklyReport', v)}
             />
           </Row>
           <Row label="Group member activity" last>
             <Toggle
               value={settings.getGroupNotifications}
-              onChange={(v) => update("getGroupNotifications", v)}
+              onChange={(v) => update('getGroupNotifications', v)}
             />
           </Row>
         </Card>
@@ -383,7 +541,7 @@ function NotificationsSection({
         future update.
       </Note>
     </PageShell>
-  );
+  )
 }
 
 function InventorySection({
@@ -391,12 +549,9 @@ function InventorySection({
   update,
   onBack,
 }: {
-  settings: UserSettings;
-  update: <K extends keyof UserSettings>(
-    key: K,
-    value: UserSettings[K],
-  ) => void;
-  onBack: () => void;
+  settings: UserSettings
+  update: <K extends keyof UserSettings>(key: K, value: UserSettings[K]) => void
+  onBack: () => void
 }) {
   return (
     <PageShell title="Inventory" onBack={onBack}>
@@ -409,7 +564,7 @@ function InventorySection({
           >
             <Toggle
               value={settings.autoAddToShoppingListOnExpiry}
-              onChange={(v) => update("autoAddToShoppingListOnExpiry", v)}
+              onChange={(v) => update('autoAddToShoppingListOnExpiry', v)}
             />
           </Row>
           <Row
@@ -419,7 +574,7 @@ function InventorySection({
           >
             <Toggle
               value={settings.autoAddToShoppingListOnLowQuantity}
-              onChange={(v) => update("autoAddToShoppingListOnLowQuantity", v)}
+              onChange={(v) => update('autoAddToShoppingListOnLowQuantity', v)}
             />
           </Row>
         </Card>
@@ -432,7 +587,7 @@ function InventorySection({
             label="Auto-delete archived items after"
             sublabel={
               settings.archiveRetentionDays === null
-                ? "Items stay forever"
+                ? 'Items stay forever'
                 : `Deleted after ${settings.archiveRetentionDays} days`
             }
           >
@@ -443,14 +598,14 @@ function InventorySection({
                     value={settings.archiveRetentionDays}
                     min={1}
                     max={365}
-                    onChange={(v) => update("archiveRetentionDays", v)}
+                    onChange={(v) => update('archiveRetentionDays', v)}
                   />
                   <span className="text-xs text-gray-400">days</span>
                 </div>
               )}
               <Toggle
                 value={settings.archiveRetentionDays !== null}
-                onChange={(v) => update("archiveRetentionDays", v ? 30 : null)}
+                onChange={(v) => update('archiveRetentionDays', v ? 30 : null)}
               />
             </div>
           </Row>
@@ -458,7 +613,7 @@ function InventorySection({
             label="Max items in archive"
             sublabel={
               settings.archiveMaxItems === null
-                ? "No limit"
+                ? 'No limit'
                 : `Oldest removed beyond ${settings.archiveMaxItems}`
             }
             last
@@ -470,19 +625,19 @@ function InventorySection({
                   min={10}
                   max={500}
                   step={10}
-                  onChange={(v) => update("archiveMaxItems", v)}
+                  onChange={(v) => update('archiveMaxItems', v)}
                 />
               )}
               <Toggle
                 value={settings.archiveMaxItems !== null}
-                onChange={(v) => update("archiveMaxItems", v ? 50 : null)}
+                onChange={(v) => update('archiveMaxItems', v ? 50 : null)}
               />
             </div>
           </Row>
         </Card>
       </div>
     </PageShell>
-  );
+  )
 }
 
 function SupportSection({ onBack }: { onBack: () => void }) {
@@ -491,22 +646,22 @@ function SupportSection({ onBack }: { onBack: () => void }) {
       <Card>
         {[
           {
-            label: "Send feedback",
-            href: "https://github.com/pouyanfz/WasteLess",
+            label: 'Send feedback',
+            href: 'https://github.com/pouyanfz/WasteLess',
           },
           {
-            label: "Report a bug",
-            href: "https://github.com/pouyanfz/WasteLess/issues",
+            label: 'Report a bug',
+            href: 'https://github.com/pouyanfz/WasteLess/issues',
           },
-          { label: "Privacy policy", href: "#" },
-          { label: "Contact me", href: "mailto:pouyan.fz@gmail.com" },
+          { label: 'Privacy policy', href: '#' },
+          { label: 'Contact me', href: 'mailto:pouyan.fz@gmail.com' },
         ].map((link, i, arr) => (
           <a
             key={link.label}
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center justify-between px-4 py-3.5 text-sm text-gray-800 hover:bg-gray-50 transition-colors ${i < arr.length - 1 ? "border-b border-gray-100" : ""}`}
+            className={`flex items-center justify-between px-4 py-3.5 text-sm text-gray-800 hover:bg-gray-50 transition-colors ${i < arr.length - 1 ? 'border-b border-gray-100' : ''}`}
           >
             {link.label}
             <svg
@@ -530,22 +685,22 @@ function SupportSection({ onBack }: { onBack: () => void }) {
         <p className="text-xs text-gray-400">Version 0.1.0 · Phase 3</p>
       </div>
     </PageShell>
-  );
+  )
 }
 
 // ─── Top-level list ───────────────────────────────────────────────────────────
 
 const SECTIONS: {
-  id: Section;
-  label: string;
-  color: string;
-  icon: React.ReactNode;
-  subtitle: (s: UserSettings) => string;
+  id: Section
+  label: string
+  color: string
+  icon: React.ReactNode
+  subtitle: (s: UserSettings) => string
 }[] = [
   {
-    id: "account",
-    label: "Account",
-    color: "bg-blue-500",
+    id: 'account',
+    label: 'Account',
+    color: 'bg-blue-500',
     icon: (
       <svg
         width="18"
@@ -561,12 +716,12 @@ const SECTIONS: {
         <circle cx="12" cy="7" r="4" />
       </svg>
     ),
-    subtitle: () => "Sign in to sync your data",
+    subtitle: () => 'Sign in to sync your data',
   },
   {
-    id: "appearance",
-    label: "Appearance",
-    color: "bg-purple-500",
+    id: 'appearance',
+    label: 'Appearance',
+    color: 'bg-purple-500',
     icon: (
       <svg
         width="18"
@@ -586,9 +741,9 @@ const SECTIONS: {
       `Theme: ${s.theme.charAt(0).toUpperCase() + s.theme.slice(1)}`,
   },
   {
-    id: "notifications",
-    label: "Notifications",
-    color: "bg-orange-500",
+    id: 'notifications',
+    label: 'Notifications',
+    color: 'bg-orange-500',
     icon: (
       <svg
         width="18"
@@ -607,9 +762,9 @@ const SECTIONS: {
     subtitle: (s) => `Warn ${s.notifyDaysBeforeExpiry}d before expiry`,
   },
   {
-    id: "inventory",
-    label: "Inventory",
-    color: "bg-green-500",
+    id: 'inventory',
+    label: 'Inventory',
+    color: 'bg-green-500',
     icon: (
       <svg
         width="18"
@@ -626,13 +781,13 @@ const SECTIONS: {
     ),
     subtitle: (s) =>
       s.autoAddToShoppingListOnExpiry || s.autoAddToShoppingListOnLowQuantity
-        ? "Auto-add to shopping list on"
-        : "Auto-add disabled",
+        ? 'Auto-add to shopping list on'
+        : 'Auto-add disabled',
   },
   {
-    id: "support",
-    label: "Support",
-    color: "bg-gray-400",
+    id: 'support',
+    label: 'Support',
+    color: 'bg-gray-400',
     icon: (
       <svg
         width="18"
@@ -649,52 +804,58 @@ const SECTIONS: {
         <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
     ),
-    subtitle: () => "Help, feedback & about",
+    subtitle: () => 'Help, feedback & about',
   },
-];
+]
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
-  const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<Section | null>(null);
-  const [settings, setSettings] = useState<UserSettings>(mockUser.settings);
+  const navigate = useNavigate()
+  const { userDoc, updateSettings } = useAppData()
+  const [activeSection, setActiveSection] = useState<Section | null>(null)
+  const [localSettings, setLocalSettings] = useState<UserSettings | null>(null)
+
+  const settings = localSettings ?? userDoc?.settings ?? null
 
   function update<K extends keyof UserSettings>(
     key: K,
     value: UserSettings[K],
   ) {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    if (!settings) return
+    const next = { ...settings, [key]: value }
+    setLocalSettings(next)
+    updateSettings({ [key]: value })
   }
 
-  if (activeSection === "account")
-    return <AccountSection onBack={() => setActiveSection(null)} />;
-  if (activeSection === "appearance")
+  if (activeSection === 'account')
+    return <AccountSection onBack={() => setActiveSection(null)} />
+  if (activeSection === 'appearance' && settings)
     return (
       <AppearanceSection
         settings={settings}
         update={update}
         onBack={() => setActiveSection(null)}
       />
-    );
-  if (activeSection === "notifications")
+    )
+  if (activeSection === 'notifications' && settings)
     return (
       <NotificationsSection
         settings={settings}
         update={update}
         onBack={() => setActiveSection(null)}
       />
-    );
-  if (activeSection === "inventory")
+    )
+  if (activeSection === 'inventory' && settings)
     return (
       <InventorySection
         settings={settings}
         update={update}
         onBack={() => setActiveSection(null)}
       />
-    );
-  if (activeSection === "support")
-    return <SupportSection onBack={() => setActiveSection(null)} />;
+    )
+  if (activeSection === 'support')
+    return <SupportSection onBack={() => setActiveSection(null)} />
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -726,7 +887,7 @@ export default function SettingsPage() {
               key={section.id}
               onClick={() => setActiveSection(section.id)}
               className={`w-full flex items-center gap-4 px-4 py-3.5 hover:bg-gray-50 transition-colors text-left ${
-                i < SECTIONS.length - 1 ? "border-b border-gray-100" : ""
+                i < SECTIONS.length - 1 ? 'border-b border-gray-100' : ''
               }`}
             >
               {/* Icon */}
@@ -742,7 +903,7 @@ export default function SettingsPage() {
                   {section.label}
                 </p>
                 <p className="text-xs text-gray-400 truncate">
-                  {section.subtitle(settings)}
+                  {settings ? section.subtitle(settings) : ''}
                 </p>
               </div>
 
@@ -762,7 +923,11 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
+
+        <p className="text-center text-xs text-gray-300 mt-6">
+          v{__APP_VERSION__} · build {__GIT_HASH__}
+        </p>
       </div>
     </div>
-  );
+  )
 }
