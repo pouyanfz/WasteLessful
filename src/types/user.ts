@@ -23,6 +23,7 @@ export interface User {
   photoURL: string | null
   groupIds: string[]
   activeGroupId: string | null
+  groupNicknames: Record<string, string>
   createdAt: Timestamp
   updatedAt: Timestamp
   settings: UserSettings
