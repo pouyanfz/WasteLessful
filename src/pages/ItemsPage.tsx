@@ -1,49 +1,47 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import type { Item, Group, ShoppingItem } from "../types";
-import { useAppData } from "../context/AppDataContext";
-import { makeTimestamp } from "../data/mockTimestamp";
-import { nextGroupColor, groupBadgeBg } from "../data/groupColors";
-import { mockUser } from "../data/mockUsers";
-import { quantityPercentage } from "../utils/quantity";
-import ItemCard from "../components/ItemCard";
-import AddItemModal from "../components/AddItemModal";
-import EditItemModal from "../components/EditItemModal";
-import GroupTabs from "../components/GroupTabs";
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import type { Item, Group, ShoppingItem } from '../types'
+import { useAppData } from '../context/AppDataContext'
+import { useAuth } from '../context/AuthContext'
+import { nowTimestamp } from '../utils/timestamp'
+import { groupBadgeBg } from '../data/groupColors'
+import { quantityPercentage } from '../utils/quantity'
+import ItemCard from '../components/ItemCard'
+import AddItemModal from '../components/AddItemModal'
+import EditItemModal from '../components/EditItemModal'
+import GroupTabs from '../components/GroupTabs'
 import FilterSheet, {
   applyFilters,
   activeFilterCount,
   EMPTY_FILTERS,
-} from "../components/FilterSheet";
-import type { Filters } from "../components/FilterSheet";
+} from '../components/FilterSheet'
+import type { Filters } from '../components/FilterSheet'
 
-const STORAGE_KEY = "activeGroupId";
-const VIEW_MODE_KEY = "desktopViewMode";
+const STORAGE_KEY = 'activeGroupId'
+const VIEW_MODE_KEY = 'desktopViewMode'
 
 function loadActiveGroupId(): string | null {
-  const val = localStorage.getItem(STORAGE_KEY);
-  if (!val || val === "null") return null;
-  return val;
+  const val = localStorage.getItem(STORAGE_KEY)
+  if (!val || val === 'null') return null
+  return val
 }
 
 function saveActiveGroupId(id: string | null) {
-  localStorage.setItem(STORAGE_KEY, id ?? "null");
+  localStorage.setItem(STORAGE_KEY, id ?? 'null')
 }
 
-function loadViewMode(): "columns" | "single" {
-  return localStorage.getItem(VIEW_MODE_KEY) === "single"
-    ? "single"
-    : "columns";
+function loadViewMode(): 'columns' | 'single' {
+  return localStorage.getItem(VIEW_MODE_KEY) === 'single' ? 'single' : 'columns'
 }
 
 interface GroupColumnProps {
-  title: string;
-  items: Item[];
-  filterCount: number;
-  onItemClick: (item: Item) => void;
-  onAddClick: () => void;
-  onMoveLeft?: () => void;
-  onMoveRight?: () => void;
+  title: string
+  items: Item[]
+  filterCount: number
+  onItemClick: (item: Item) => void
+  onAddClick: () => void
+  onMoveLeft?: () => void
+  onMoveRight?: () => void
 }
 
 function GearButton({ onClick }: { onClick: () => void }) {
@@ -67,18 +65,18 @@ function GearButton({ onClick }: { onClick: () => void }) {
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
       </svg>
     </button>
-  );
+  )
 }
 
 function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
-  const [adding, setAdding] = useState(false);
-  const [input, setInput] = useState("");
+  const [adding, setAdding] = useState(false)
+  const [input, setInput] = useState('')
 
   function confirm() {
-    const name = input.trim();
-    if (name) onAdd(name);
-    setAdding(false);
-    setInput("");
+    const name = input.trim()
+    if (name) onAdd(name)
+    setAdding(false)
+    setInput('')
   }
 
   if (adding) {
@@ -89,13 +87,13 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              confirm();
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              confirm()
             }
-            if (e.key === "Escape") {
-              setAdding(false);
-              setInput("");
+            if (e.key === 'Escape') {
+              setAdding(false)
+              setInput('')
             }
           }}
           placeholder="Group name"
@@ -112,8 +110,8 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
           </button>
           <button
             onClick={() => {
-              setAdding(false);
-              setInput("");
+              setAdding(false)
+              setInput('')
             }}
             className="flex-1 border border-gray-200 text-gray-500 rounded-xl py-2.5 text-sm hover:bg-gray-50 transition-colors"
           >
@@ -121,7 +119,7 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -132,7 +130,7 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
       <span className="text-2xl leading-none">+</span>
       New group
     </button>
-  );
+  )
 }
 
 function GroupColumn({
@@ -203,7 +201,7 @@ function GroupColumn({
       <div className="flex flex-col gap-3">
         {items.length === 0 ? (
           <p className="text-center text-gray-400 text-sm mt-8">
-            {filterCount > 0 ? "No items match filters." : "No items yet."}
+            {filterCount > 0 ? 'No items match filters.' : 'No items yet.'}
           </p>
         ) : (
           items.map((item) => (
@@ -216,7 +214,7 @@ function GroupColumn({
         )}
       </div>
     </div>
-  );
+  )
 }
 
 function ArchivedItemCard({
@@ -225,26 +223,26 @@ function ArchivedItemCard({
   onRestore,
   onDelete,
 }: {
-  item: Item;
-  groupName: string;
-  onRestore: () => void;
-  onDelete: () => void;
+  item: Item
+  groupName: string
+  onRestore: () => void
+  onDelete: () => void
 }) {
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   const archivedMs = item.archivedAt
     ? Date.now() - item.archivedAt.toDate().getTime()
-    : null;
+    : null
   const archivedDays =
-    archivedMs !== null ? Math.floor(archivedMs / 86400000) : null;
+    archivedMs !== null ? Math.floor(archivedMs / 86400000) : null
   const archivedLabel =
     archivedDays === null
-      ? ""
+      ? ''
       : archivedDays === 0
-        ? "Archived today"
+        ? 'Archived today'
         : archivedDays === 1
-          ? "Archived yesterday"
-          : `Archived ${archivedDays}d ago`;
+          ? 'Archived yesterday'
+          : `Archived ${archivedDays}d ago`
 
   return (
     <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3">
@@ -302,7 +300,7 @@ function ArchivedItemCard({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 // ─── Auto-add prompt ──────────────────────────────────────────────────────────
@@ -315,12 +313,12 @@ function AutoAddPromptSheet({
   onAdd,
   onDismiss,
 }: {
-  item: Item;
-  reason: "empty" | "low";
-  groups: Group[];
-  shoppingLists: import("../types").ShoppingList[];
-  onAdd: (destId: string) => void;
-  onDismiss: () => void;
+  item: Item
+  reason: 'empty' | 'low'
+  groups: Group[]
+  shoppingLists: import('../types').ShoppingList[]
+  onAdd: (destId: string) => void
+  onDismiss: () => void
 }) {
   const allDests = [
     ...groups.map((g) => ({ id: g.id, name: g.name, color: g.color })),
@@ -329,8 +327,8 @@ function AutoAddPromptSheet({
       name: l.name,
       color: null as string | null,
     })),
-  ];
-  const [destId, setDestId] = useState(allDests[0]?.id ?? "");
+  ]
+  const [destId, setDestId] = useState(allDests[0]?.id ?? '')
 
   return (
     <div
@@ -344,7 +342,7 @@ function AutoAddPromptSheet({
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
-              {reason === "empty"
+              {reason === 'empty'
                 ? `You're out of ${item.name}`
                 : `${item.name} is running low`}
             </h2>
@@ -377,10 +375,10 @@ function AutoAddPromptSheet({
                 }
                 className={`text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${
                   destId === d.id && !d.color
-                    ? "bg-green-500 text-white border-green-500"
+                    ? 'bg-green-500 text-white border-green-500'
                     : destId !== d.id
-                      ? "bg-white text-gray-500 border-gray-200 hover:border-green-400"
-                      : ""
+                      ? 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
+                      : ''
                 }`}
               >
                 {d.name}
@@ -391,7 +389,7 @@ function AutoAddPromptSheet({
 
         <button
           onClick={() => {
-            if (destId) onAdd(destId);
+            if (destId) onAdd(destId)
           }}
           disabled={!destId}
           className="w-full py-3 rounded-xl bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors disabled:opacity-40"
@@ -406,214 +404,182 @@ function AutoAddPromptSheet({
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Sort label helper ────────────────────────────────────────────────────────
 
 function sortLabel(by: string, dir: string): string {
   const labels: Record<string, [string, string]> = {
-    expiry: ["Expiry ↑", "Expiry ↓"],
-    name: ["Name A→Z", "Name Z→A"],
-    quantity: ["Qty low→high", "Qty high→low"],
-    added: ["Added oldest", "Added newest"],
-  };
-  return (labels[by] ?? ["?", "?"])[dir === "asc" ? 0 : 1];
+    expiry: ['Expiry ↑', 'Expiry ↓'],
+    name: ['Name A→Z', 'Name Z→A'],
+    quantity: ['Qty low→high', 'Qty high→low'],
+    added: ['Added oldest', 'Added newest'],
+  }
+  return (labels[by] ?? ['?', '?'])[dir === 'asc' ? 0 : 1]
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ItemsPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { firebaseUser } = useAuth()
   const {
     items,
-    setItems,
     groups,
-    setGroups,
     shoppingItems,
-    setShoppingItems,
     shoppingLists,
-  } = useAppData();
+    addItem,
+    updateItem,
+    archiveItem,
+    restoreItem,
+    deleteItem,
+    addGroup,
+    updateGroup,
+    deleteGroup,
+    reorderGroups,
+    addShoppingItem,
+    userDoc,
+  } = useAppData()
   const [activeGroupId, setActiveGroupId] = useState<string | null>(
     loadActiveGroupId,
-  );
+  )
   const [autoAddPrompt, setAutoAddPrompt] = useState<{
-    item: Item;
-    reason: "empty" | "low";
-  } | null>(null);
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const [showAddModal, setShowAddModal] = useState(false);
+    item: Item
+    reason: 'empty' | 'low'
+  } | null>(null)
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
+  const [showAddModal, setShowAddModal] = useState(false)
   const [addToGroupId, setAddToGroupId] = useState<string>(
-    () => groups[0]?.id ?? "",
-  );
+    () => groups[0]?.id ?? '',
+  )
   const [addModalPrefill, setAddModalPrefill] = useState<{
-    name: string;
-    amount: number;
-    unit: string;
-  } | null>(null);
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [editingItem, setEditingItem] = useState<Item | null>(null);
-  const [desktopView, setDesktopView] = useState<"columns" | "single">(
+    name: string
+    amount: number
+    unit: string
+  } | null>(null)
+  const [showFilterSheet, setShowFilterSheet] = useState(false)
+  const [editingItem, setEditingItem] = useState<Item | null>(null)
+  const [desktopView, setDesktopView] = useState<'columns' | 'single'>(
     loadViewMode,
-  );
-  const [search, setSearch] = useState("");
+  )
+  const [search, setSearch] = useState('')
+  const [showSampleBanner, setShowSampleBanner] = useState(
+    () => localStorage.getItem('wl_sample_data') === '1',
+  )
 
-  function toggleDesktopView() {
-    setDesktopView((v) => {
-      const next = v === "columns" ? "single" : "columns";
-      localStorage.setItem(VIEW_MODE_KEY, next);
-      return next;
-    });
-  }
-
-  function handleAddGroup(name: string) {
-    const newGroup: Group = {
-      id: crypto.randomUUID(),
-      name,
-      color: nextGroupColor(groups.map((g) => g.color)),
-      ownerId: "user-1",
-      memberIds: ["user-1"],
-      inviteCode: "",
-      inviteCodeExpiresAt: null,
-      updatedAt: makeTimestamp(new Date()) as never,
-    };
-    setGroups((prev) => [...prev, newGroup]);
-    handleTabChange(newGroup.id);
+  async function handleAddGroup(name: string) {
+    const groupId = await addGroup(name)
+    handleTabChange(groupId)
   }
 
   function handleTabChange(groupId: string | null) {
-    setActiveGroupId(groupId);
-    saveActiveGroupId(groupId);
+    setActiveGroupId(groupId)
+    saveActiveGroupId(groupId)
   }
 
-  function handleAdd(item: Item) {
-    setItems((prev) => [item, ...prev]);
+  async function handleAdd(item: Item) {
+    await addItem(item)
   }
 
-  function handleSave(updated: Item) {
-    setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+  async function handleSave(updated: Item) {
+    await updateItem(updated.id, updated)
   }
 
-  function handleDelete(id: string) {
-    const now = makeTimestamp(new Date()) as never;
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, isArchived: true, archivedAt: now } : i,
-      ),
-    );
-    setEditingItem(null);
+  async function handleDelete(id: string) {
+    await archiveItem(id)
+    setEditingItem(null)
   }
 
-  function handleRestore(id: string) {
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id ? { ...i, isArchived: false, archivedAt: null } : i,
-      ),
-    );
+  async function handleRestore(id: string) {
+    await restoreItem(id)
   }
 
-  function handlePermanentDelete(id: string) {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  async function handlePermanentDelete(id: string) {
+    await deleteItem(id)
   }
 
   // Open AddItemModal pre-filled when navigated from shopping list
   useEffect(() => {
     const state = location.state as {
       prefillItem?: {
-        name: string;
-        amount: number;
-        unit: string;
-        groupId: string | null;
-      };
-    } | null;
+        name: string
+        amount: number
+        unit: string
+        groupId: string | null
+      }
+    } | null
     if (state?.prefillItem) {
-      const { name, amount, unit, groupId } = state.prefillItem;
-      setAddToGroupId(groupId ?? groups[0]?.id ?? "");
-      setAddModalPrefill({ name, amount, unit });
-      setShowAddModal(true);
-      window.history.replaceState({}, document.title);
+      const { name, amount, unit, groupId } = state.prefillItem
+      setAddToGroupId(groupId ?? groups[0]?.id ?? '')
+      setAddModalPrefill({ name, amount, unit })
+      setShowAddModal(true)
+      window.history.replaceState({}, document.title)
     }
-  }, []);
+  }, [])
 
   function moveGroup(index: number, dir: -1 | 1) {
-    setGroups((prev) => {
-      const next = [...prev];
-      const target = index + dir;
-      if (target < 0 || target >= next.length) return prev;
-      [next[index], next[target]] = [next[target], next[index]];
-      return next;
-    });
+    const next = [...groups]
+    const target = index + dir
+    if (target < 0 || target >= next.length) return
+    ;[next[index], next[target]] = [next[target], next[index]]
+    reorderGroups(next)
   }
 
-  function handleUpdateGroupColor(groupId: string, color: string) {
-    setGroups((prev) =>
-      prev.map((g) => (g.id === groupId ? { ...g, color } : g)),
-    );
+  async function handleUpdateGroupColor(groupId: string, color: string) {
+    await updateGroup(groupId, { color })
   }
 
-  function handleDeleteGroup(groupId: string, moveToGroupId: string | null) {
-    setItems((prev) =>
-      moveToGroupId
-        ? prev.map((item) =>
-            item.groupId === groupId
-              ? { ...item, groupId: moveToGroupId }
-              : item,
-          )
-        : prev.filter((item) => item.groupId !== groupId),
-    );
-    setGroups((prev) => prev.filter((g) => g.id !== groupId));
-    if (activeGroupId === groupId) handleTabChange(null);
+  async function handleDeleteGroup(
+    groupId: string,
+    moveToGroupId: string | null,
+  ) {
+    await deleteGroup(groupId, moveToGroupId)
+    if (activeGroupId === groupId) handleTabChange(null)
   }
 
-  function handleAdjust(id: string, delta: number) {
-    const current = items.find((i) => i.id === id);
-    if (!current) return;
+  async function handleAdjust(id: string, delta: number) {
+    const current = items.find((i) => i.id === id)
+    if (!current) return
 
-    const next = Math.max(0, current.quantity.current + delta);
+    const next = Math.max(0, current.quantity.current + delta)
     const newInitial =
-      next > current.quantity.initial ? next : current.quantity.initial;
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id
-          ? {
-              ...i,
-              quantity: { ...i.quantity, current: next, initial: newInitial },
-            }
-          : i,
-      ),
-    );
+      next > current.quantity.initial ? next : current.quantity.initial
+    await updateItem(id, {
+      quantity: { ...current.quantity, current: next, initial: newInitial },
+    })
 
-    // Only check when reducing and item is not already on the shopping list
     if (delta < 0) {
       const alreadyOnList = shoppingItems.some(
-        (s) => s.linkedItemId === id && s.status === "toBuy",
-      );
+        (s) => s.linkedItemId === id && s.status === 'toBuy',
+      )
+      const settings = userDoc?.settings
       if (!alreadyOnList) {
         if (next === 0) {
-          setAutoAddPrompt({ item: current, reason: "empty" });
-        } else if (mockUser.settings.autoAddToShoppingListOnLowQuantity) {
+          setAutoAddPrompt({ item: current, reason: 'empty' })
+        } else if (settings?.autoAddToShoppingListOnLowQuantity) {
           const prevPct = quantityPercentage(
             current.quantity.current,
             current.quantity.initial,
-          );
-          const newPct = quantityPercentage(next, newInitial);
+          )
+          const newPct = quantityPercentage(next, newInitial)
           if (
-            prevPct > mockUser.settings.lowQuantityThreshold &&
-            newPct <= mockUser.settings.lowQuantityThreshold
+            prevPct > (settings.lowQuantityThreshold ?? 25) &&
+            newPct <= (settings.lowQuantityThreshold ?? 25)
           ) {
-            setAutoAddPrompt({ item: current, reason: "low" });
+            setAutoAddPrompt({ item: current, reason: 'low' })
           }
         }
       }
     }
   }
 
-  function handleAutoAdd(destId: string) {
-    if (!autoAddPrompt) return;
-    const { item } = autoAddPrompt;
-    const now = makeTimestamp(new Date()) as never;
-    const isGroup = groups.some((g) => g.id === destId);
+  async function handleAutoAdd(destId: string) {
+    if (!autoAddPrompt || !firebaseUser) return
+    const { item } = autoAddPrompt
+    const now = nowTimestamp()
+    const isGroup = groups.some((g) => g.id === destId)
     const newShoppingItem: ShoppingItem = {
       id: crypto.randomUUID(),
       groupId: isGroup ? destId : null,
@@ -626,25 +592,25 @@ export default function ItemsPage() {
       linkedRecipeId: null,
       linkedItemId: item.id,
       linkedItemName: item.name,
-      status: "toBuy",
+      status: 'toBuy',
       autoAdded: true,
       addedToInventory: false,
-      addedBy: "user-1",
+      addedBy: firebaseUser.uid,
       boughtBy: null,
       addedAt: now,
       boughtAt: null,
       updatedAt: now,
-    };
-    setShoppingItems((prev) => [...prev, newShoppingItem]);
-    setAutoAddPrompt(null);
+    }
+    await addShoppingItem(newShoppingItem)
+    setAutoAddPrompt(null)
   }
 
   function openAddModal(groupId: string) {
-    setAddToGroupId(groupId);
-    setShowAddModal(true);
+    setAddToGroupId(groupId)
+    setShowAddModal(true)
   }
 
-  const isArchiveView = activeGroupId === "archived";
+  const isArchiveView = activeGroupId === 'archived'
 
   // --- Archived items (sorted by most recently archived) ---
   const archivedItems = useMemo(
@@ -657,56 +623,56 @@ export default function ItemsPage() {
             (a.archivedAt?.toDate().getTime() ?? 0),
         ),
     [items],
-  );
+  )
 
   // --- Mobile: single tab view ---
   const tabItems = useMemo(() => {
-    if (isArchiveView) return [];
+    if (isArchiveView) return []
     const base = activeGroupId
       ? items.filter((i) => i.groupId === activeGroupId)
-      : items;
-    return base.filter((i) => !i.isArchived);
-  }, [items, activeGroupId, isArchiveView]);
+      : items
+    return base.filter((i) => !i.isArchived)
+  }, [items, activeGroupId, isArchiveView])
 
   const availableCategories = useMemo(() => {
-    const cats = new Set<string>();
-    tabItems.forEach((i) => i.categories.forEach((c) => cats.add(c)));
-    return Array.from(cats).sort();
-  }, [tabItems]);
+    const cats = new Set<string>()
+    tabItems.forEach((i) => i.categories.forEach((c) => cats.add(c)))
+    return Array.from(cats).sort()
+  }, [tabItems])
 
   const availableColors = useMemo(() => {
-    const colors = new Set<string>();
-    tabItems.forEach((i) => colors.add(i.colorTag ?? "none"));
-    return Array.from(colors);
-  }, [tabItems]);
+    const colors = new Set<string>()
+    tabItems.forEach((i) => colors.add(i.colorTag ?? 'none'))
+    return Array.from(colors)
+  }, [tabItems])
 
   const visibleItems = useMemo(() => {
-    const filtered = applyFilters(tabItems, filters);
-    if (!search.trim()) return filtered;
-    const q = search.toLowerCase();
-    return filtered.filter((i) => i.name.toLowerCase().includes(q));
-  }, [tabItems, filters, search]);
-  const filterCount = activeFilterCount(filters);
+    const filtered = applyFilters(tabItems, filters)
+    if (!search.trim()) return filtered
+    const q = search.toLowerCase()
+    return filtered.filter((i) => i.name.toLowerCase().includes(q))
+  }, [tabItems, filters, search])
+  const filterCount = activeFilterCount(filters)
 
   // --- Desktop: per-group filtered items (excludes archived) ---
   const allCategories = useMemo(() => {
-    const cats = new Set<string>();
+    const cats = new Set<string>()
     items
       .filter((i) => !i.isArchived)
-      .forEach((i) => i.categories.forEach((c) => cats.add(c)));
-    return Array.from(cats).sort();
-  }, [items]);
+      .forEach((i) => i.categories.forEach((c) => cats.add(c)))
+    return Array.from(cats).sort()
+  }, [items])
 
   const allColors = useMemo(() => {
-    const colors = new Set<string>();
+    const colors = new Set<string>()
     items
       .filter((i) => !i.isArchived)
-      .forEach((i) => colors.add(i.colorTag ?? "none"));
-    return Array.from(colors);
-  }, [items]);
+      .forEach((i) => colors.add(i.colorTag ?? 'none'))
+    return Array.from(colors)
+  }, [items])
 
   const itemsByGroup = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = search.trim().toLowerCase()
     return groups.map((g) => ({
       group: g,
       items: applyFilters(
@@ -718,8 +684,8 @@ export default function ItemsPage() {
         ),
         filters,
       ),
-    }));
-  }, [groups, items, filters, search]);
+    }))
+  }, [groups, items, filters, search])
 
   const searchBar = (
     <div className="relative">
@@ -746,7 +712,7 @@ export default function ItemsPage() {
       />
       {search && (
         <button
-          onClick={() => setSearch("")}
+          onClick={() => setSearch('')}
           className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
         >
           <svg
@@ -764,7 +730,7 @@ export default function ItemsPage() {
         </button>
       )}
     </div>
-  );
+  )
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -810,7 +776,7 @@ export default function ItemsPage() {
               </button>
             </>
           )}
-          <GearButton onClick={() => navigate("/settings")} />
+          <GearButton onClick={() => navigate('/settings')} />
         </div>
 
         {/* Desktop controls */}
@@ -819,11 +785,11 @@ export default function ItemsPage() {
           <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1">
             <button
               onClick={() => {
-                setDesktopView("single");
-                localStorage.setItem(VIEW_MODE_KEY, "single");
+                setDesktopView('single')
+                localStorage.setItem(VIEW_MODE_KEY, 'single')
               }}
               title="Single column"
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === "single" ? "bg-white shadow text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === 'single' ? 'bg-white shadow text-gray-800' : 'text-gray-400 hover:text-gray-600'}`}
             >
               <svg
                 width="14"
@@ -840,11 +806,11 @@ export default function ItemsPage() {
             </button>
             <button
               onClick={() => {
-                setDesktopView("columns");
-                localStorage.setItem(VIEW_MODE_KEY, "columns");
+                setDesktopView('columns')
+                localStorage.setItem(VIEW_MODE_KEY, 'columns')
               }}
               title="Columns"
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === "columns" ? "bg-white shadow text-gray-800" : "text-gray-400 hover:text-gray-600"}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === 'columns' ? 'bg-white shadow text-gray-800' : 'text-gray-400 hover:text-gray-600'}`}
             >
               <svg
                 width="14"
@@ -863,7 +829,7 @@ export default function ItemsPage() {
           </div>
 
           {/* Add — only shown in single view (columns have their own + per column), hidden in archive */}
-          {desktopView === "single" && !isArchiveView && (
+          {desktopView === 'single' && !isArchiveView && (
             <button
               onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
               className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
@@ -900,9 +866,29 @@ export default function ItemsPage() {
               )}
             </button>
           )}
-          <GearButton onClick={() => navigate("/settings")} />
+          <GearButton onClick={() => navigate('/settings')} />
         </div>
       </header>
+
+      {/* Sample data banner */}
+      {showSampleBanner && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
+          <p className="text-sm text-amber-800">
+            <span className="font-medium">This is sample data.</span> Explore
+            the app, then clear it whenever you're ready.
+          </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem('wl_sample_data')
+              setShowSampleBanner(false)
+            }}
+            className="text-amber-500 hover:text-amber-700 shrink-0 text-lg leading-none"
+            aria-label="Dismiss"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       {/* Mobile: tabs + single column */}
       <div className="lg:hidden">
@@ -911,7 +897,7 @@ export default function ItemsPage() {
           activeGroupId={activeGroupId}
           onChange={handleTabChange}
           onAddGroup={handleAddGroup}
-          onReorder={setGroups}
+          onReorder={reorderGroups}
           onDeleteGroup={handleDeleteGroup}
           onUpdateGroupColor={handleUpdateGroupColor}
           archivedCount={archivedItems.length}
@@ -921,7 +907,7 @@ export default function ItemsPage() {
         )}
         {/* Sort indicator */}
         {!isArchiveView &&
-          !(filters.sort.by === "expiry" && filters.sort.dir === "asc") && (
+          !(filters.sort.by === 'expiry' && filters.sort.dir === 'asc') && (
             <div className="px-4 pt-2 max-w-lg mx-auto flex">
               <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
                 <svg
@@ -977,7 +963,7 @@ export default function ItemsPage() {
                   item={item}
                   groupName={
                     groups.find((g) => g.id === item.groupId)?.name ??
-                    "Unknown group"
+                    'Unknown group'
                   }
                   onRestore={() => handleRestore(item.id)}
                   onDelete={() => handlePermanentDelete(item.id)}
@@ -987,8 +973,8 @@ export default function ItemsPage() {
           ) : visibleItems.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">
               {filterCount > 0
-                ? "No items match your filters."
-                : "No items yet. Add one!"}
+                ? 'No items match your filters.'
+                : 'No items yet. Add one!'}
             </p>
           ) : (
             visibleItems.map((item) => (
@@ -1006,12 +992,12 @@ export default function ItemsPage() {
       </div>
 
       {/* Desktop: columns view */}
-      {desktopView === "columns" && (
+      {desktopView === 'columns' && (
         <div className="hidden lg:block">
           <div className="px-6 pt-4 max-w-sm">{searchBar}</div>
         </div>
       )}
-      {desktopView === "columns" && (
+      {desktopView === 'columns' && (
         <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 pb-24 items-start min-h-[calc(100vh-8rem)]">
           {itemsByGroup.map(({ group, items: groupItems }, i) => (
             <GroupColumn
@@ -1032,14 +1018,14 @@ export default function ItemsPage() {
       )}
 
       {/* Desktop: single column view */}
-      {desktopView === "single" && (
+      {desktopView === 'single' && (
         <div className="hidden lg:block">
           <GroupTabs
             groups={groups}
             activeGroupId={activeGroupId}
             onChange={handleTabChange}
             onAddGroup={handleAddGroup}
-            onReorder={setGroups}
+            onReorder={reorderGroups}
             onDeleteGroup={handleDeleteGroup}
             onUpdateGroupColor={handleUpdateGroupColor}
             archivedCount={archivedItems.length}
@@ -1049,7 +1035,7 @@ export default function ItemsPage() {
           )}
           {/* Sort indicator */}
           {!isArchiveView &&
-            !(filters.sort.by === "expiry" && filters.sort.dir === "asc") && (
+            !(filters.sort.by === 'expiry' && filters.sort.dir === 'asc') && (
               <div className="px-6 pt-2 max-w-xl mx-auto flex">
                 <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
                   <svg
@@ -1105,7 +1091,7 @@ export default function ItemsPage() {
                     item={item}
                     groupName={
                       groups.find((g) => g.id === item.groupId)?.name ??
-                      "Unknown group"
+                      'Unknown group'
                     }
                     onRestore={() => handleRestore(item.id)}
                     onDelete={() => handlePermanentDelete(item.id)}
@@ -1115,8 +1101,8 @@ export default function ItemsPage() {
             ) : visibleItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
                 {filterCount > 0
-                  ? "No items match your filters."
-                  : "No items yet. Add one!"}
+                  ? 'No items match your filters.'
+                  : 'No items yet. Add one!'}
               </p>
             ) : (
               visibleItems.map((item) => (
@@ -1138,11 +1124,11 @@ export default function ItemsPage() {
         <AddItemModal
           defaultGroupId={addToGroupId}
           groups={groups}
-          userId="user-1"
+          userId={firebaseUser?.uid ?? 'guest'}
           onAdd={handleAdd}
           onClose={() => {
-            setShowAddModal(false);
-            setAddModalPrefill(null);
+            setShowAddModal(false)
+            setAddModalPrefill(null)
           }}
           prefill={addModalPrefill ?? undefined}
         />
@@ -1162,10 +1148,10 @@ export default function ItemsPage() {
         <FilterSheet
           filters={filters}
           availableCategories={
-            desktopView === "columns" ? allCategories : availableCategories
+            desktopView === 'columns' ? allCategories : availableCategories
           }
           availableColors={
-            desktopView === "columns" ? allColors : availableColors
+            desktopView === 'columns' ? allColors : availableColors
           }
           onChange={setFilters}
           onClose={() => setShowFilterSheet(false)}
@@ -1183,5 +1169,5 @@ export default function ItemsPage() {
         />
       )}
     </div>
-  );
+  )
 }

@@ -1,42 +1,43 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppData } from "../context/AppDataContext";
-import { makeTimestamp } from "../data/mockTimestamp";
-import { groupBadgeBg } from "../data/groupColors";
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAppData } from '../context/AppDataContext'
+import { useAuth } from '../context/AuthContext'
+import { nowTimestamp } from '../utils/timestamp'
+import { groupBadgeBg } from '../data/groupColors'
 import type {
   Recipe,
   RecipeIngredient,
   ShoppingItem,
   ShoppingList,
-} from "../types";
+} from '../types'
 
 const UNITS = [
-  "piece",
-  "g",
-  "kg",
-  "mL",
-  "L",
-  "pack",
-  "can",
-  "bottle",
-  "box",
-  "tbsp",
-  "tsp",
-  "cup",
-];
+  'piece',
+  'g',
+  'kg',
+  'mL',
+  'L',
+  'pack',
+  'can',
+  'bottle',
+  'box',
+  'tbsp',
+  'tsp',
+  'cup',
+]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function ingredientStatus(
   ingredient: RecipeIngredient,
   shoppingItems: ShoppingItem[],
-): "purchased" | "haveIt" | "onList" | "ready" {
+): 'purchased' | 'haveIt' | 'onList' | 'ready' {
   if (ingredient.shoppingItemId) {
-    const si = shoppingItems.find((s) => s.id === ingredient.shoppingItemId);
-    if (si) return si.status === "bought" ? "purchased" : "onList";
+    const si = shoppingItems.find((s) => s.id === ingredient.shoppingItemId)
+    if (si) return si.status === 'bought' ? 'purchased' : 'onList'
   }
-  if (ingredient.haveIt) return "haveIt";
-  return "ready";
+  if (ingredient.haveIt) return 'haveIt'
+  return 'ready'
 }
 
 // ─── Add ingredient sheet ─────────────────────────────────────────────────────
@@ -47,42 +48,43 @@ function AddIngredientSheet({
   onAdd,
   onClose,
 }: {
-  lists: ShoppingList[];
-  groups: { id: string; name: string }[];
-  onAdd: (ingredient: RecipeIngredient, addToList: string | null) => void;
-  onClose: () => void;
+  lists: ShoppingList[]
+  groups: { id: string; name: string }[]
+  onAdd: (ingredient: RecipeIngredient, addToList: string | null) => void
+  onClose: () => void
 }) {
-  const [name, setName] = useState("");
-  const [amount, setAmount] = useState<number | "">(1);
-  const [unit, setUnit] = useState("piece");
-  const [isCustomUnit, setIsCustomUnit] = useState(false);
-  const [customUnit, setCustomUnit] = useState("");
-  const [haveIt, setHaveIt] = useState(false);
-  const [addToList, setAddToList] = useState(false);
+  const [name, setName] = useState('')
+  const [amount, setAmount] = useState<number | ''>(1)
+  const [unit, setUnit] = useState('piece')
+  const [isCustomUnit, setIsCustomUnit] = useState(false)
+  const [customUnit, setCustomUnit] = useState('')
+  const [haveIt, setHaveIt] = useState(false)
+  const [addToList, setAddToList] = useState(false)
   const [destTab, setDestTab] = useState<string>(
-    lists[0]?.id ?? groups[0]?.id ?? "",
-  );
+    lists[0]?.id ?? groups[0]?.id ?? '',
+  )
 
   const allDests = [
     ...lists.map((l) => ({ id: l.id, name: l.name, isGroup: false })),
     ...groups.map((g) => ({ id: g.id, name: g.name, isGroup: true })),
-  ];
+  ]
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    const resolvedUnit = isCustomUnit ? customUnit.trim() || unit : unit;
+    e.preventDefault()
+    if (!name.trim()) return
+    const resolvedUnit = isCustomUnit ? customUnit.trim() || unit : unit
     const ingredient: RecipeIngredient = {
       name: name.trim(),
-      quantityAmount: amount === "" ? null : amount,
-      quantityUnit: amount === "" ? null : resolvedUnit,
+      quantityAmount: amount === '' ? null : amount,
+      quantityUnit: amount === '' ? null : resolvedUnit,
       linkedItemId: null,
       shoppingItemId: null,
       haveIt,
-    };
-    const addToListDestination = !haveIt && addToList && destTab ? destTab : null;
-    onAdd(ingredient, addToListDestination);
-    onClose();
+    }
+    const addToListDestination =
+      !haveIt && addToList && destTab ? destTab : null
+    onAdd(ingredient, addToListDestination)
+    onClose()
   }
 
   return (
@@ -121,7 +123,7 @@ function AddIngredientSheet({
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">
-              Quantity{" "}
+              Quantity{' '}
               <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <div className="flex gap-2">
@@ -131,18 +133,18 @@ function AddIngredientSheet({
                 step="any"
                 value={amount}
                 onChange={(e) =>
-                  setAmount(e.target.value === "" ? "" : Number(e.target.value))
+                  setAmount(e.target.value === '' ? '' : Number(e.target.value))
                 }
                 placeholder="—"
                 className="w-24 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
               />
               <select
-                value={isCustomUnit ? "__custom__" : unit}
+                value={isCustomUnit ? '__custom__' : unit}
                 onChange={(e) => {
-                  if (e.target.value === "__custom__") setIsCustomUnit(true);
+                  if (e.target.value === '__custom__') setIsCustomUnit(true)
                   else {
-                    setIsCustomUnit(false);
-                    setUnit(e.target.value);
+                    setIsCustomUnit(false)
+                    setUnit(e.target.value)
                   }
                 }}
                 className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -179,13 +181,13 @@ function AddIngredientSheet({
             <button
               type="button"
               onClick={() => {
-                setHaveIt((v) => !v);
-                if (!haveIt) setAddToList(false);
+                setHaveIt((v) => !v)
+                if (!haveIt) setAddToList(false)
               }}
-              className={`w-11 h-6 rounded-full transition-colors relative ${haveIt ? "bg-green-500" : "bg-gray-200"}`}
+              className={`w-11 h-6 rounded-full transition-colors relative ${haveIt ? 'bg-green-500' : 'bg-gray-200'}`}
             >
               <span
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${haveIt ? "left-[22px]" : "left-0.5"}`}
+                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${haveIt ? 'left-[22px]' : 'left-0.5'}`}
               />
             </button>
           </div>
@@ -205,10 +207,10 @@ function AddIngredientSheet({
                 <button
                   type="button"
                   onClick={() => setAddToList((v) => !v)}
-                  className={`w-11 h-6 rounded-full transition-colors relative ${addToList ? "bg-green-500" : "bg-gray-200"}`}
+                  className={`w-11 h-6 rounded-full transition-colors relative ${addToList ? 'bg-green-500' : 'bg-gray-200'}`}
                 >
                   <span
-                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${addToList ? "left-[22px]" : "left-0.5"}`}
+                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${addToList ? 'left-[22px]' : 'left-0.5'}`}
                   />
                 </button>
               </div>
@@ -222,7 +224,7 @@ function AddIngredientSheet({
                         key={d.id}
                         type="button"
                         onClick={() => setDestTab(d.id)}
-                        className={`text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${destTab === d.id ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-500 border-gray-200 hover:border-green-400"}`}
+                        className={`text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${destTab === d.id ? 'bg-green-500 text-white border-green-500' : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'}`}
                       >
                         {d.name}
                       </button>
@@ -243,7 +245,7 @@ function AddIngredientSheet({
         </form>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Recipe detail sheet ──────────────────────────────────────────────────────
@@ -260,38 +262,38 @@ function RecipeDetailSheet({
   onToggleHaveIt,
   onClose,
 }: {
-  recipe: Recipe;
-  shoppingItems: ShoppingItem[];
-  shoppingLists: ShoppingList[];
-  groups: { id: string; name: string; color: string }[];
-  onUpdate: (updated: Recipe) => void;
-  onDelete: (id: string) => void;
+  recipe: Recipe
+  shoppingItems: ShoppingItem[]
+  shoppingLists: ShoppingList[]
+  groups: { id: string; name: string; color: string }[]
+  onUpdate: (updated: Recipe) => void | Promise<void>
+  onDelete: (id: string) => void | Promise<void>
   onAddToShoppingList: (
     recipeId: string,
     ingredient: RecipeIngredient,
     destId: string,
-  ) => void;
-  onRemoveFromList: (recipeId: string, ingredient: RecipeIngredient) => void;
-  onToggleHaveIt: (recipeId: string, ingredient: RecipeIngredient) => void;
-  onClose: () => void;
+  ) => void
+  onRemoveFromList: (recipeId: string, ingredient: RecipeIngredient) => void
+  onToggleHaveIt: (recipeId: string, ingredient: RecipeIngredient) => void
+  onClose: () => void
 }) {
-  const [showAddIngredient, setShowAddIngredient] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [editingName, setEditingName] = useState(false);
-  const [nameInput, setNameInput] = useState(recipe.name);
-  const [notesInput, setNotesInput] = useState(recipe.notes ?? "");
+  const [showAddIngredient, setShowAddIngredient] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [editingName, setEditingName] = useState(false)
+  const [nameInput, setNameInput] = useState(recipe.name)
+  const [notesInput, setNotesInput] = useState(recipe.notes ?? '')
 
   function saveNameEdit() {
     if (nameInput.trim() && nameInput.trim() !== recipe.name) {
-      onUpdate({ ...recipe, name: nameInput.trim() });
+      onUpdate({ ...recipe, name: nameInput.trim() })
     }
-    setEditingName(false);
+    setEditingName(false)
   }
 
   function saveNotes() {
-    const val = notesInput.trim();
-    if (val !== (recipe.notes ?? "")) {
-      onUpdate({ ...recipe, notes: val || null });
+    const val = notesInput.trim()
+    if (val !== (recipe.notes ?? '')) {
+      onUpdate({ ...recipe, notes: val || null })
     }
   }
 
@@ -302,10 +304,10 @@ function RecipeDetailSheet({
     const updated = {
       ...recipe,
       ingredients: [...recipe.ingredients, ingredient],
-    };
-    onUpdate(updated);
+    }
+    onUpdate(updated)
     if (destId) {
-      onAddToShoppingList(recipe.id, ingredient, destId);
+      onAddToShoppingList(recipe.id, ingredient, destId)
     }
   }
 
@@ -313,14 +315,14 @@ function RecipeDetailSheet({
     const updated = {
       ...recipe,
       ingredients: recipe.ingredients.filter((_, i) => i !== idx),
-    };
-    onUpdate(updated);
+    }
+    onUpdate(updated)
   }
 
   const allDests = [
     ...shoppingLists.map((l) => ({ id: l.id, name: l.name })),
     ...groups.map((g) => ({ id: g.id, name: g.name })),
-  ];
+  ]
 
   return (
     <>
@@ -359,10 +361,10 @@ function RecipeDetailSheet({
                   onChange={(e) => setNameInput(e.target.value)}
                   onBlur={saveNameEdit}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") saveNameEdit();
-                    if (e.key === "Escape") {
-                      setNameInput(recipe.name);
-                      setEditingName(false);
+                    if (e.key === 'Enter') saveNameEdit()
+                    if (e.key === 'Escape') {
+                      setNameInput(recipe.name)
+                      setEditingName(false)
                     }
                   }}
                   className="text-lg font-semibold w-full border-b-2 border-green-400 focus:outline-none bg-transparent"
@@ -407,26 +409,26 @@ function RecipeDetailSheet({
               </p>
             )}
             {recipe.ingredients.map((ingredient, idx) => {
-              const status = ingredientStatus(ingredient, shoppingItems);
+              const status = ingredientStatus(ingredient, shoppingItems)
               const si = ingredient.shoppingItemId
                 ? shoppingItems.find((s) => s.id === ingredient.shoppingItemId)
-                : null;
+                : null
               const siGroup = si?.groupId
                 ? groups.find((g) => g.id === si.groupId)
-                : null;
+                : null
               const listName = si
                 ? si.shoppingListId
                   ? shoppingLists.find((l) => l.id === si.shoppingListId)?.name
                   : siGroup?.name
-                : null;
-              const listColor = siGroup?.color ?? null;
+                : null
+              const listColor = siGroup?.color ?? null
 
               const dotColor =
-                status === "purchased"
-                  ? "bg-green-400"
-                  : status === "onList"
-                    ? "bg-amber-400"
-                    : "bg-gray-200";
+                status === 'purchased' || status === 'haveIt'
+                  ? 'bg-green-400'
+                  : status === 'onList'
+                    ? 'bg-amber-400'
+                    : 'bg-gray-200'
 
               return (
                 <div
@@ -448,14 +450,14 @@ function RecipeDetailSheet({
                       <p className="text-xs text-gray-400">
                         {ingredient.quantityAmount !== null
                           ? ingredient.quantityAmount
-                          : ""}{" "}
-                        {ingredient.quantityUnit ?? ""}
+                          : ''}{' '}
+                        {ingredient.quantityUnit ?? ''}
                       </p>
                     )}
                   </div>
 
                   {/* Status badge / add button */}
-                  {status === "purchased" ? (
+                  {status === 'purchased' ? (
                     <span className="text-[10px] bg-green-50 text-green-600 rounded-full px-2 py-1 font-medium shrink-0 flex items-center gap-1">
                       <svg
                         width="9"
@@ -471,7 +473,7 @@ function RecipeDetailSheet({
                       </svg>
                       purchased
                     </span>
-                  ) : status === "haveIt" ? (
+                  ) : status === 'haveIt' ? (
                     <div className="flex items-center gap-1 shrink-0">
                       <span className="text-[10px] bg-green-50 text-green-600 rounded-full px-2 py-1 font-medium flex items-center gap-1">
                         <svg
@@ -490,8 +492,8 @@ function RecipeDetailSheet({
                       </span>
                       <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          onToggleHaveIt(recipe.id, ingredient);
+                          e.stopPropagation()
+                          onToggleHaveIt(recipe.id, ingredient)
                         }}
                         className="text-gray-300 hover:text-red-400 transition-colors"
                         title="Unmark"
@@ -510,7 +512,7 @@ function RecipeDetailSheet({
                         </svg>
                       </button>
                     </div>
-                  ) : status === "onList" ? (
+                  ) : status === 'onList' ? (
                     <div className="flex items-center gap-1 shrink-0">
                       <span
                         style={
@@ -521,14 +523,14 @@ function RecipeDetailSheet({
                               }
                             : {}
                         }
-                        className={`text-[10px] rounded-full px-2 py-1 font-medium ${!listColor ? "bg-amber-50 text-amber-600" : ""}`}
+                        className={`text-[10px] rounded-full px-2 py-1 font-medium ${!listColor ? 'bg-amber-50 text-amber-600' : ''}`}
                       >
-                        {listName ? `on ${listName}` : "on list"}
+                        {listName ? `on ${listName}` : 'on list'}
                       </span>
                       <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          onRemoveFromList(recipe.id, ingredient);
+                          e.stopPropagation()
+                          onRemoveFromList(recipe.id, ingredient)
                         }}
                         className="text-gray-300 hover:text-red-400 transition-colors"
                         title="Remove from list"
@@ -579,7 +581,7 @@ function RecipeDetailSheet({
                     </svg>
                   </button>
                 </div>
-              );
+              )
             })}
 
             {/* Legend */}
@@ -629,8 +631,8 @@ function RecipeDetailSheet({
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    onDelete(recipe.id);
-                    onClose();
+                    onDelete(recipe.id)
+                    onClose()
                   }}
                   className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors"
                 >
@@ -664,7 +666,7 @@ function RecipeDetailSheet({
         />
       )}
     </>
-  );
+  )
 }
 
 // ─── Add-to-list button ───────────────────────────────────────────────────────
@@ -673,35 +675,35 @@ function AddToListButton({
   allDests,
   onSelect,
 }: {
-  allDests: { id: string; name: string }[];
-  onSelect: (destId: string) => void;
+  allDests: { id: string; name: string }[]
+  onSelect: (destId: string) => void
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
-  if (allDests.length === 0) return null;
+  if (allDests.length === 0) return null
 
   if (allDests.length === 1) {
     return (
       <button
         onClick={(e) => {
-          e.stopPropagation();
-          onSelect(allDests[0].id);
+          e.stopPropagation()
+          onSelect(allDests[0].id)
         }}
-        className="text-[10px] text-green-600 bg-green-50 hover:bg-green-100 rounded-full px-2 py-1 font-medium shrink-0 transition-colors"
+        className="text-[10px] text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-full px-2 py-1 font-medium shrink-0 transition-colors"
       >
         + add to list
       </button>
-    );
+    )
   }
 
   return (
     <>
       <button
         onClick={(e) => {
-          e.stopPropagation();
-          setOpen(true);
+          e.stopPropagation()
+          setOpen(true)
         }}
-        className="text-[10px] text-green-600 bg-green-50 hover:bg-green-100 rounded-full px-2 py-1 font-medium shrink-0 transition-colors"
+        className="text-[10px] text-sky-800 bg-sky-50 hover:bg-sky-100 rounded-full px-2 py-1 font-medium shrink-0 transition-colors"
       >
         + add to list
       </button>
@@ -709,8 +711,8 @@ function AddToListButton({
         <div
           className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40"
           onClick={(e) => {
-            e.stopPropagation();
-            setOpen(false);
+            e.stopPropagation()
+            setOpen(false)
           }}
         >
           <div
@@ -725,9 +727,9 @@ function AddToListButton({
                 <button
                   key={d.id}
                   onClick={(e) => {
-                    e.stopPropagation();
-                    onSelect(d.id);
-                    setOpen(false);
+                    e.stopPropagation()
+                    onSelect(d.id)
+                    setOpen(false)
                   }}
                   className="text-left px-4 py-3 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 border border-gray-100 transition-colors"
                 >
@@ -739,7 +741,7 @@ function AddToListButton({
         </div>
       )}
     </>
-  );
+  )
 }
 
 // ─── New recipe sheet ─────────────────────────────────────────────────────────
@@ -749,19 +751,19 @@ function NewRecipeSheet({
   onSave,
   onClose,
 }: {
-  groups: { id: string; name: string }[];
-  onSave: (name: string, groupId: string, notes: string) => void;
-  onClose: () => void;
+  groups: { id: string; name: string }[]
+  onSave: (name: string, groupId: string, notes: string) => void
+  onClose: () => void
 }) {
-  const [name, setName] = useState("");
-  const [notes, setNotes] = useState("");
-  const [groupId, setGroupId] = useState(groups[0]?.id ?? "");
+  const [name, setName] = useState('')
+  const [notes, setNotes] = useState('')
+  const [groupId, setGroupId] = useState(groups[0]?.id ?? '')
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    onSave(name.trim(), groupId, notes.trim());
-    onClose();
+    e.preventDefault()
+    if (!name.trim()) return
+    onSave(name.trim(), groupId, notes.trim())
+    onClose()
   }
 
   return (
@@ -815,7 +817,7 @@ function NewRecipeSheet({
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">
-              Notes{" "}
+              Notes{' '}
               <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <textarea
@@ -837,7 +839,7 @@ function NewRecipeSheet({
         </form>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Recipe card ──────────────────────────────────────────────────────────────
@@ -847,16 +849,16 @@ function RecipeCard({
   shoppingItems,
   onClick,
 }: {
-  recipe: Recipe;
-  shoppingItems: ShoppingItem[];
-  onClick: () => void;
+  recipe: Recipe
+  shoppingItems: ShoppingItem[]
+  onClick: () => void
 }) {
   const onListCount = recipe.ingredients.filter(
     (ing) =>
       ing.shoppingItemId &&
       shoppingItems.some((s) => s.id === ing.shoppingItemId),
-  ).length;
-  const needCount = recipe.ingredients.length - onListCount;
+  ).length
+  const needCount = recipe.ingredients.length - onListCount
 
   return (
     <button
@@ -872,7 +874,7 @@ function RecipeCard({
       <div className="flex items-center gap-3 mt-2">
         <span className="text-xs text-gray-400">
           {recipe.ingredients.length} ingredient
-          {recipe.ingredients.length !== 1 ? "s" : ""}
+          {recipe.ingredients.length !== 1 ? 's' : ''}
         </span>
         {onListCount > 0 && (
           <span className="text-[10px] bg-amber-50 text-amber-600 rounded-full px-2 py-0.5 font-medium">
@@ -886,115 +888,98 @@ function RecipeCard({
         )}
       </div>
     </button>
-  );
+  )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function RecipesPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const { firebaseUser } = useAuth()
   const {
     recipes,
-    setRecipes,
     shoppingItems,
-    setShoppingItems,
     shoppingLists,
     groups,
-  } = useAppData();
-  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [showNewRecipe, setShowNewRecipe] = useState(false);
+    addRecipe,
+    updateRecipe,
+    deleteRecipe,
+    addShoppingItem,
+    deleteShoppingItem,
+  } = useAppData()
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
+  const [showNewRecipe, setShowNewRecipe] = useState(false)
 
-  function toggleIngredientHaveIt(
+  async function toggleIngredientHaveIt(
     recipeId: string,
     ingredient: RecipeIngredient,
   ) {
-    const now = makeTimestamp(new Date()) as never;
+    const recipe = recipes.find((r) => r.id === recipeId)
+    if (!recipe) return
     const toggle = (ing: RecipeIngredient) =>
-      ing === ingredient ? { ...ing, haveIt: !ing.haveIt } : ing;
-    setRecipes((prev) =>
-      prev.map((r) =>
-        r.id !== recipeId
-          ? r
-          : { ...r, ingredients: r.ingredients.map(toggle), updatedAt: now },
-      ),
-    );
+      ing === ingredient ? { ...ing, haveIt: !ing.haveIt } : ing
+    const updatedIngredients = recipe.ingredients.map(toggle)
+    await updateRecipe(recipeId, { ingredients: updatedIngredients })
     setSelectedRecipe((prev) =>
       prev?.id !== recipeId
         ? prev
-        : { ...prev, ingredients: prev.ingredients.map(toggle) },
-    );
+        : { ...prev, ingredients: updatedIngredients },
+    )
   }
 
-  function removeIngredientFromShoppingList(
+  async function removeIngredientFromShoppingList(
     recipeId: string,
     ingredient: RecipeIngredient,
   ) {
-    // Remove the shopping item
     if (ingredient.shoppingItemId) {
-      setShoppingItems((prev) =>
-        prev.filter((s) => s.id !== ingredient.shoppingItemId),
-      );
+      await deleteShoppingItem(ingredient.shoppingItemId)
     }
-    // Unlink from the ingredient
-    const now = makeTimestamp(new Date()) as never;
-    setRecipes((prev) =>
-      prev.map((r) => {
-        if (r.id !== recipeId) return r;
-        const ingredients = r.ingredients.map((ing) =>
-          ing === ingredient || ing.shoppingItemId === ingredient.shoppingItemId
-            ? { ...ing, shoppingItemId: null }
-            : ing,
-        );
-        return { ...r, ingredients, updatedAt: now };
-      }),
-    );
+    const recipe = recipes.find((r) => r.id === recipeId)
+    if (!recipe) return
+    const updatedIngredients = recipe.ingredients.map((ing) =>
+      ing === ingredient || ing.shoppingItemId === ingredient.shoppingItemId
+        ? { ...ing, shoppingItemId: null }
+        : ing,
+    )
+    await updateRecipe(recipeId, { ingredients: updatedIngredients })
     setSelectedRecipe((prev) => {
-      if (!prev || prev.id !== recipeId) return prev;
-      const ingredients = prev.ingredients.map((ing) =>
-        ing === ingredient || ing.shoppingItemId === ingredient.shoppingItemId
-          ? { ...ing, shoppingItemId: null }
-          : ing,
-      );
-      return { ...prev, ingredients };
-    });
+      if (!prev || prev.id !== recipeId) return prev
+      return { ...prev, ingredients: updatedIngredients }
+    })
   }
 
-  function createRecipe(name: string, groupId: string, notes: string) {
-    const now = makeTimestamp(new Date()) as never;
+  async function createRecipe(name: string, groupId: string, notes: string) {
+    const now = nowTimestamp()
     const newRecipe: Recipe = {
       id: crypto.randomUUID(),
       groupId,
       name,
       notes: notes || null,
       ingredients: [],
-      createdBy: "user-1",
+      createdBy: firebaseUser?.uid ?? 'guest',
       createdAt: now,
       updatedAt: now,
-    };
-    setRecipes((prev) => [newRecipe, ...prev]);
-    setSelectedRecipe(newRecipe);
+    }
+    await addRecipe(newRecipe)
+    setSelectedRecipe(newRecipe)
   }
 
-  function updateRecipe(updated: Recipe) {
-    const now = makeTimestamp(new Date()) as never;
-    const withTimestamp = { ...updated, updatedAt: now };
-    setRecipes((prev) =>
-      prev.map((r) => (r.id === updated.id ? withTimestamp : r)),
-    );
-    setSelectedRecipe(withTimestamp);
+  async function handleUpdateRecipe(updated: Recipe) {
+    await updateRecipe(updated.id, updated)
+    setSelectedRecipe({ ...updated })
   }
 
-  function deleteRecipe(id: string) {
-    setRecipes((prev) => prev.filter((r) => r.id !== id));
+  async function handleDeleteRecipe(id: string) {
+    await deleteRecipe(id)
   }
 
-  function addIngredientToShoppingList(
+  async function addIngredientToShoppingList(
     recipeId: string,
     ingredient: RecipeIngredient,
     destId: string,
   ) {
-    const now = makeTimestamp(new Date()) as never;
-    const isGroup = groups.some((g) => g.id === destId);
+    const now = nowTimestamp()
+    const isGroup = groups.some((g) => g.id === destId)
     const newShoppingItem: ShoppingItem = {
       id: crypto.randomUUID(),
       groupId: isGroup ? destId : null,
@@ -1002,45 +987,34 @@ export default function RecipesPage() {
       name: ingredient.name,
       quantity: {
         amount: ingredient.quantityAmount ?? 1,
-        unit: ingredient.quantityUnit ?? "piece",
+        unit: ingredient.quantityUnit ?? 'piece',
       },
       linkedRecipeId: recipeId,
       linkedItemId: ingredient.linkedItemId,
       linkedItemName: null,
-      status: "toBuy",
+      status: 'toBuy',
       autoAdded: false,
       addedToInventory: false,
-      addedBy: "user-1",
+      addedBy: firebaseUser?.uid ?? 'guest',
       boughtBy: null,
       addedAt: now,
       boughtAt: null,
       updatedAt: now,
-    };
-    setShoppingItems((prev) => [...prev, newShoppingItem]);
+    }
+    await addShoppingItem(newShoppingItem)
 
-    // Link the shopping item back to the ingredient in the recipe
-    setRecipes((prev) =>
-      prev.map((r) => {
-        if (r.id !== recipeId) return r;
-        const ingredients = r.ingredients.map((ing) =>
-          ing.name === ingredient.name && ing.shoppingItemId === null
-            ? { ...ing, shoppingItemId: newShoppingItem.id }
-            : ing,
-        );
-        return { ...r, ingredients, updatedAt: now };
-      }),
-    );
-
-    // Keep selectedRecipe in sync
+    const recipe = recipes.find((r) => r.id === recipeId)
+    if (!recipe) return
+    const updatedIngredients = recipe.ingredients.map((ing) =>
+      ing.name === ingredient.name && ing.shoppingItemId === null
+        ? { ...ing, shoppingItemId: newShoppingItem.id }
+        : ing,
+    )
+    await updateRecipe(recipeId, { ingredients: updatedIngredients })
     setSelectedRecipe((prev) => {
-      if (!prev || prev.id !== recipeId) return prev;
-      const ingredients = prev.ingredients.map((ing) =>
-        ing.name === ingredient.name && ing.shoppingItemId === null
-          ? { ...ing, shoppingItemId: newShoppingItem.id }
-          : ing,
-      );
-      return { ...prev, ingredients };
-    });
+      if (!prev || prev.id !== recipeId) return prev
+      return { ...prev, ingredients: updatedIngredients }
+    })
   }
 
   return (
@@ -1056,7 +1030,7 @@ export default function RecipesPage() {
             +
           </button>
           <button
-            onClick={() => navigate("/settings")}
+            onClick={() => navigate('/settings')}
             className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:border-green-400 hover:text-green-600 transition-colors"
             title="Settings"
           >
@@ -1128,8 +1102,8 @@ export default function RecipesPage() {
           shoppingItems={shoppingItems}
           shoppingLists={shoppingLists}
           groups={groups}
-          onUpdate={updateRecipe}
-          onDelete={deleteRecipe}
+          onUpdate={handleUpdateRecipe}
+          onDelete={handleDeleteRecipe}
           onAddToShoppingList={addIngredientToShoppingList}
           onRemoveFromList={removeIngredientFromShoppingList}
           onToggleHaveIt={toggleIngredientHaveIt}
@@ -1137,5 +1111,5 @@ export default function RecipesPage() {
         />
       )}
     </div>
-  );
+  )
 }

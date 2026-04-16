@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users can only access their own document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Group members can read/write their groups
+    match /groups/{groupId} {
+      allow read, write: if request.auth != null
+        && request.auth.uid in resource.data.memberIds;
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.ownerId;
+    }
+
+    // Items, shopping list, recipes: authenticated users only (tighten in Phase 5)
+    match /items/{itemId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /shoppingList/{itemId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /recipes/{recipeId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /activityLog/{logId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

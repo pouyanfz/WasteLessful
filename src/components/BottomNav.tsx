@@ -1,9 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from 'react-router-dom'
 
 const links = [
   {
-    to: "/",
-    label: "Items",
+    to: '/',
+    label: 'Items',
     icon: (
       <svg
         width="22"
@@ -20,8 +20,8 @@ const links = [
     ),
   },
   {
-    to: "/shopping",
-    label: "Shopping",
+    to: '/shopping',
+    label: 'Shopping',
     icon: (
       <svg
         width="22"
@@ -40,8 +40,8 @@ const links = [
     ),
   },
   {
-    to: "/recipes",
-    label: "Recipes",
+    to: '/recipes',
+    label: 'Recipes',
     icon: (
       <svg
         width="22"
@@ -58,7 +58,7 @@ const links = [
       </svg>
     ),
   },
-];
+]
 
 export default function BottomNav() {
   return (
@@ -70,13 +70,13 @@ export default function BottomNav() {
           end
           className={({ isActive }) =>
             `flex-1 flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition-colors ${
-              isActive ? "text-green-600" : "text-gray-400"
+              isActive ? 'text-green-600' : 'text-gray-400'
             }`
           }
         >
           {({ isActive }) => (
             <>
-              <span className={isActive ? "text-green-500" : "text-gray-400"}>
+              <span className={isActive ? 'text-green-500' : 'text-gray-400'}>
                 {icon}
               </span>
               {label}
@@ -85,5 +85,5 @@ export default function BottomNav() {
         </NavLink>
       ))}
     </nav>
-  );
+  )
 }

@@ -1,29 +1,29 @@
-import type { Item, Group } from "../types";
-import { daysUntilExpiry, daysSinceAdded } from "../utils/expiry";
-import { quantityPercentage } from "../utils/quantity";
-import { groupBadgeBg, groupBadgeColor } from "../data/groupColors";
+import type { Item, Group } from '../types'
+import { daysUntilExpiry, daysSinceAdded } from '../utils/expiry'
+import { quantityPercentage } from '../utils/quantity'
+import { groupBadgeBg, groupBadgeColor } from '../data/groupColors'
 
 interface ItemCardProps {
-  item: Item;
-  group?: Pick<Group, "name" | "color">;
-  showGroupBadge?: boolean;
-  onClick?: () => void;
-  onAdjust?: (delta: number) => void;
+  item: Item
+  group?: Pick<Group, 'name' | 'color'>
+  showGroupBadge?: boolean
+  onClick?: () => void
+  onAdjust?: (delta: number) => void
 }
 
 function getExpiryLabel(item: Item): { label: string; color: string } {
   if (!item.dates.expiresAt) {
-    const days = daysSinceAdded(item.dates.addedAt.toDate());
-    return { label: `Added ${days}d ago`, color: "text-gray-400" };
+    const days = daysSinceAdded(item.dates.addedAt.toDate())
+    return { label: `Added ${days}d ago`, color: 'text-gray-400' }
   }
 
-  const days = daysUntilExpiry(item.dates.expiresAt.toDate());
+  const days = daysUntilExpiry(item.dates.expiresAt.toDate())
   if (days < 0)
-    return { label: `Expired ${Math.abs(days)}d ago`, color: "text-red-500" };
-  if (days === 0) return { label: "Expires today", color: "text-orange-400" };
+    return { label: `Expired ${Math.abs(days)}d ago`, color: 'text-red-500' }
+  if (days === 0) return { label: 'Expires today', color: 'text-orange-400' }
   if (days <= 3)
-    return { label: `Expires in ${days}d`, color: "text-orange-400" };
-  return { label: `Expires in ${days}d`, color: "text-green-500" };
+    return { label: `Expires in ${days}d`, color: 'text-orange-400' }
+  return { label: `Expires in ${days}d`, color: 'text-green-500' }
 }
 
 export default function ItemCard({
@@ -33,16 +33,16 @@ export default function ItemCard({
   onClick,
   onAdjust,
 }: ItemCardProps) {
-  const pct = quantityPercentage(item.quantity.current, item.quantity.initial);
-  const { label, color } = getExpiryLabel(item);
+  const pct = quantityPercentage(item.quantity.current, item.quantity.initial)
+  const { label, color } = getExpiryLabel(item)
 
   const barColor =
-    pct <= 25 ? "bg-red-500" : pct <= 50 ? "bg-orange-400" : "bg-green-500";
+    pct <= 25 ? 'bg-red-500' : pct <= 50 ? 'bg-orange-400' : 'bg-green-500'
 
   return (
     <div
       className="rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-2 cursor-pointer active:scale-[0.98] transition-transform"
-      style={{ backgroundColor: group?.color ? `${group.color}12` : "#ffffff" }}
+      style={{ backgroundColor: group?.color ? `${group.color}12` : '#ffffff' }}
       onClick={onClick}
     >
       {/* Header */}
@@ -76,7 +76,7 @@ export default function ItemCard({
       <div>
         <div className="flex justify-between text-xs text-gray-500 mb-1">
           <span>
-            {item.quantity.current} / {item.quantity.initial}{" "}
+            {item.quantity.current} / {item.quantity.initial}{' '}
             {item.quantity.unit}
           </span>
           <span>{Math.round(pct)}%</span>
@@ -128,5 +128,5 @@ export default function ItemCard({
         </div>
       )}
     </div>
-  );
+  )
 }

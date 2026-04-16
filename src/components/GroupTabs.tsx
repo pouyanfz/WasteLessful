@@ -1,19 +1,19 @@
-import { useRef, useState } from "react";
-import type { Group } from "../types";
-import { GROUP_COLORS } from "../data/groupColors";
+import { useRef, useState } from 'react'
+import type { Group } from '../types'
+import { GROUP_COLORS } from '../data/groupColors'
 
 interface GroupTabsProps {
-  groups: Group[];
-  activeGroupId: string | null;
-  onChange: (groupId: string | null) => void;
-  onAddGroup: (name: string) => void;
-  onReorder?: (groups: Group[]) => void;
-  onDeleteGroup?: (groupId: string, moveToGroupId: string | null) => void;
-  onUpdateGroupColor?: (groupId: string, color: string) => void;
-  archivedCount?: number;
+  groups: Group[]
+  activeGroupId: string | null
+  onChange: (groupId: string | null) => void
+  onAddGroup: (name: string) => void
+  onReorder?: (groups: Group[]) => void
+  onDeleteGroup?: (groupId: string, moveToGroupId: string | null) => void
+  onUpdateGroupColor?: (groupId: string, color: string) => void
+  archivedCount?: number
 }
 
-type PendingDelete = { groupId: string; groupName: string } | null;
+type PendingDelete = { groupId: string; groupName: string } | null
 
 export default function GroupTabs({
   groups,
@@ -25,68 +25,68 @@ export default function GroupTabs({
   onUpdateGroupColor,
   archivedCount,
 }: GroupTabsProps) {
-  const [adding, setAdding] = useState(false);
-  const [input, setInput] = useState("");
-  const [manageOpen, setManageOpen] = useState(false);
-  const [editingColorId, setEditingColorId] = useState<string | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null);
-  const [deleteMode, setDeleteMode] = useState<"move" | "delete">("move");
-  const [moveToId, setMoveToId] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [adding, setAdding] = useState(false)
+  const [input, setInput] = useState('')
+  const [manageOpen, setManageOpen] = useState(false)
+  const [editingColorId, setEditingColorId] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null)
+  const [deleteMode, setDeleteMode] = useState<'move' | 'delete'>('move')
+  const [moveToId, setMoveToId] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   function startAdding() {
-    setAdding(true);
-    setInput("");
+    setAdding(true)
+    setInput('')
     setTimeout(() => {
-      inputRef.current?.focus();
+      inputRef.current?.focus()
       scrollRef.current?.scrollTo({
         left: scrollRef.current.scrollWidth,
-        behavior: "smooth",
-      });
-    }, 0);
+        behavior: 'smooth',
+      })
+    }, 0)
   }
 
   function confirm() {
-    const name = input.trim();
-    if (name) onAddGroup(name);
-    setAdding(false);
-    setInput("");
+    const name = input.trim()
+    if (name) onAddGroup(name)
+    setAdding(false)
+    setInput('')
   }
 
   function cancel() {
-    setAdding(false);
-    setInput("");
+    setAdding(false)
+    setInput('')
   }
 
   function move(index: number, dir: -1 | 1) {
-    const next = [...groups];
-    const target = index + dir;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
-    onReorder?.(next);
+    const next = [...groups]
+    const target = index + dir
+    if (target < 0 || target >= next.length) return
+    ;[next[index], next[target]] = [next[target], next[index]]
+    onReorder?.(next)
   }
 
   function initiateDelete(group: Group) {
-    const others = groups.filter((g) => g.id !== group.id);
-    setPendingDelete({ groupId: group.id, groupName: group.name });
-    setMoveToId(others[0]?.id ?? "");
-    setDeleteMode(others.length > 0 ? "move" : "delete");
+    const others = groups.filter((g) => g.id !== group.id)
+    setPendingDelete({ groupId: group.id, groupName: group.name })
+    setMoveToId(others[0]?.id ?? '')
+    setDeleteMode(others.length > 0 ? 'move' : 'delete')
   }
 
   function confirmDelete() {
-    if (!pendingDelete) return;
+    if (!pendingDelete) return
     onDeleteGroup?.(
       pendingDelete.groupId,
-      deleteMode === "move" ? moveToId : null,
-    );
-    setPendingDelete(null);
-    setManageOpen(false);
+      deleteMode === 'move' ? moveToId : null,
+    )
+    setPendingDelete(null)
+    setManageOpen(false)
   }
 
   const otherGroups = pendingDelete
     ? groups.filter((g) => g.id !== pendingDelete.groupId)
-    : [];
+    : []
 
   return (
     <>
@@ -123,8 +123,8 @@ export default function GroupTabs({
                 onClick={() => onChange(null)}
                 className={`shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeGroupId === null
-                    ? "border-green-500 text-green-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
                 }`}
               >
                 All
@@ -132,7 +132,7 @@ export default function GroupTabs({
 
               {/* Group tabs */}
               {groups.map((g) => {
-                const isActive = activeGroupId === g.id;
+                const isActive = activeGroupId === g.id
                 return (
                   <button
                     key={g.id}
@@ -144,10 +144,10 @@ export default function GroupTabs({
                     }
                     className={`shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                       isActive && !g.color
-                        ? "border-green-500 text-green-600"
+                        ? 'border-green-500 text-green-600'
                         : isActive
-                          ? ""
-                          : "border-transparent text-gray-500 hover:text-gray-700"
+                          ? ''
+                          : 'border-transparent text-gray-500 hover:text-gray-700'
                     }`}
                   >
                     {g.color && (
@@ -158,16 +158,16 @@ export default function GroupTabs({
                     )}
                     {g.name}
                   </button>
-                );
+                )
               })}
 
               {/* Archive tab — always last, visually distinct */}
               <button
-                onClick={() => onChange("archived")}
+                onClick={() => onChange('archived')}
                 className={`shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  activeGroupId === "archived"
-                    ? "border-gray-400 text-gray-700"
-                    : "border-transparent text-gray-400 hover:text-gray-600"
+                  activeGroupId === 'archived'
+                    ? 'border-gray-400 text-gray-700'
+                    : 'border-transparent text-gray-400 hover:text-gray-600'
                 }`}
               >
                 <svg
@@ -200,11 +200,11 @@ export default function GroupTabs({
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        confirm();
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        confirm()
                       }
-                      if (e.key === "Escape") cancel();
+                      if (e.key === 'Escape') cancel()
                     }}
                     placeholder="Group name"
                     className="border border-green-400 rounded-lg px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -330,11 +330,11 @@ export default function GroupTabs({
                         }
                         className="w-5 h-5 rounded-full shrink-0 transition-all"
                         style={{
-                          backgroundColor: g.color || "#e5e7eb",
+                          backgroundColor: g.color || '#e5e7eb',
                           boxShadow:
                             editingColorId === g.id
-                              ? "0 0 0 2px white, 0 0 0 3.5px #9ca3af"
-                              : "none",
+                              ? '0 0 0 2px white, 0 0 0 3.5px #9ca3af'
+                              : 'none',
                         }}
                         title="Change color"
                       />
@@ -357,16 +357,16 @@ export default function GroupTabs({
                         {/* No color swatch */}
                         <button
                           onClick={() => {
-                            onUpdateGroupColor?.(g.id, "");
-                            setEditingColorId(null);
+                            onUpdateGroupColor?.(g.id, '')
+                            setEditingColorId(null)
                           }}
                           className="w-6 h-6 rounded-full border border-gray-300 bg-white transition-transform hover:scale-110 relative overflow-hidden"
                           title="No color"
                           style={
-                            g.color === ""
+                            g.color === ''
                               ? {
                                   boxShadow:
-                                    "0 0 0 2px white, 0 0 0 3.5px #9ca3af",
+                                    '0 0 0 2px white, 0 0 0 3.5px #9ca3af',
                                 }
                               : {}
                           }
@@ -375,7 +375,7 @@ export default function GroupTabs({
                             className="absolute inset-0"
                             style={{
                               background:
-                                "linear-gradient(to bottom right, transparent calc(50% - 0.5px), #d1d5db calc(50% - 0.5px), #d1d5db calc(50% + 0.5px), transparent calc(50% + 0.5px))",
+                                'linear-gradient(to bottom right, transparent calc(50% - 0.5px), #d1d5db calc(50% - 0.5px), #d1d5db calc(50% + 0.5px), transparent calc(50% + 0.5px))',
                             }}
                           />
                         </button>
@@ -383,15 +383,15 @@ export default function GroupTabs({
                           <button
                             key={c}
                             onClick={() => {
-                              onUpdateGroupColor?.(g.id, c);
-                              setEditingColorId(null);
+                              onUpdateGroupColor?.(g.id, c)
+                              setEditingColorId(null)
                             }}
                             className="w-6 h-6 rounded-full transition-transform hover:scale-110"
                             style={{
                               backgroundColor: c,
                               outline:
-                                g.color === c ? `2px solid ${c}` : "none",
-                              outlineOffset: "2px",
+                                g.color === c ? `2px solid ${c}` : 'none',
+                              outlineOffset: '2px',
                             }}
                             title={c}
                           />
@@ -432,23 +432,23 @@ export default function GroupTabs({
               {otherGroups.length > 0 && (
                 <label
                   className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
-                    deleteMode === "move"
-                      ? "border-green-400 bg-green-50"
-                      : "border-gray-200 hover:border-gray-300"
+                    deleteMode === 'move'
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-gray-200 hover:border-gray-300'
                   }`}
-                  onClick={() => setDeleteMode("move")}
+                  onClick={() => setDeleteMode('move')}
                 >
                   <input
                     type="radio"
-                    checked={deleteMode === "move"}
-                    onChange={() => setDeleteMode("move")}
+                    checked={deleteMode === 'move'}
+                    onChange={() => setDeleteMode('move')}
                     className="mt-0.5 accent-green-500"
                   />
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-700">
                       Move items to another group
                     </p>
-                    {deleteMode === "move" && (
+                    {deleteMode === 'move' && (
                       <select
                         value={moveToId}
                         onChange={(e) => setMoveToId(e.target.value)}
@@ -468,16 +468,16 @@ export default function GroupTabs({
 
               <label
                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
-                  deleteMode === "delete"
-                    ? "border-red-400 bg-red-50"
-                    : "border-gray-200 hover:border-gray-300"
+                  deleteMode === 'delete'
+                    ? 'border-red-400 bg-red-50'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
-                onClick={() => setDeleteMode("delete")}
+                onClick={() => setDeleteMode('delete')}
               >
                 <input
                   type="radio"
-                  checked={deleteMode === "delete"}
-                  onChange={() => setDeleteMode("delete")}
+                  checked={deleteMode === 'delete'}
+                  onChange={() => setDeleteMode('delete')}
                   className="accent-red-500"
                 />
                 <p className="text-sm font-medium text-gray-700">
@@ -497,12 +497,12 @@ export default function GroupTabs({
                 onClick={confirmDelete}
                 className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors"
               >
-                {deleteMode === "move" ? "Move & Delete" : "Delete Group"}
+                {deleteMode === 'move' ? 'Move & Delete' : 'Delete Group'}
               </button>
             </div>
           </div>
         </div>
       )}
     </>
-  );
+  )
 }
