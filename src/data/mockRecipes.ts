@@ -1,74 +1,74 @@
-import type { Recipe } from "../types";
-import { daysAgo } from "./mockTimestamp";
+import type { Recipe } from '../types'
+import { daysAgo } from './mockTimestamp'
 
 export const mockRecipes: Recipe[] = [
   {
-    id: "recipe-1",
-    groupId: "group-1",
-    name: "Ghormeh Sabzi",
-    notes: "Traditional Persian herb stew. Serve with saffron rice.",
+    id: 'recipe-1',
+    groupId: 'group-1',
+    name: 'Ghormeh Sabzi',
+    notes: 'Traditional Persian herb stew. Serve with saffron rice.',
     ingredients: [
       {
-        name: "Lamb",
+        name: 'Lamb',
         quantityAmount: 500,
-        quantityUnit: "g",
+        quantityUnit: 'g',
         linkedItemId: null,
         shoppingItemId: null,
         haveIt: false,
       },
       {
-        name: "Kidney Beans",
+        name: 'Kidney Beans',
         quantityAmount: 1,
-        quantityUnit: "can",
+        quantityUnit: 'can',
         linkedItemId: null,
         shoppingItemId: null,
         haveIt: false,
       },
       {
-        name: "Dried Fenugreek",
+        name: 'Dried Fenugreek',
         quantityAmount: 2,
-        quantityUnit: "pack",
+        quantityUnit: 'pack',
         linkedItemId: null,
         shoppingItemId: null,
         haveIt: false,
       },
       {
-        name: "Onion",
+        name: 'Onion',
         quantityAmount: 2,
-        quantityUnit: "piece",
+        quantityUnit: 'piece',
         linkedItemId: null,
         shoppingItemId: null,
         haveIt: false,
       },
     ],
-    createdBy: "user-1",
+    createdBy: 'user-1',
     createdAt: daysAgo(5) as never,
     updatedAt: daysAgo(5) as never,
   },
   {
-    id: "recipe-2",
-    groupId: "group-1",
-    name: "Omelette",
+    id: 'recipe-2',
+    groupId: 'group-1',
+    name: 'Omelette',
     notes: null,
     ingredients: [
       {
-        name: "Eggs",
+        name: 'Eggs',
         quantityAmount: 3,
-        quantityUnit: "piece",
+        quantityUnit: 'piece',
         linkedItemId: null,
         shoppingItemId: null,
         haveIt: false,
       },
       {
-        name: "Butter",
+        name: 'Butter',
         quantityAmount: 1,
-        quantityUnit: "pack",
+        quantityUnit: 'pack',
         linkedItemId: null,
         shoppingItemId: null,
         haveIt: false,
       },
       {
-        name: "Salt",
+        name: 'Salt',
         quantityAmount: null,
         quantityUnit: null,
         linkedItemId: null,
@@ -76,8 +76,8 @@ export const mockRecipes: Recipe[] = [
         haveIt: false,
       },
     ],
-    createdBy: "user-1",
+    createdBy: 'user-1',
     createdAt: daysAgo(2) as never,
     updatedAt: daysAgo(2) as never,
   },
-];
+]

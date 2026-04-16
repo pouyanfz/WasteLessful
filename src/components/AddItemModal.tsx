@@ -1,44 +1,44 @@
-import { useState } from "react";
-import type { Item, QuantityUnit } from "../types";
-import type { Group } from "../types";
-import { makeTimestamp } from "../data/mockTimestamp";
+import { useState } from 'react'
+import type { Item, QuantityUnit } from '../types'
+import type { Group } from '../types'
+import { nowTimestamp, dateStringToTimestamp } from '../utils/timestamp'
 
 const UNITS: QuantityUnit[] = [
-  "kg",
-  "g",
-  "L",
-  "mL",
-  "bottle",
-  "pack",
-  "box",
-  "can",
-];
+  'kg',
+  'g',
+  'L',
+  'mL',
+  'bottle',
+  'pack',
+  'box',
+  'can',
+]
 const COLOR_OPTIONS = [
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#3b82f6",
-  "#a855f7",
-  "#ec4899",
-];
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#3b82f6',
+  '#a855f7',
+  '#ec4899',
+]
 const CATEGORY_OPTIONS = [
-  "food",
-  "drink",
-  "dairy",
-  "dry-goods",
-  "condiment",
-  "snack",
-  "cleaning",
-];
+  'food',
+  'drink',
+  'dairy',
+  'dry-goods',
+  'condiment',
+  'snack',
+  'cleaning',
+]
 
 interface AddItemModalProps {
-  defaultGroupId: string;
-  groups: Group[];
-  userId: string;
-  onAdd: (item: Item) => void;
-  onClose: () => void;
-  prefill?: { name: string; amount: number; unit: string };
+  defaultGroupId: string
+  groups: Group[]
+  userId: string
+  onAdd: (item: Item) => void
+  onClose: () => void
+  prefill?: { name: string; amount: number; unit: string }
 }
 
 export default function AddItemModal({
@@ -49,59 +49,59 @@ export default function AddItemModal({
   onClose,
   prefill,
 }: AddItemModalProps) {
-  const [selectedGroupId, setSelectedGroupId] = useState(defaultGroupId);
-  const [name, setName] = useState(prefill?.name ?? "");
-  const [categories, setCategories] = useState<string[]>([]);
-  const [customCategoryInput, setCustomCategoryInput] = useState("");
-  const [colorTag, setColorTag] = useState<string | null>(null);
-  const [notes, setNotes] = useState("");
-  const prefillUnit = prefill?.unit ?? "pack";
-  const isKnownUnit = (UNITS as readonly string[]).includes(prefillUnit);
+  const [selectedGroupId, setSelectedGroupId] = useState(defaultGroupId)
+  const [name, setName] = useState(prefill?.name ?? '')
+  const [categories, setCategories] = useState<string[]>([])
+  const [customCategoryInput, setCustomCategoryInput] = useState('')
+  const [colorTag, setColorTag] = useState<string | null>(null)
+  const [notes, setNotes] = useState('')
+  const prefillUnit = prefill?.unit ?? 'pack'
+  const isKnownUnit = (UNITS as readonly string[]).includes(prefillUnit)
   const [quantity, setQuantity] = useState({
     current: prefill?.amount ?? 1,
     initial: prefill?.amount ?? 1,
-    unit: (isKnownUnit ? prefillUnit : "pack") as QuantityUnit,
-  });
-  const [isCustomUnit, setIsCustomUnit] = useState(!isKnownUnit && !!prefill);
-  const [customUnitInput, setCustomUnitInput] = useState("");
+    unit: (isKnownUnit ? prefillUnit : 'pack') as QuantityUnit,
+  })
+  const [isCustomUnit, setIsCustomUnit] = useState(!isKnownUnit && !!prefill)
+  const [customUnitInput, setCustomUnitInput] = useState('')
   const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(
     !isKnownUnit && prefill ? prefillUnit : null,
-  );
-  const [expiresAt, setExpiresAt] = useState("");
+  )
+  const [expiresAt, setExpiresAt] = useState('')
 
   function toggleCategory(cat: string) {
     setCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
-    );
+    )
   }
 
   function addCustomCategory() {
-    const val = customCategoryInput.trim().toLowerCase();
+    const val = customCategoryInput.trim().toLowerCase()
     if (val && !categories.includes(val)) {
-      setCategories((prev) => [...prev, val]);
+      setCategories((prev) => [...prev, val])
     }
-    setCustomCategoryInput("");
+    setCustomCategoryInput('')
   }
 
   function removeCategory(cat: string) {
-    setCategories((prev) => prev.filter((c) => c !== cat));
+    setCategories((prev) => prev.filter((c) => c !== cat))
   }
 
   function confirmCustomUnit() {
-    const val = customUnitInput.trim();
+    const val = customUnitInput.trim()
     if (val) {
-      setConfirmedCustomUnit(val);
-      setQuantity((q) => ({ ...q, unit: val }));
-      setCustomUnitInput("");
-      setIsCustomUnit(false);
+      setConfirmedCustomUnit(val)
+      setQuantity((q) => ({ ...q, unit: val }))
+      setCustomUnitInput('')
+      setIsCustomUnit(false)
     }
   }
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
+    e.preventDefault()
+    if (!name.trim()) return
 
-    const now = makeTimestamp(new Date());
+    const now = nowTimestamp()
     const newItem: Item = {
       id: crypto.randomUUID(),
       groupId: selectedGroupId,
@@ -112,22 +112,20 @@ export default function AddItemModal({
       notes: notes.trim() || null,
       quantity,
       dates: {
-        addedAt: now as never,
-        purchasedAt: now as never,
-        expiresAt: expiresAt
-          ? (makeTimestamp(new Date(expiresAt)) as never)
-          : null,
+        addedAt: now,
+        purchasedAt: now,
+        expiresAt: expiresAt ? dateStringToTimestamp(expiresAt) : null,
         lastUsedAt: null,
       },
       notification: { enabled: false, daysBeforeExp: null },
       addedBy: userId,
-      updatedAt: now as never,
+      updatedAt: now,
       isArchived: false,
       archivedAt: null,
-    };
+    }
 
-    onAdd(newItem);
-    onClose();
+    onAdd(newItem)
+    onClose()
   }
 
   return (
@@ -165,8 +163,8 @@ export default function AddItemModal({
                     onClick={() => setSelectedGroupId(g.id)}
                     className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                       selectedGroupId === g.id
-                        ? "bg-green-500 text-white border-green-500"
-                        : "bg-white text-gray-500 border-gray-200"
+                        ? 'bg-green-500 text-white border-green-500'
+                        : 'bg-white text-gray-500 border-gray-200'
                     }`}
                   >
                     {g.name}
@@ -210,19 +208,19 @@ export default function AddItemModal({
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
               <select
-                value={isCustomUnit ? "__custom__" : quantity.unit}
+                value={isCustomUnit ? '__custom__' : quantity.unit}
                 onChange={(e) => {
-                  if (e.target.value === "__custom__") {
-                    setIsCustomUnit(true);
+                  if (e.target.value === '__custom__') {
+                    setIsCustomUnit(true)
                   } else {
-                    setIsCustomUnit(false);
-                    setCustomUnitInput("");
+                    setIsCustomUnit(false)
+                    setCustomUnitInput('')
                     if (e.target.value !== confirmedCustomUnit)
-                      setConfirmedCustomUnit(null);
+                      setConfirmedCustomUnit(null)
                     setQuantity((q) => ({
                       ...q,
                       unit: e.target.value as QuantityUnit,
-                    }));
+                    }))
                   }
                 }}
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -247,7 +245,7 @@ export default function AddItemModal({
                   value={customUnitInput}
                   onChange={(e) => setCustomUnitInput(e.target.value)}
                   onKeyDown={(e) =>
-                    e.key === "Enter" &&
+                    e.key === 'Enter' &&
                     (e.preventDefault(), confirmCustomUnit())
                   }
                   placeholder="e.g. jar, tray…"
@@ -292,8 +290,8 @@ export default function AddItemModal({
                   onClick={() => toggleCategory(cat)}
                   className={`text-xs rounded-full px-3 py-1 border transition-colors ${
                     categories.includes(cat)
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-white text-gray-500 border-gray-200 hover:border-green-400"
+                      ? 'bg-green-500 text-white border-green-500'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
                   }`}
                 >
                   {cat}
@@ -325,7 +323,7 @@ export default function AddItemModal({
                 value={customCategoryInput}
                 onChange={(e) => setCustomCategoryInput(e.target.value)}
                 onKeyDown={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), addCustomCategory())
+                  e.key === 'Enter' && (e.preventDefault(), addCustomCategory())
                 }
                 placeholder="Add custom category…"
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -355,8 +353,8 @@ export default function AddItemModal({
                   className="w-7 h-7 rounded-full transition-transform hover:scale-110"
                   style={{
                     backgroundColor: c,
-                    outline: colorTag === c ? `2px solid ${c}` : "none",
-                    outlineOffset: "2px",
+                    outline: colorTag === c ? `2px solid ${c}` : 'none',
+                    outlineOffset: '2px',
                   }}
                 />
               ))}
@@ -386,5 +384,5 @@ export default function AddItemModal({
         </form>
       </div>
     </div>
-  );
+  )
 }

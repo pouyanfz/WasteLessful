@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { makeTimestamp } from "../data/mockTimestamp";
-import type { Group, ShoppingItem, ShoppingList } from "../types";
-import { useAppData } from "../context/AppDataContext";
-import { groupBadgeBg } from "../data/groupColors";
+import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { nowTimestamp } from '../utils/timestamp'
+import type { Group, ShoppingItem, ShoppingList } from '../types'
+import { useAppData } from '../context/AppDataContext'
+import { useAuth } from '../context/AuthContext'
+import { groupBadgeBg } from '../data/groupColors'
 
-const UNITS = ["pack", "L", "mL", "kg", "g", "bottle", "box", "can", "piece"];
+const UNITS = ['pack', 'L', 'mL', 'kg', 'g', 'bottle', 'box', 'can', 'piece']
 
 // ─── Tab strip ────────────────────────────────────────────────────────────────
 
@@ -17,48 +18,48 @@ function TabStrip({
   onManage,
   onAddList,
 }: {
-  lists: ShoppingList[];
-  groups: Group[];
-  activeTab: string;
-  onChange: (tab: string) => void;
-  onManage: () => void;
-  onAddList: (name: string) => void;
+  lists: ShoppingList[]
+  groups: Group[]
+  activeTab: string
+  onChange: (tab: string) => void
+  onManage: () => void
+  onAddList: (name: string) => void
 }) {
-  const [adding, setAdding] = useState(false);
-  const [input, setInput] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [adding, setAdding] = useState(false)
+  const [input, setInput] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   function startAdding() {
-    setAdding(true);
-    setInput("");
+    setAdding(true)
+    setInput('')
     setTimeout(() => {
-      inputRef.current?.focus();
+      inputRef.current?.focus()
       scrollRef.current?.scrollTo({
         left: scrollRef.current.scrollWidth,
-        behavior: "smooth",
-      });
-    }, 0);
+        behavior: 'smooth',
+      })
+    }, 0)
   }
 
   function confirm() {
-    const name = input.trim();
-    if (name) onAddList(name);
-    setAdding(false);
-    setInput("");
+    const name = input.trim()
+    if (name) onAddList(name)
+    setAdding(false)
+    setInput('')
   }
 
   function cancel() {
-    setAdding(false);
-    setInput("");
+    setAdding(false)
+    setInput('')
   }
 
   function tabCls(active: boolean) {
     return `shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
       active
-        ? "border-green-500 text-green-600"
-        : "border-transparent text-gray-500 hover:text-gray-700"
-    }`;
+        ? 'border-green-500 text-green-600'
+        : 'border-transparent text-gray-500 hover:text-gray-700'
+    }`
   }
 
   return (
@@ -88,8 +89,8 @@ function TabStrip({
         <div className="relative flex-1 min-w-0">
           <div ref={scrollRef} className="flex overflow-x-auto scrollbar-hide">
             <button
-              onClick={() => onChange("all")}
-              className={tabCls(activeTab === "all")}
+              onClick={() => onChange('all')}
+              className={tabCls(activeTab === 'all')}
             >
               All
             </button>
@@ -127,11 +128,11 @@ function TabStrip({
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      confirm();
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      confirm()
                     }
-                    if (e.key === "Escape") cancel();
+                    if (e.key === 'Escape') cancel()
                   }}
                   placeholder="List name"
                   className="border border-green-400 rounded-lg px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -169,7 +170,7 @@ function TabStrip({
         )}
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Manage lists modal ───────────────────────────────────────────────────────
@@ -181,18 +182,18 @@ function ManageListsModal({
   onDelete,
   onClose,
 }: {
-  lists: ShoppingList[];
-  groups: Group[];
-  onReorder: (lists: ShoppingList[]) => void;
-  onDelete: (id: string) => void;
-  onClose: () => void;
+  lists: ShoppingList[]
+  groups: Group[]
+  onReorder: (lists: ShoppingList[]) => void
+  onDelete: (id: string) => void
+  onClose: () => void
 }) {
   function move(i: number, dir: -1 | 1) {
-    const next = [...lists];
-    const t = i + dir;
-    if (t < 0 || t >= next.length) return;
-    [next[i], next[t]] = [next[t], next[i]];
-    onReorder(next);
+    const next = [...lists]
+    const t = i + dir
+    if (t < 0 || t >= next.length) return
+    ;[next[i], next[t]] = [next[t], next[i]]
+    onReorder(next)
   }
 
   return (
@@ -318,7 +319,7 @@ function ManageListsModal({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Edit sheet ───────────────────────────────────────────────────────────────
@@ -332,47 +333,46 @@ function EditShoppingItemSheet({
   onAddToInventory,
   onClose,
 }: {
-  item: ShoppingItem;
-  lists: ShoppingList[];
-  groups: Group[];
-  onSave: (updated: ShoppingItem) => void;
-  onDelete: (id: string) => void;
-  onAddToInventory: (item: ShoppingItem) => void;
-  onClose: () => void;
+  item: ShoppingItem
+  lists: ShoppingList[]
+  groups: Group[]
+  onSave: (updated: ShoppingItem) => void
+  onDelete: (id: string) => void
+  onAddToInventory: (item: ShoppingItem) => void
+  onClose: () => void
 }) {
-  const [name, setName] = useState(item.name);
-  const [amount, setAmount] = useState(item.quantity.amount);
+  const [name, setName] = useState(item.name)
+  const [amount, setAmount] = useState(item.quantity.amount)
   const [unit, setUnit] = useState(
-    UNITS.includes(item.quantity.unit) ? item.quantity.unit : "pack",
-  );
+    UNITS.includes(item.quantity.unit) ? item.quantity.unit : 'pack',
+  )
   const [customUnit, setCustomUnit] = useState(
-    !UNITS.includes(item.quantity.unit) ? item.quantity.unit : "",
-  );
+    !UNITS.includes(item.quantity.unit) ? item.quantity.unit : '',
+  )
   const [isCustomUnit, setIsCustomUnit] = useState(
     !UNITS.includes(item.quantity.unit),
-  );
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const isBought = item.status === "bought";
+  )
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const isBought = item.status === 'bought'
 
   function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    const resolvedUnit = isCustomUnit ? customUnit.trim() || unit : unit;
-    const now = makeTimestamp(new Date()) as never;
+    e.preventDefault()
+    if (!name.trim()) return
+    const resolvedUnit = isCustomUnit ? customUnit.trim() || unit : unit
     onSave({
       ...item,
       name: name.trim(),
       quantity: { amount, unit: resolvedUnit },
-      updatedAt: now,
-    });
-    onClose();
+      updatedAt: nowTimestamp(),
+    })
+    onClose()
   }
 
   const listLabel = item.shoppingListId
     ? lists.find((l) => l.id === item.shoppingListId)?.name
     : item.groupId
       ? groups.find((g) => g.id === item.groupId)?.name
-      : null;
+      : null
 
   return (
     <div
@@ -424,12 +424,12 @@ function EditShoppingItemSheet({
                 className="w-24 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
               />
               <select
-                value={isCustomUnit ? "__custom__" : unit}
+                value={isCustomUnit ? '__custom__' : unit}
                 onChange={(e) => {
-                  if (e.target.value === "__custom__") setIsCustomUnit(true);
+                  if (e.target.value === '__custom__') setIsCustomUnit(true)
                   else {
-                    setIsCustomUnit(false);
-                    setUnit(e.target.value);
+                    setIsCustomUnit(false)
+                    setUnit(e.target.value)
                   }
                 }}
                 className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -458,7 +458,7 @@ function EditShoppingItemSheet({
             item.linkedItemName &&
             item.linkedItemName !== item.name && (
               <p className="text-xs text-green-700 bg-green-50 rounded-lg px-3 py-2">
-                Auto-added to restock:{" "}
+                Auto-added to restock:{' '}
                 <span className="font-medium">{item.linkedItemName}</span>
               </p>
             )}
@@ -516,8 +516,8 @@ function EditShoppingItemSheet({
           <div className="flex gap-2">
             <button
               onClick={() => {
-                onDelete(item.id);
-                onClose();
+                onDelete(item.id)
+                onClose()
               }}
               className="flex-1 bg-red-500 text-white rounded-xl py-3 text-sm font-medium hover:bg-red-600 transition-colors"
             >
@@ -540,7 +540,7 @@ function EditShoppingItemSheet({
         )}
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Inventory prompt sheet ───────────────────────────────────────────────────
@@ -551,10 +551,10 @@ function InventoryPromptSheet({
   onJustMark,
   onClose,
 }: {
-  item: ShoppingItem;
-  onAddToInventory: () => void;
-  onJustMark: () => void;
-  onClose: () => void;
+  item: ShoppingItem
+  onAddToInventory: () => void
+  onJustMark: () => void
+  onClose: () => void
 }) {
   return (
     <div
@@ -571,7 +571,7 @@ function InventoryPromptSheet({
               Mark as bought?
             </h2>
             <p className="text-sm text-gray-500 mt-1">
-              Do you want to add{" "}
+              Do you want to add{' '}
               <span className="font-medium text-gray-700">{item.name}</span> to
               your inventory too?
             </p>
@@ -613,7 +613,7 @@ function InventoryPromptSheet({
         </button>
       </div>
     </div>
-  );
+  )
 }
 
 // ─── Shopping row ─────────────────────────────────────────────────────────────
@@ -626,25 +626,25 @@ function ShoppingRow({
   onToggle,
   onEdit,
 }: {
-  item: ShoppingItem;
-  groupLabel: string | null;
-  groupColor: string | null;
-  recipeLabel: string | null;
-  onToggle: (id: string) => void;
-  onEdit: (item: ShoppingItem) => void;
+  item: ShoppingItem
+  groupLabel: string | null
+  groupColor: string | null
+  recipeLabel: string | null
+  onToggle: (id: string) => void
+  onEdit: (item: ShoppingItem) => void
 }) {
-  const bought = item.status === "bought";
+  const bought = item.status === 'bought'
   return (
     <div
-      className={`bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm border border-gray-100 cursor-pointer active:scale-[0.99] transition-transform ${bought ? "opacity-60" : ""}`}
+      className={`bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm border border-gray-100 cursor-pointer active:scale-[0.99] transition-transform ${bought ? 'opacity-60' : ''}`}
       onClick={() => onEdit(item)}
     >
       <button
         onClick={(e) => {
-          e.stopPropagation();
-          onToggle(item.id);
+          e.stopPropagation()
+          onToggle(item.id)
         }}
-        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${bought ? "bg-green-500 border-green-500 text-white" : "border-gray-300 hover:border-green-400"}`}
+        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${bought ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-green-400'}`}
       >
         {bought && (
           <svg
@@ -664,7 +664,7 @@ function ShoppingRow({
 
       <div className="flex-1 min-w-0">
         <p
-          className={`text-sm font-medium ${bought ? "line-through text-gray-400" : "text-gray-900"}`}
+          className={`text-sm font-medium ${bought ? 'line-through text-gray-400' : 'text-gray-900'}`}
         >
           {item.name}
         </p>
@@ -676,7 +676,7 @@ function ShoppingRow({
             <span className="text-[10px] bg-green-100 text-green-700 rounded-full px-1.5 py-0.5 font-medium">
               {item.linkedItemName && item.linkedItemName !== item.name
                 ? `restocking ${item.linkedItemName}`
-                : "auto"}
+                : 'auto'}
             </span>
           )}
           {recipeLabel && (
@@ -694,7 +694,7 @@ function ShoppingRow({
                     }
                   : {}
               }
-              className={`text-[10px] rounded-full px-1.5 py-0.5 font-medium ${!groupColor ? "bg-gray-100 text-gray-500" : ""}`}
+              className={`text-[10px] rounded-full px-1.5 py-0.5 font-medium ${!groupColor ? 'bg-gray-100 text-gray-500' : ''}`}
             >
               {groupLabel}
             </span>
@@ -717,157 +717,130 @@ function ShoppingRow({
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
       </svg>
     </div>
-  );
+  )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ShoppingListPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const { firebaseUser } = useAuth()
   const {
     groups,
     shoppingItems: items,
-    setShoppingItems: setItems,
     shoppingLists: lists,
-    setShoppingLists: setLists,
     recipes,
-  } = useAppData();
-  const [activeTab, setActiveTab] = useState("all");
-  const [showManage, setShowManage] = useState(false);
+    addShoppingItem,
+    updateShoppingItem,
+    deleteShoppingItem,
+    addShoppingList,
+    deleteShoppingList,
+  } = useAppData()
+  const [activeTab, setActiveTab] = useState('all')
+  const [showManage, setShowManage] = useState(false)
   const [pendingToggleItem, setPendingToggleItem] =
-    useState<ShoppingItem | null>(null);
-  const [newName, setNewName] = useState("");
-  const [newAmount, setNewAmount] = useState(1);
-  const [newUnit, setNewUnit] = useState("pack");
-  const [isCustomAddUnit, setIsCustomAddUnit] = useState(false);
-  const [customAddUnit, setCustomAddUnit] = useState("");
-  const [editingItem, setEditingItem] = useState<ShoppingItem | null>(null);
+    useState<ShoppingItem | null>(null)
+  const [newName, setNewName] = useState('')
+  const [newAmount, setNewAmount] = useState(1)
+  const [newUnit, setNewUnit] = useState('pack')
+  const [isCustomAddUnit, setIsCustomAddUnit] = useState(false)
+  const [customAddUnit, setCustomAddUnit] = useState('')
+  const [editingItem, setEditingItem] = useState<ShoppingItem | null>(null)
 
   // Determine tab type
-  const isGroupTab = groups.some((g) => g.id === activeTab);
-  const isListTab = lists.some((l) => l.id === activeTab);
+  const isGroupTab = groups.some((g) => g.id === activeTab)
+  const isListTab = lists.some((l) => l.id === activeTab)
 
   // Scope items to active tab
   const scopedItems =
-    activeTab === "all"
+    activeTab === 'all'
       ? items
       : isGroupTab
         ? items.filter((i) => i.groupId === activeTab)
         : isListTab
           ? items.filter((i) => i.shoppingListId === activeTab)
-          : items;
+          : items
 
-  const toBuy = scopedItems.filter((i) => i.status === "toBuy");
-  const bought = scopedItems.filter((i) => i.status === "bought");
+  const toBuy = scopedItems.filter((i) => i.status === 'toBuy')
+  const bought = scopedItems.filter((i) => i.status === 'bought')
 
   // Group badge on rows when viewing "All"
   function getRowLabel(item: ShoppingItem): string | null {
-    if (activeTab !== "all") return null;
+    if (activeTab !== 'all') return null
     if (item.shoppingListId)
-      return lists.find((l) => l.id === item.shoppingListId)?.name ?? null;
+      return lists.find((l) => l.id === item.shoppingListId)?.name ?? null
     if (item.groupId)
-      return groups.find((g) => g.id === item.groupId)?.name ?? null;
-    return null;
+      return groups.find((g) => g.id === item.groupId)?.name ?? null
+    return null
   }
 
   function addList(name: string) {
-    const newList: ShoppingList = { id: crypto.randomUUID(), name };
-    setLists((prev) => [...prev, newList]);
-    setActiveTab(newList.id);
+    const list = addShoppingList(name)
+    setActiveTab(list.id)
   }
 
   function deleteList(id: string) {
-    setItems((prev) => prev.filter((i) => i.shoppingListId !== id));
-    setLists((prev) => prev.filter((l) => l.id !== id));
-    if (activeTab === id) setActiveTab("all");
+    deleteShoppingList(id)
+    if (activeTab === id) setActiveTab('all')
   }
 
-  function toggleStatus(id: string) {
-    const item = items.find((i) => i.id === id);
-    if (!item) return;
-    if (item.status === "toBuy") {
-      // Show prompt before marking as bought
-      setPendingToggleItem(item);
+  async function toggleStatus(id: string) {
+    const item = items.find((i) => i.id === id)
+    if (!item) return
+    if (item.status === 'toBuy') {
+      setPendingToggleItem(item)
     } else {
-      // Unchecking: revert to toBuy immediately
-      const now = makeTimestamp(new Date()) as never;
-      setItems((prev) =>
-        prev.map((i) =>
-          i.id === id
-            ? {
-                ...i,
-                status: "toBuy" as const,
-                boughtBy: null,
-                boughtAt: null,
-                updatedAt: now,
-              }
-            : i,
-        ),
-      );
+      await updateShoppingItem(id, {
+        status: 'toBuy',
+        boughtBy: null,
+        boughtAt: null,
+      })
     }
   }
 
-  function markBought(id: string) {
-    const now = makeTimestamp(new Date()) as never;
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id
-          ? {
-              ...i,
-              status: "bought" as const,
-              boughtBy: "user-1",
-              boughtAt: now,
-              updatedAt: now,
-            }
-          : i,
-      ),
-    );
+  async function markBought(id: string) {
+    await updateShoppingItem(id, {
+      status: 'bought',
+      boughtBy: firebaseUser?.uid ?? null,
+      boughtAt: nowTimestamp(),
+    })
   }
 
-  function markBoughtAndAddedToInventory(id: string) {
-    const now = makeTimestamp(new Date()) as never;
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === id
-          ? {
-              ...i,
-              status: "bought" as const,
-              boughtBy: "user-1",
-              boughtAt: now,
-              updatedAt: now,
-              addedToInventory: true,
-            }
-          : i,
-      ),
-    );
+  async function markBoughtAndAddedToInventory(id: string) {
+    await updateShoppingItem(id, {
+      status: 'bought',
+      boughtBy: firebaseUser?.uid ?? null,
+      boughtAt: nowTimestamp(),
+      addedToInventory: true,
+    })
   }
 
-  function deleteItem(id: string) {
-    setItems((prev) => prev.filter((i) => i.id !== id));
-  }
-  function saveItem(updated: ShoppingItem) {
-    setItems((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
+  async function deleteItem(id: string) {
+    await deleteShoppingItem(id)
   }
 
-  function clearBought() {
-    setItems((prev) =>
-      prev.filter((i) => {
-        if (i.status !== "bought") return true;
-        if (activeTab === "all") return false;
-        if (isGroupTab) return i.groupId !== activeTab;
-        if (isListTab) return i.shoppingListId !== activeTab;
-        return true;
-      }),
-    );
+  async function saveItem(updated: ShoppingItem) {
+    await updateShoppingItem(updated.id, updated)
   }
 
-  function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newName.trim()) return;
+  async function clearBought() {
+    const toDelete = items.filter((i) => {
+      if (i.status !== 'bought') return false
+      if (activeTab === 'all') return true
+      if (isGroupTab) return i.groupId === activeTab
+      if (isListTab) return i.shoppingListId === activeTab
+      return false
+    })
+    await Promise.all(toDelete.map((i) => deleteShoppingItem(i.id)))
+  }
+
+  async function handleAdd(e: React.FormEvent) {
+    e.preventDefault()
+    if (!newName.trim()) return
     const resolvedUnit = isCustomAddUnit
       ? customAddUnit.trim() || newUnit
-      : newUnit;
-    const now = makeTimestamp(new Date()) as never;
+      : newUnit
+    const now = nowTimestamp()
     const newItem: ShoppingItem = {
       id: crypto.randomUUID(),
       groupId: isGroupTab ? activeTab : null,
@@ -877,32 +850,28 @@ export default function ShoppingListPage() {
       linkedRecipeId: null,
       linkedItemId: null,
       linkedItemName: null,
-      status: "toBuy",
+      status: 'toBuy',
       autoAdded: false,
       addedToInventory: false,
-      addedBy: "user-1",
+      addedBy: firebaseUser?.uid ?? 'guest',
       boughtBy: null,
       addedAt: now,
       boughtAt: null,
       updatedAt: now,
-    };
-    setItems((prev) => [newItem, ...prev]);
-    setNewName("");
-    setNewAmount(1);
-    setNewUnit("pack");
-    setIsCustomAddUnit(false);
-    setCustomAddUnit("");
+    }
+    await addShoppingItem(newItem)
+    setNewName('')
+    setNewAmount(1)
+    setNewUnit('pack')
+    setIsCustomAddUnit(false)
+    setCustomAddUnit('')
   }
 
-  function handleAddToInventory(item: ShoppingItem) {
-    setEditingItem(null);
-    setPendingToggleItem(null);
-    setItems((prev) =>
-      prev.map((i) =>
-        i.id === item.id ? { ...i, addedToInventory: true } : i,
-      ),
-    );
-    navigate("/", {
+  async function handleAddToInventory(item: ShoppingItem) {
+    setEditingItem(null)
+    setPendingToggleItem(null)
+    await updateShoppingItem(item.id, { addedToInventory: true })
+    navigate('/', {
       state: {
         prefillItem: {
           name: item.name,
@@ -911,23 +880,23 @@ export default function ShoppingListPage() {
           groupId: item.groupId,
         },
       },
-    });
+    })
   }
 
   // Add form: show destination selector only on "All" tab
-  const showDestSelector = activeTab === "all";
+  const showDestSelector = activeTab === 'all'
   const [addDestTab, setAddDestTab] = useState<string>(
-    lists[0]?.id ?? groups[0]?.id ?? "",
-  );
+    lists[0]?.id ?? groups[0]?.id ?? '',
+  )
 
-  function handleAddFromAll(e: React.FormEvent) {
-    e.preventDefault();
-    if (!newName.trim() || !addDestTab) return;
+  async function handleAddFromAll(e: React.FormEvent) {
+    e.preventDefault()
+    if (!newName.trim() || !addDestTab) return
     const resolvedUnit = isCustomAddUnit
       ? customAddUnit.trim() || newUnit
-      : newUnit;
-    const now = makeTimestamp(new Date()) as never;
-    const destIsGroup = groups.some((g) => g.id === addDestTab);
+      : newUnit
+    const now = nowTimestamp()
+    const destIsGroup = groups.some((g) => g.id === addDestTab)
     const newItem: ShoppingItem = {
       id: crypto.randomUUID(),
       groupId: destIsGroup ? addDestTab : null,
@@ -937,21 +906,21 @@ export default function ShoppingListPage() {
       linkedRecipeId: null,
       linkedItemId: null,
       linkedItemName: null,
-      status: "toBuy",
+      status: 'toBuy',
       autoAdded: false,
       addedToInventory: false,
-      addedBy: "user-1",
+      addedBy: firebaseUser?.uid ?? 'guest',
       boughtBy: null,
       addedAt: now,
       boughtAt: null,
       updatedAt: now,
-    };
-    setItems((prev) => [newItem, ...prev]);
-    setNewName("");
-    setNewAmount(1);
-    setNewUnit("pack");
-    setIsCustomAddUnit(false);
-    setCustomAddUnit("");
+    }
+    await addShoppingItem(newItem)
+    setNewName('')
+    setNewAmount(1)
+    setNewUnit('pack')
+    setIsCustomAddUnit(false)
+    setCustomAddUnit('')
   }
 
   return (
@@ -960,7 +929,7 @@ export default function ShoppingListPage() {
       <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-xl font-semibold text-gray-900">Shopping List</h1>
         <button
-          onClick={() => navigate("/settings")}
+          onClick={() => navigate('/settings')}
           className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:border-green-400 hover:text-green-600 transition-colors"
           title="Settings"
         >
@@ -1003,7 +972,7 @@ export default function ShoppingListPage() {
                 key={l.id}
                 type="button"
                 onClick={() => setAddDestTab(l.id)}
-                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === l.id ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-500 border-gray-200 hover:border-green-400"}`}
+                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === l.id ? 'bg-green-500 text-white border-green-500' : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'}`}
               >
                 {l.name}
               </button>
@@ -1016,7 +985,7 @@ export default function ShoppingListPage() {
                 key={g.id}
                 type="button"
                 onClick={() => setAddDestTab(g.id)}
-                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === g.id ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-500 border-gray-200 hover:border-green-400"}`}
+                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === g.id ? 'bg-green-500 text-white border-green-500' : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'}`}
               >
                 {g.name}
               </button>
@@ -1041,12 +1010,12 @@ export default function ShoppingListPage() {
             className="w-14 border border-gray-200 rounded-xl px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-green-400"
           />
           <select
-            value={isCustomAddUnit ? "__custom__" : newUnit}
+            value={isCustomAddUnit ? '__custom__' : newUnit}
             onChange={(e) => {
-              if (e.target.value === "__custom__") setIsCustomAddUnit(true);
+              if (e.target.value === '__custom__') setIsCustomAddUnit(true)
               else {
-                setIsCustomAddUnit(false);
-                setNewUnit(e.target.value);
+                setIsCustomAddUnit(false)
+                setNewUnit(e.target.value)
               }
             }}
             className="w-20 border border-gray-200 rounded-xl px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -1157,7 +1126,9 @@ export default function ShoppingListPage() {
         <ManageListsModal
           lists={lists}
           groups={groups}
-          onReorder={setLists}
+          onReorder={() => {
+            /* local list reorder not wired to Firestore */
+          }}
           onDelete={deleteList}
           onClose={() => setShowManage(false)}
         />
@@ -1167,12 +1138,12 @@ export default function ShoppingListPage() {
         <InventoryPromptSheet
           item={pendingToggleItem}
           onAddToInventory={() => {
-            markBoughtAndAddedToInventory(pendingToggleItem.id);
-            handleAddToInventory(pendingToggleItem);
+            markBoughtAndAddedToInventory(pendingToggleItem.id)
+            handleAddToInventory(pendingToggleItem)
           }}
           onJustMark={() => {
-            markBought(pendingToggleItem.id);
-            setPendingToggleItem(null);
+            markBought(pendingToggleItem.id)
+            setPendingToggleItem(null)
           }}
           onClose={() => setPendingToggleItem(null)}
         />
@@ -1190,5 +1161,5 @@ export default function ShoppingListPage() {
         />
       )}
     </div>
-  );
+  )
 }

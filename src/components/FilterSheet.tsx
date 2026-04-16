@@ -1,17 +1,17 @@
-import type { Item } from "../types";
-import { daysUntilExpiry } from "../utils/expiry";
-import { isLowQuantity } from "../utils/quantity";
-import { mockUser } from "../data/mockUsers";
+import type { Item } from '../types'
+import { daysUntilExpiry } from '../utils/expiry'
+import { isLowQuantity } from '../utils/quantity'
+import { mockUser } from '../data/mockUsers'
 
-export type ExpiryStatus = "expired" | "expiringSoon" | "fresh" | "noExpiry";
-export type SortBy = "expiry" | "name" | "quantity" | "added";
+export type ExpiryStatus = 'expired' | 'expiringSoon' | 'fresh' | 'noExpiry'
+export type SortBy = 'expiry' | 'name' | 'quantity' | 'added'
 
 export interface Filters {
-  expiryStatus: ExpiryStatus[];
-  categories: string[];
-  colors: string[];
-  lowQuantity: boolean;
-  sort: { by: SortBy; dir: "asc" | "desc" };
+  expiryStatus: ExpiryStatus[]
+  categories: string[]
+  colors: string[]
+  lowQuantity: boolean
+  sort: { by: SortBy; dir: 'asc' | 'desc' }
 }
 
 export const EMPTY_FILTERS: Filters = {
@@ -19,8 +19,8 @@ export const EMPTY_FILTERS: Filters = {
   categories: [],
   colors: [],
   lowQuantity: false,
-  sort: { by: "expiry", dir: "asc" },
-};
+  sort: { by: 'expiry', dir: 'asc' },
+}
 
 export function activeFilterCount(f: Filters): number {
   return (
@@ -28,19 +28,19 @@ export function activeFilterCount(f: Filters): number {
     f.categories.length +
     f.colors.length +
     (f.lowQuantity ? 1 : 0)
-  );
+  )
 }
 
 function getExpiryStatus(item: Item, notifyDays: number): ExpiryStatus {
-  if (!item.dates.expiresAt) return "noExpiry";
-  const days = daysUntilExpiry(item.dates.expiresAt.toDate());
-  if (days < 0) return "expired";
-  if (days <= notifyDays) return "expiringSoon";
-  return "fresh";
+  if (!item.dates.expiresAt) return 'noExpiry'
+  const days = daysUntilExpiry(item.dates.expiresAt.toDate())
+  if (days < 0) return 'expired'
+  if (days <= notifyDays) return 'expiringSoon'
+  return 'fresh'
 }
 
 export function applyFilters(items: Item[], f: Filters): Item[] {
-  const { notifyDaysBeforeExpiry, lowQuantityThreshold } = mockUser.settings;
+  const { notifyDaysBeforeExpiry, lowQuantityThreshold } = mockUser.settings
 
   const filtered = items.filter((item) => {
     if (
@@ -51,92 +51,92 @@ export function applyFilters(items: Item[], f: Filters): Item[] {
         lowQuantityThreshold,
       )
     )
-      return false;
+      return false
     if (
       f.categories.length > 0 &&
       !f.categories.some((c) => item.categories.includes(c))
     )
-      return false;
-    if (f.colors.length > 0 && !f.colors.includes(item.colorTag ?? "none"))
-      return false;
+      return false
+    if (f.colors.length > 0 && !f.colors.includes(item.colorTag ?? 'none'))
+      return false
     if (f.expiryStatus.length > 0) {
-      const status = getExpiryStatus(item, notifyDaysBeforeExpiry);
-      if (!f.expiryStatus.includes(status)) return false;
+      const status = getExpiryStatus(item, notifyDaysBeforeExpiry)
+      if (!f.expiryStatus.includes(status)) return false
     }
-    return true;
-  });
+    return true
+  })
 
-  const mul = f.sort.dir === "asc" ? 1 : -1;
+  const mul = f.sort.dir === 'asc' ? 1 : -1
   return [...filtered].sort((a, b) => {
     switch (f.sort.by) {
-      case "name":
-        return mul * a.name.localeCompare(b.name);
-      case "quantity": {
+      case 'name':
+        return mul * a.name.localeCompare(b.name)
+      case 'quantity': {
         const pa =
-          a.quantity.initial > 0 ? a.quantity.current / a.quantity.initial : 0;
+          a.quantity.initial > 0 ? a.quantity.current / a.quantity.initial : 0
         const pb =
-          b.quantity.initial > 0 ? b.quantity.current / b.quantity.initial : 0;
-        return mul * (pa - pb);
+          b.quantity.initial > 0 ? b.quantity.current / b.quantity.initial : 0
+        return mul * (pa - pb)
       }
-      case "added":
+      case 'added':
         return (
           mul *
           (a.dates.addedAt.toDate().getTime() -
             b.dates.addedAt.toDate().getTime())
-        );
-      case "expiry":
+        )
+      case 'expiry':
       default: {
         // Items without expiry always go to the end regardless of direction
-        if (!a.dates.expiresAt && !b.dates.expiresAt) return 0;
-        if (!a.dates.expiresAt) return 1;
-        if (!b.dates.expiresAt) return -1;
+        if (!a.dates.expiresAt && !b.dates.expiresAt) return 0
+        if (!a.dates.expiresAt) return 1
+        if (!b.dates.expiresAt) return -1
         return (
           mul *
           (a.dates.expiresAt.toDate().getTime() -
             b.dates.expiresAt.toDate().getTime())
-        );
+        )
       }
     }
-  });
+  })
 }
 
 const EXPIRY_OPTIONS: { value: ExpiryStatus; label: string; color: string }[] =
   [
     {
-      value: "expired",
-      label: "Expired",
-      color: "bg-red-100 text-red-600 border-red-200",
+      value: 'expired',
+      label: 'Expired',
+      color: 'bg-red-100 text-red-600 border-red-200',
     },
     {
-      value: "expiringSoon",
-      label: "Expiring soon",
-      color: "bg-orange-100 text-orange-600 border-orange-200",
+      value: 'expiringSoon',
+      label: 'Expiring soon',
+      color: 'bg-orange-100 text-orange-600 border-orange-200',
     },
     {
-      value: "fresh",
-      label: "Fresh",
-      color: "bg-green-100 text-green-600 border-green-200",
+      value: 'fresh',
+      label: 'Fresh',
+      color: 'bg-green-100 text-green-600 border-green-200',
     },
     {
-      value: "noExpiry",
-      label: "No expiry",
-      color: "bg-gray-100 text-gray-500 border-gray-200",
+      value: 'noExpiry',
+      label: 'No expiry',
+      color: 'bg-gray-100 text-gray-500 border-gray-200',
     },
-  ];
+  ]
 
 const SORT_OPTIONS: { value: SortBy; label: string }[] = [
-  { value: "expiry", label: "Expiry" },
-  { value: "name", label: "Name" },
-  { value: "quantity", label: "Quantity" },
-  { value: "added", label: "Date added" },
-];
+  { value: 'expiry', label: 'Expiry' },
+  { value: 'name', label: 'Name' },
+  { value: 'quantity', label: 'Quantity' },
+  { value: 'added', label: 'Date added' },
+]
 
 interface FilterSheetProps {
-  filters: Filters;
-  availableCategories: string[];
-  availableColors: string[];
-  onChange: (f: Filters) => void;
-  onClose: () => void;
+  filters: Filters
+  availableCategories: string[]
+  availableColors: string[]
+  onChange: (f: Filters) => void
+  onClose: () => void
 }
 
 export default function FilterSheet({
@@ -152,7 +152,7 @@ export default function FilterSheet({
       expiryStatus: filters.expiryStatus.includes(val)
         ? filters.expiryStatus.filter((s) => s !== val)
         : [...filters.expiryStatus, val],
-    });
+    })
   }
 
   function toggleCategory(cat: string) {
@@ -161,7 +161,7 @@ export default function FilterSheet({
       categories: filters.categories.includes(cat)
         ? filters.categories.filter((c) => c !== cat)
         : [...filters.categories, cat],
-    });
+    })
   }
 
   function toggleColor(color: string) {
@@ -170,11 +170,11 @@ export default function FilterSheet({
       colors: filters.colors.includes(color)
         ? filters.colors.filter((c) => c !== color)
         : [...filters.colors, color],
-    });
+    })
   }
 
   function setSort(by: SortBy) {
-    onChange({ ...filters, sort: { ...filters.sort, by } });
+    onChange({ ...filters, sort: { ...filters.sort, by } })
   }
 
   function toggleSortDir() {
@@ -182,12 +182,12 @@ export default function FilterSheet({
       ...filters,
       sort: {
         ...filters.sort,
-        dir: filters.sort.dir === "asc" ? "desc" : "asc",
+        dir: filters.sort.dir === 'asc' ? 'desc' : 'asc',
       },
-    });
+    })
   }
 
-  const count = activeFilterCount(filters);
+  const count = activeFilterCount(filters)
 
   return (
     <div
@@ -227,7 +227,7 @@ export default function FilterSheet({
               onClick={toggleSortDir}
               className="flex items-center gap-1 text-xs text-gray-500 px-2.5 py-1 rounded-full border border-gray-200 hover:border-green-400 hover:text-green-600 transition-colors"
             >
-              {filters.sort.dir === "asc" ? (
+              {filters.sort.dir === 'asc' ? (
                 <>
                   <svg
                     width="11"
@@ -269,8 +269,8 @@ export default function FilterSheet({
                 onClick={() => setSort(opt.value)}
                 className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                   filters.sort.by === opt.value
-                    ? "bg-green-500 text-white border-green-500"
-                    : "bg-white text-gray-500 border-gray-200 hover:border-green-400"
+                    ? 'bg-green-500 text-white border-green-500'
+                    : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
                 }`}
               >
                 {opt.label}
@@ -286,20 +286,20 @@ export default function FilterSheet({
           <h3 className="text-sm font-medium text-gray-700">Expiry status</h3>
           <div className="flex flex-wrap gap-2">
             {EXPIRY_OPTIONS.map((opt) => {
-              const active = filters.expiryStatus.includes(opt.value);
+              const active = filters.expiryStatus.includes(opt.value)
               return (
                 <button
                   key={opt.value}
                   onClick={() => toggleExpiry(opt.value)}
                   className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                     active
-                      ? opt.color + " ring-2 ring-offset-1 ring-current"
-                      : "bg-white text-gray-500 border-gray-200"
+                      ? opt.color + ' ring-2 ring-offset-1 ring-current'
+                      : 'bg-white text-gray-500 border-gray-200'
                   }`}
                 >
                   {opt.label}
                 </button>
-              );
+              )
             })}
           </div>
         </section>
@@ -319,12 +319,12 @@ export default function FilterSheet({
               onChange({ ...filters, lowQuantity: !filters.lowQuantity })
             }
             className={`w-12 h-7 rounded-full transition-colors relative ${
-              filters.lowQuantity ? "bg-green-500" : "bg-gray-200"
+              filters.lowQuantity ? 'bg-green-500' : 'bg-gray-200'
             }`}
           >
             <span
               className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-all ${
-                filters.lowQuantity ? "left-6" : "left-1"
+                filters.lowQuantity ? 'left-6' : 'left-1'
               }`}
             />
           </button>
@@ -336,22 +336,22 @@ export default function FilterSheet({
             <h3 className="text-sm font-medium text-gray-700">Color tag</h3>
             <div className="flex flex-wrap gap-3">
               {availableColors.map((color) => {
-                const active = filters.colors.includes(color);
-                const isNone = color === "none";
+                const active = filters.colors.includes(color)
+                const isNone = color === 'none'
                 return (
                   <button
                     key={color}
                     onClick={() => toggleColor(color)}
-                    title={isNone ? "No color" : color}
+                    title={isNone ? 'No color' : color}
                     className={`w-9 h-9 rounded-full flex items-center justify-center transition-transform hover:scale-110 ${
-                      active ? "scale-110" : ""
-                    } ${isNone ? "bg-gray-100 border border-gray-300" : ""}`}
+                      active ? 'scale-110' : ''
+                    } ${isNone ? 'bg-gray-100 border border-gray-300' : ''}`}
                     style={
                       !isNone
                         ? {
                             backgroundColor: color,
-                            outline: active ? `2px solid ${color}` : "none",
-                            outlineOffset: "2px",
+                            outline: active ? `2px solid ${color}` : 'none',
+                            outlineOffset: '2px',
                           }
                         : undefined
                     }
@@ -362,7 +362,7 @@ export default function FilterSheet({
                       </span>
                     )}
                   </button>
-                );
+                )
               })}
             </div>
           </section>
@@ -374,20 +374,20 @@ export default function FilterSheet({
             <h3 className="text-sm font-medium text-gray-700">Category</h3>
             <div className="flex flex-wrap gap-2">
               {availableCategories.map((cat) => {
-                const active = filters.categories.includes(cat);
+                const active = filters.categories.includes(cat)
                 return (
                   <button
                     key={cat}
                     onClick={() => toggleCategory(cat)}
                     className={`text-sm rounded-full px-4 py-2 border transition-colors ${
                       active
-                        ? "bg-green-500 text-white border-green-500"
-                        : "bg-white text-gray-500 border-gray-200"
+                        ? 'bg-green-500 text-white border-green-500'
+                        : 'bg-white text-gray-500 border-gray-200'
                     }`}
                   >
                     {cat}
                   </button>
-                );
+                )
               })}
             </div>
           </section>
@@ -399,10 +399,10 @@ export default function FilterSheet({
           className="bg-green-500 text-white rounded-xl py-3 font-medium text-sm hover:bg-green-600 transition-colors mt-auto"
         >
           {count > 0
-            ? `Show results (${count} filter${count > 1 ? "s" : ""} active)`
-            : "Done"}
+            ? `Show results (${count} filter${count > 1 ? 's' : ''} active)`
+            : 'Done'}
         </button>
       </div>
     </div>
-  );
+  )
 }
