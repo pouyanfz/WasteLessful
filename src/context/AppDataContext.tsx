@@ -1,58 +1,353 @@
-import { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
-import type { Item, Group, ShoppingItem, ShoppingList, Recipe } from "../types";
-import { mockItems } from "../data/mockItems";
-import { mockGroups } from "../data/mockGroups";
-import { mockShoppingItems } from "../data/mockShoppingItems";
-import { mockShoppingLists } from "../data/mockShoppingLists";
-import { mockRecipes } from "../data/mockRecipes";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react'
+import { doc, onSnapshot } from 'firebase/firestore'
+import { db } from '../firebase/db'
+import { useAuth } from './AuthContext'
+import {
+  createGroup,
+  updateGroup as fsUpdateGroup,
+  deleteGroup as fsDeleteGroup,
+  subscribeToGroups,
+} from '../firebase/groups'
+import {
+  addItem as fsAddItem,
+  updateItem as fsUpdateItem,
+  deleteItem as fsDeleteItem,
+  moveItemsToGroup,
+  deleteItemsBatch,
+  subscribeToItems,
+} from '../firebase/items'
+import {
+  addShoppingItem as fsAddShoppingItem,
+  updateShoppingItem as fsUpdateShoppingItem,
+  deleteShoppingItem as fsDeleteShoppingItem,
+  subscribeToShoppingItems,
+} from '../firebase/shoppingList'
+import {
+  addRecipe as fsAddRecipe,
+  updateRecipe as fsUpdateRecipe,
+  deleteRecipe as fsDeleteRecipe,
+  subscribeToRecipes,
+} from '../firebase/recipes'
+import { updateUserDoc } from '../firebase/users'
+import { nextGroupColor } from '../data/groupColors'
+import type {
+  Item,
+  Group,
+  ShoppingItem,
+  ShoppingList,
+  Recipe,
+  User,
+  UserSettings,
+} from '../types'
+import { nowTimestamp } from '../utils/timestamp'
 
 interface AppData {
-  items: Item[];
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-  groups: Group[];
-  setGroups: React.Dispatch<React.SetStateAction<Group[]>>;
-  shoppingItems: ShoppingItem[];
-  setShoppingItems: React.Dispatch<React.SetStateAction<ShoppingItem[]>>;
-  shoppingLists: ShoppingList[];
-  setShoppingLists: React.Dispatch<React.SetStateAction<ShoppingList[]>>;
-  recipes: Recipe[];
-  setRecipes: React.Dispatch<React.SetStateAction<Recipe[]>>;
+  userDoc: User | null
+  items: Item[]
+  groups: Group[]
+  shoppingItems: ShoppingItem[]
+  shoppingLists: ShoppingList[]
+  recipes: Recipe[]
+  loading: boolean
+
+  // Settings
+  updateSettings: (data: Partial<UserSettings>) => Promise<void>
+
+  // Items
+  addItem: (item: Item) => Promise<void>
+  updateItem: (id: string, data: Partial<Omit<Item, 'id'>>) => Promise<void>
+  deleteItem: (id: string) => Promise<void>
+  archiveItem: (id: string) => Promise<void>
+  restoreItem: (id: string) => Promise<void>
+
+  // Groups
+  addGroup: (name: string) => Promise<string>
+  updateGroup: (
+    id: string,
+    data: Partial<Pick<Group, 'name' | 'color'>>,
+  ) => Promise<void>
+  deleteGroup: (id: string, moveToGroupId: string | null) => Promise<void>
+  reorderGroups: (groups: Group[]) => void
+
+  // Shopping items
+  addShoppingItem: (item: ShoppingItem) => Promise<void>
+  updateShoppingItem: (
+    id: string,
+    data: Partial<Omit<ShoppingItem, 'id'>>,
+  ) => Promise<void>
+  deleteShoppingItem: (id: string) => Promise<void>
+
+  // Named shopping lists (local/session only)
+  addShoppingList: (name: string) => ShoppingList
+  deleteShoppingList: (id: string) => void
+
+  // Recipes
+  addRecipe: (recipe: Recipe) => Promise<void>
+  updateRecipe: (id: string, data: Partial<Omit<Recipe, 'id'>>) => Promise<void>
+  deleteRecipe: (id: string) => Promise<void>
 }
 
-const AppDataContext = createContext<AppData | null>(null);
+const AppDataContext = createContext<AppData | null>(null)
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<Item[]>(mockItems);
-  const [groups, setGroups] = useState<Group[]>(mockGroups);
-  const [shoppingItems, setShoppingItems] =
-    useState<ShoppingItem[]>(mockShoppingItems);
-  const [shoppingLists, setShoppingLists] =
-    useState<ShoppingList[]>(mockShoppingLists);
-  const [recipes, setRecipes] = useState<Recipe[]>(mockRecipes);
+  const { firebaseUser } = useAuth()
+
+  const [userDoc, setUserDoc] = useState<User | null>(null)
+  const [firestoreGroups, setFirestoreGroups] = useState<Group[]>([])
+  const [groupOrder, setGroupOrder] = useState<string[]>([])
+  const [firestoreItems, setFirestoreItems] = useState<Item[]>([])
+  const [firestoreShoppingItems, setFirestoreShoppingItems] = useState<
+    ShoppingItem[]
+  >([])
+  // Named list items are session-only (not persisted in Firestore)
+  const [localShoppingItems, setLocalShoppingItems] = useState<ShoppingItem[]>(
+    [],
+  )
+  const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([])
+  const [recipes, setRecipes] = useState<Recipe[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
+
+  // Subscribe to user document
+  useEffect(() => {
+    if (!firebaseUser) {
+      setUserDoc(null)
+      setDataLoading(false)
+      return
+    }
+    const unsub = onSnapshot(doc(db, 'users', firebaseUser.uid), (snap) => {
+      if (snap.exists()) {
+        setUserDoc(snap.data() as User)
+      }
+    })
+    return unsub
+  }, [firebaseUser?.uid])
+
+  // Subscribe to groups / items / shopping / recipes when groupIds change
+  useEffect(() => {
+    const groupIds = userDoc?.groupIds ?? []
+    setDataLoading(true)
+
+    const unsubGroups = subscribeToGroups(groupIds, (groups) => {
+      setFirestoreGroups(groups)
+      // Initialize order on first load
+      setGroupOrder((prev) =>
+        prev.length === 0 ? groups.map((g) => g.id) : prev,
+      )
+      setDataLoading(false)
+    })
+
+    const unsubItems = subscribeToItems(groupIds, setFirestoreItems)
+    const unsubShopping = subscribeToShoppingItems(
+      groupIds,
+      setFirestoreShoppingItems,
+    )
+    const unsubRecipes = subscribeToRecipes(groupIds, setRecipes)
+
+    if (groupIds.length === 0) setDataLoading(false)
+
+    return () => {
+      unsubGroups()
+      unsubItems()
+      unsubShopping()
+      unsubRecipes()
+    }
+  }, [userDoc?.groupIds?.join(',')])
+
+  // Groups sorted by local order
+  const groups = useMemo(() => {
+    if (groupOrder.length === 0) return firestoreGroups
+    return [...firestoreGroups].sort(
+      (a, b) => groupOrder.indexOf(a.id) - groupOrder.indexOf(b.id),
+    )
+  }, [firestoreGroups, groupOrder])
+
+  const shoppingItems = useMemo(
+    () => [...firestoreShoppingItems, ...localShoppingItems],
+    [firestoreShoppingItems, localShoppingItems],
+  )
+
+  const loading = dataLoading
+
+  // ── Settings ────────────────────────────────────────────────────────────────
+
+  async function updateSettings(data: Partial<UserSettings>) {
+    if (!firebaseUser || !userDoc) return
+    await updateUserDoc(firebaseUser.uid, {
+      settings: { ...userDoc.settings, ...data },
+    })
+  }
+
+  // ── Items ────────────────────────────────────────────────────────────────────
+
+  async function addItem(item: Item) {
+    await fsAddItem(item)
+  }
+
+  async function updateItem(id: string, data: Partial<Omit<Item, 'id'>>) {
+    await fsUpdateItem(id, data)
+  }
+
+  async function deleteItem(id: string) {
+    await fsDeleteItem(id)
+  }
+
+  async function archiveItem(id: string) {
+    await fsUpdateItem(id, {
+      isArchived: true,
+      archivedAt: nowTimestamp(),
+    })
+  }
+
+  async function restoreItem(id: string) {
+    await fsUpdateItem(id, { isArchived: false, archivedAt: null })
+  }
+
+  // ── Groups ───────────────────────────────────────────────────────────────────
+
+  async function addGroup(name: string): Promise<string> {
+    if (!firebaseUser || !userDoc) throw new Error('Not authenticated')
+    const color = nextGroupColor(firestoreGroups.map((g) => g.color))
+    const groupId = await createGroup(firebaseUser.uid, name, color)
+    const newGroupIds = [...(userDoc.groupIds ?? []), groupId]
+    await updateUserDoc(firebaseUser.uid, { groupIds: newGroupIds })
+    setGroupOrder((prev) => [...prev, groupId])
+    return groupId
+  }
+
+  async function updateGroup(
+    id: string,
+    data: Partial<Pick<Group, 'name' | 'color'>>,
+  ) {
+    await fsUpdateGroup(id, data)
+  }
+
+  async function deleteGroup(id: string, moveToGroupId: string | null) {
+    if (!firebaseUser || !userDoc) return
+    const groupItemIds = firestoreItems
+      .filter((i) => i.groupId === id)
+      .map((i) => i.id)
+
+    if (moveToGroupId) {
+      await moveItemsToGroup(groupItemIds, moveToGroupId)
+    } else {
+      await deleteItemsBatch(groupItemIds)
+    }
+
+    await fsDeleteGroup(id)
+    const newGroupIds = userDoc.groupIds.filter((gid) => gid !== id)
+    await updateUserDoc(firebaseUser.uid, { groupIds: newGroupIds })
+    setGroupOrder((prev) => prev.filter((gid) => gid !== id))
+  }
+
+  function reorderGroups(newGroups: Group[]) {
+    setGroupOrder(newGroups.map((g) => g.id))
+  }
+
+  // ── Shopping items ───────────────────────────────────────────────────────────
+
+  async function addShoppingItem(item: ShoppingItem) {
+    if (item.groupId !== null) {
+      await fsAddShoppingItem(item)
+    } else {
+      // Named-list items are session-only
+      setLocalShoppingItems((prev) => [...prev, item])
+    }
+  }
+
+  async function updateShoppingItem(
+    id: string,
+    data: Partial<Omit<ShoppingItem, 'id'>>,
+  ) {
+    const isFirestore = firestoreShoppingItems.some((i) => i.id === id)
+    if (isFirestore) {
+      await fsUpdateShoppingItem(id, data)
+    } else {
+      setLocalShoppingItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, ...data } : i)),
+      )
+    }
+  }
+
+  async function deleteShoppingItem(id: string) {
+    const isFirestore = firestoreShoppingItems.some((i) => i.id === id)
+    if (isFirestore) {
+      await fsDeleteShoppingItem(id)
+    } else {
+      setLocalShoppingItems((prev) => prev.filter((i) => i.id !== id))
+    }
+  }
+
+  // ── Named shopping lists (session-only) ──────────────────────────────────────
+
+  function addShoppingList(name: string): ShoppingList {
+    const list: ShoppingList = { id: crypto.randomUUID(), name }
+    setShoppingLists((prev) => [...prev, list])
+    return list
+  }
+
+  function deleteShoppingList(id: string) {
+    setShoppingLists((prev) => prev.filter((l) => l.id !== id))
+    setLocalShoppingItems((prev) => prev.filter((i) => i.shoppingListId !== id))
+  }
+
+  // ── Recipes ──────────────────────────────────────────────────────────────────
+
+  async function addRecipe(recipe: Recipe) {
+    await fsAddRecipe(recipe)
+  }
+
+  async function updateRecipe(id: string, data: Partial<Omit<Recipe, 'id'>>) {
+    await fsUpdateRecipe(id, data)
+  }
+
+  async function deleteRecipe(id: string) {
+    await fsDeleteRecipe(id)
+  }
 
   return (
     <AppDataContext.Provider
       value={{
-        items,
-        setItems,
+        userDoc,
+        items: firestoreItems,
         groups,
-        setGroups,
         shoppingItems,
-        setShoppingItems,
         shoppingLists,
-        setShoppingLists,
         recipes,
-        setRecipes,
+        loading,
+        updateSettings,
+        addItem,
+        updateItem,
+        deleteItem,
+        archiveItem,
+        restoreItem,
+        addGroup,
+        updateGroup,
+        deleteGroup,
+        reorderGroups,
+        addShoppingItem,
+        updateShoppingItem,
+        deleteShoppingItem,
+        addShoppingList,
+        deleteShoppingList,
+        addRecipe,
+        updateRecipe,
+        deleteRecipe,
       }}
     >
       {children}
     </AppDataContext.Provider>
-  );
+  )
 }
 
 export function useAppData(): AppData {
-  const ctx = useContext(AppDataContext);
-  if (!ctx) throw new Error("useAppData must be used within AppDataProvider");
-  return ctx;
+  const ctx = useContext(AppDataContext)
+  if (!ctx) throw new Error('useAppData must be used within AppDataProvider')
+  return ctx
 }
