@@ -1,49 +1,49 @@
-import { useState } from "react";
-import type { Item, QuantityUnit } from "../types";
-import type { Group } from "../types";
-import { makeTimestamp } from "../data/mockTimestamp";
+import { useState } from 'react'
+import type { Item, QuantityUnit } from '../types'
+import type { Group } from '../types'
+import { nowTimestamp, dateStringToTimestamp } from '../utils/timestamp'
 
 const UNITS: QuantityUnit[] = [
-  "kg",
-  "g",
-  "L",
-  "mL",
-  "bottle",
-  "pack",
-  "box",
-  "can",
-];
+  'kg',
+  'g',
+  'L',
+  'mL',
+  'bottle',
+  'pack',
+  'box',
+  'can',
+]
 const COLOR_OPTIONS = [
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#3b82f6",
-  "#a855f7",
-  "#ec4899",
-];
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#3b82f6',
+  '#a855f7',
+  '#ec4899',
+]
 const CATEGORY_OPTIONS = [
-  "food",
-  "drink",
-  "dairy",
-  "dry-goods",
-  "condiment",
-  "snack",
-  "cleaning",
-];
+  'food',
+  'drink',
+  'dairy',
+  'dry-goods',
+  'condiment',
+  'snack',
+  'cleaning',
+]
 
 interface EditItemModalProps {
-  item: Item;
-  groups: Group[];
-  onSave: (updated: Item) => void;
-  onDelete: (id: string) => void;
-  onClose: () => void;
+  item: Item
+  groups: Group[]
+  onSave: (updated: Item) => void
+  onDelete: (id: string) => void
+  onClose: () => void
 }
 
 function toDateInputValue(ts: { toDate: () => Date } | null): string {
-  if (!ts) return "";
-  const d = ts.toDate();
-  return d.toISOString().split("T")[0];
+  if (!ts) return ''
+  const d = ts.toDate()
+  return d.toISOString().split('T')[0]
 }
 
 export default function EditItemModal({
@@ -53,56 +53,56 @@ export default function EditItemModal({
   onDelete,
   onClose,
 }: EditItemModalProps) {
-  const [selectedGroupId, setSelectedGroupId] = useState(item.groupId);
-  const [name, setName] = useState(item.name);
-  const [categories, setCategories] = useState<string[]>(item.categories);
-  const [customCategoryInput, setCustomCategoryInput] = useState("");
-  const [colorTag, setColorTag] = useState<string | null>(item.colorTag);
-  const [notes, setNotes] = useState(item.notes ?? "");
-  const [quantity, setQuantity] = useState(item.quantity);
+  const [selectedGroupId, setSelectedGroupId] = useState(item.groupId)
+  const [name, setName] = useState(item.name)
+  const [categories, setCategories] = useState<string[]>(item.categories)
+  const [customCategoryInput, setCustomCategoryInput] = useState('')
+  const [colorTag, setColorTag] = useState<string | null>(item.colorTag)
+  const [notes, setNotes] = useState(item.notes ?? '')
+  const [quantity, setQuantity] = useState(item.quantity)
   const initialCustomUnit = UNITS.includes(item.quantity.unit)
     ? null
-    : item.quantity.unit;
-  const [isCustomUnit, setIsCustomUnit] = useState(false);
-  const [customUnitInput, setCustomUnitInput] = useState("");
+    : item.quantity.unit
+  const [isCustomUnit, setIsCustomUnit] = useState(false)
+  const [customUnitInput, setCustomUnitInput] = useState('')
   const [confirmedCustomUnit, setConfirmedCustomUnit] = useState<string | null>(
     initialCustomUnit,
-  );
+  )
   const [expiresAt, setExpiresAt] = useState(
     toDateInputValue(item.dates.expiresAt),
-  );
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  )
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   function toggleCategory(cat: string) {
     setCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
-    );
+    )
   }
 
   function addCustomCategory() {
-    const val = customCategoryInput.trim().toLowerCase();
+    const val = customCategoryInput.trim().toLowerCase()
     if (val && !categories.includes(val))
-      setCategories((prev) => [...prev, val]);
-    setCustomCategoryInput("");
+      setCategories((prev) => [...prev, val])
+    setCustomCategoryInput('')
   }
 
   function removeCategory(cat: string) {
-    setCategories((prev) => prev.filter((c) => c !== cat));
+    setCategories((prev) => prev.filter((c) => c !== cat))
   }
 
   function confirmCustomUnit() {
-    const val = customUnitInput.trim();
+    const val = customUnitInput.trim()
     if (val) {
-      setConfirmedCustomUnit(val);
-      setQuantity((q) => ({ ...q, unit: val }));
-      setCustomUnitInput("");
-      setIsCustomUnit(false);
+      setConfirmedCustomUnit(val)
+      setQuantity((q) => ({ ...q, unit: val }))
+      setCustomUnitInput('')
+      setIsCustomUnit(false)
     }
   }
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!name.trim()) return;
+    e.preventDefault()
+    if (!name.trim()) return
 
     const updated: Item = {
       ...item,
@@ -114,15 +114,13 @@ export default function EditItemModal({
       quantity,
       dates: {
         ...item.dates,
-        expiresAt: expiresAt
-          ? (makeTimestamp(new Date(expiresAt)) as never)
-          : null,
+        expiresAt: expiresAt ? dateStringToTimestamp(expiresAt) : null,
       },
-      updatedAt: makeTimestamp(new Date()) as never,
-    };
+      updatedAt: nowTimestamp(),
+    }
 
-    onSave(updated);
-    onClose();
+    onSave(updated)
+    onClose()
   }
 
   return (
@@ -158,8 +156,8 @@ export default function EditItemModal({
                     onClick={() => setSelectedGroupId(g.id)}
                     className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                       selectedGroupId === g.id
-                        ? "bg-green-500 text-white border-green-500"
-                        : "bg-white text-gray-500 border-gray-200"
+                        ? 'bg-green-500 text-white border-green-500'
+                        : 'bg-white text-gray-500 border-gray-200'
                     }`}
                   >
                     {g.name}
@@ -201,19 +199,19 @@ export default function EditItemModal({
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
               />
               <select
-                value={isCustomUnit ? "__custom__" : quantity.unit}
+                value={isCustomUnit ? '__custom__' : quantity.unit}
                 onChange={(e) => {
-                  if (e.target.value === "__custom__") {
-                    setIsCustomUnit(true);
+                  if (e.target.value === '__custom__') {
+                    setIsCustomUnit(true)
                   } else {
-                    setIsCustomUnit(false);
-                    setCustomUnitInput("");
+                    setIsCustomUnit(false)
+                    setCustomUnitInput('')
                     if (e.target.value !== confirmedCustomUnit)
-                      setConfirmedCustomUnit(null);
+                      setConfirmedCustomUnit(null)
                     setQuantity((q) => ({
                       ...q,
                       unit: e.target.value as QuantityUnit,
-                    }));
+                    }))
                   }
                 }}
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -238,7 +236,7 @@ export default function EditItemModal({
                   value={customUnitInput}
                   onChange={(e) => setCustomUnitInput(e.target.value)}
                   onKeyDown={(e) =>
-                    e.key === "Enter" &&
+                    e.key === 'Enter' &&
                     (e.preventDefault(), confirmCustomUnit())
                   }
                   placeholder="e.g. jar, tray…"
@@ -283,8 +281,8 @@ export default function EditItemModal({
                   onClick={() => toggleCategory(cat)}
                   className={`text-xs rounded-full px-3 py-1 border transition-colors ${
                     categories.includes(cat)
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-white text-gray-500 border-gray-200 hover:border-green-400"
+                      ? 'bg-green-500 text-white border-green-500'
+                      : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
                   }`}
                 >
                   {cat}
@@ -314,7 +312,7 @@ export default function EditItemModal({
                 value={customCategoryInput}
                 onChange={(e) => setCustomCategoryInput(e.target.value)}
                 onKeyDown={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), addCustomCategory())
+                  e.key === 'Enter' && (e.preventDefault(), addCustomCategory())
                 }
                 placeholder="Add custom category…"
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -344,8 +342,8 @@ export default function EditItemModal({
                   className="w-7 h-7 rounded-full transition-transform hover:scale-110"
                   style={{
                     backgroundColor: c,
-                    outline: colorTag === c ? `2px solid ${c}` : "none",
-                    outlineOffset: "2px",
+                    outline: colorTag === c ? `2px solid ${c}` : 'none',
+                    outlineOffset: '2px',
                   }}
                 />
               ))}
@@ -379,8 +377,8 @@ export default function EditItemModal({
               <button
                 type="button"
                 onClick={() => {
-                  onDelete(item.id);
-                  onClose();
+                  onDelete(item.id)
+                  onClose()
                 }}
                 className="flex-1 bg-red-500 text-white rounded-xl py-3 font-medium text-sm hover:bg-red-600 transition-colors"
               >
@@ -406,5 +404,5 @@ export default function EditItemModal({
         </form>
       </div>
     </div>
-  );
+  )
 }
