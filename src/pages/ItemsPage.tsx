@@ -980,7 +980,7 @@ export default function ItemsPage() {
               </span>
             </div>
           )}
-        <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto pb-24">
+        <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto">
           {isArchiveView ? (
             archivedItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
@@ -1101,7 +1101,7 @@ export default function ItemsPage() {
         </div>
       )}
       {desktopView === 'columns' && !isArchiveView && (
-        <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 pb-24 items-start min-h-[calc(100vh-8rem)]">
+        <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 items-start min-h-[calc(100vh-8rem)]">
           {itemsByGroup.map(({ group, items: groupItems }, i) => (
             <GroupColumn
               key={group.id}
@@ -1122,7 +1122,7 @@ export default function ItemsPage() {
         </div>
       )}
       {desktopView === 'columns' && isArchiveView && (
-        <div className="hidden lg:block px-6 py-6 pb-24">
+        <div className="hidden lg:block px-6 py-6">
           {archivedItems.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">Archive is empty.</p>
           ) : (
@@ -1206,7 +1206,7 @@ export default function ItemsPage() {
                 </span>
               </div>
             )}
-          <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto pb-24">
+          <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto">
             {isArchiveView ? (
               archivedItems.length === 0 ? (
                 <p className="text-center text-gray-400 mt-12">

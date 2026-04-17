@@ -32,14 +32,19 @@ function AppShell() {
   return (
     <AppDataProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<ItemsPage />} />
-          <Route path="/shopping" element={<ShoppingListPage />} />
-          <Route path="/recipes" element={<RecipesPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/join" element={<JoinPage />} />
-        </Routes>
-        <ConditionalBottomNav />
+        {/* Full-screen flex column: content scrolls, nav sits below it — no fixed overlap */}
+        <div className="flex flex-col h-dvh">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <Routes>
+              <Route path="/" element={<ItemsPage />} />
+              <Route path="/shopping" element={<ShoppingListPage />} />
+              <Route path="/recipes" element={<RecipesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/join" element={<JoinPage />} />
+            </Routes>
+          </div>
+          <ConditionalBottomNav />
+        </div>
       </BrowserRouter>
     </AppDataProvider>
   )

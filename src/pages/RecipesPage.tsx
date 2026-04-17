@@ -1018,7 +1018,7 @@ export default function RecipesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-xl font-semibold text-gray-900">Recipes</h1>
