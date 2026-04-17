@@ -1101,8 +1101,8 @@ export default function ItemsPage() {
           </div>
         </div>
       )}
-      {desktopView === 'columns' && !isArchiveView && (
-        <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 items-start min-h-[calc(100vh-8rem)]">
+      {desktopView === 'columns' && (
+        <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 pb-24 items-start min-h-[calc(100vh-8rem)]">
           {itemsByGroup.map(({ group, items: groupItems }, i) => (
             <GroupColumn
               key={group.id}
@@ -1123,7 +1123,7 @@ export default function ItemsPage() {
         </div>
       )}
       {desktopView === 'columns' && isArchiveView && (
-        <div className="hidden lg:block px-6 py-6">
+        <div className="hidden lg:block px-6 py-6 pb-24">
           {archivedItems.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">Archive is empty.</p>
           ) : (
