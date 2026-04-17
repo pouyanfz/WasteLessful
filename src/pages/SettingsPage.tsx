@@ -681,7 +681,7 @@ function SupportSection({ onBack }: { onBack: () => void }) {
       </Card>
 
       <div className="flex flex-col items-center gap-1 py-4">
-        <p className="text-sm font-semibold text-gray-400">WasteLess</p>
+        <p className="text-sm font-semibold text-gray-400">Wastelessful</p>
         <p className="text-xs text-gray-400">Version 0.1.0 · Phase 3</p>
       </div>
     </PageShell>

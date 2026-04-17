@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "wasteless-ebb06"
-  }
+  },
+  "targets": {
+    "wasteless-ebb06": {
+      "hosting": {
+        "production": [
+          "wastelessful"
+        ],
+        "dev": [
+          "wastelessful-dev"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
