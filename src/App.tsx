@@ -1,11 +1,18 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { AppDataProvider } from './context/AppDataContext'
 import ItemsPage from './pages/ItemsPage'
 import ShoppingListPage from './pages/ShoppingListPage'
 import RecipesPage from './pages/RecipesPage'
 import SettingsPage from './pages/SettingsPage'
+import JoinPage from './pages/JoinPage'
 import BottomNav from './components/BottomNav'
+
+function ConditionalBottomNav() {
+  const { pathname } = useLocation()
+  if (pathname === '/join') return null
+  return <BottomNav />
+}
 
 function AppShell() {
   const { loading } = useAuth()
@@ -29,8 +36,9 @@ function AppShell() {
           <Route path="/shopping" element={<ShoppingListPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/join" element={<JoinPage />} />
         </Routes>
-        <BottomNav />
+        <ConditionalBottomNav />
       </BrowserRouter>
     </AppDataProvider>
   )

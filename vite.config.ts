@@ -28,8 +28,8 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'Wasteless',
-        short_name: 'Wasteless',
+        name: 'Wastelessful',
+        short_name: 'Wastelessful',
         description: 'Track food and household items to avoid waste',
         theme_color: '#16a34a',
         background_color: '#ffffff',

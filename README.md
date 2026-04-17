@@ -1,6 +1,6 @@
-# Wasteless
+# Wastelessful
 
-How many times have you thrown out food you forgot you had? Wasteless helps you track items across locations, monitor expiry dates, manage quantities, and build shopping lists so nothing goes to waste.
+How many times have you thrown out food you forgot you had? Wastelessful helps you track items across locations, monitor expiry dates, manage quantities, and build shopping lists so nothing goes to waste.
 
 ## Features
 
@@ -30,8 +30,8 @@ How many times have you thrown out food you forgot you had? Wasteless helps you 
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/wasteless.git
-cd wasteless
+git clone https://github.com/your-username/wastelessful.git
+cd wastelessful
 npm install
 ```
 

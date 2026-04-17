@@ -14,6 +14,10 @@ import {
   updateGroup as fsUpdateGroup,
   deleteGroup as fsDeleteGroup,
   subscribeToGroups,
+  refreshInviteCode as fsRefreshInviteCode,
+  getGroupByInviteCode,
+  joinGroupFirestore,
+  removeMemberFirestore,
 } from '../firebase/groups'
 import {
   addItem as fsAddItem,
@@ -35,7 +39,12 @@ import {
   deleteRecipe as fsDeleteRecipe,
   subscribeToRecipes,
 } from '../firebase/recipes'
-import { updateUserDoc } from '../firebase/users'
+import {
+  updateUserDoc,
+  addGroupToUserDoc,
+  removeGroupFromUserDoc,
+  setGroupNickname as fsSetGroupNickname,
+} from '../firebase/users'
 import { nextGroupColor } from '../data/groupColors'
 import type {
   Item,
@@ -47,6 +56,12 @@ import type {
   UserSettings,
 } from '../types'
 import { nowTimestamp } from '../utils/timestamp'
+
+export type JoinResult =
+  | { status: 'joined'; groupId: string; groupName: string }
+  | { status: 'already-member'; groupId: string; groupName: string }
+  | { status: 'invalid' }
+  | { status: 'expired'; groupName: string }
 
 interface AppData {
   userDoc: User | null
@@ -83,6 +98,12 @@ interface AppData {
     data: Partial<Omit<ShoppingItem, 'id'>>,
   ) => Promise<void>
   deleteShoppingItem: (id: string) => Promise<void>
+
+  // Invite / members
+  refreshInviteCode: (groupId: string) => Promise<string>
+  joinGroupByCode: (code: string) => Promise<JoinResult>
+  removeMember: (groupId: string, memberId: string) => Promise<void>
+  setGroupNickname: (groupId: string, nickname: string) => Promise<void>
 
   // Named shopping lists (local/session only)
   addShoppingList: (name: string) => ShoppingList
@@ -209,6 +230,48 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     await fsUpdateItem(id, { isArchived: false, archivedAt: null })
   }
 
+  // ── Invite / members ────────────────────────────────────────────────────────
+
+  async function refreshInviteCode(groupId: string): Promise<string> {
+    return fsRefreshInviteCode(groupId)
+  }
+
+  async function joinGroupByCode(code: string): Promise<JoinResult> {
+    if (!firebaseUser) return { status: 'invalid' }
+    const group = await getGroupByInviteCode(code.trim().toUpperCase())
+    if (!group) return { status: 'invalid' }
+    const expiry = group.inviteCodeExpiresAt
+    if (expiry && expiry.toDate() < new Date()) {
+      return { status: 'expired', groupName: group.name }
+    }
+    if (group.memberIds.includes(firebaseUser.uid)) {
+      return {
+        status: 'already-member',
+        groupId: group.id,
+        groupName: group.name,
+      }
+    }
+    await joinGroupFirestore(group.id, firebaseUser.uid)
+    await addGroupToUserDoc(firebaseUser.uid, group.id)
+    return { status: 'joined', groupId: group.id, groupName: group.name }
+  }
+
+  async function removeMember(
+    groupId: string,
+    memberId: string,
+  ): Promise<void> {
+    await removeMemberFirestore(groupId, memberId)
+    await removeGroupFromUserDoc(memberId, groupId)
+  }
+
+  async function setGroupNickname(
+    groupId: string,
+    nickname: string,
+  ): Promise<void> {
+    if (!firebaseUser) return
+    await fsSetGroupNickname(firebaseUser.uid, groupId, nickname)
+  }
+
   // ── Groups ───────────────────────────────────────────────────────────────────
 
   async function addGroup(name: string): Promise<string> {
@@ -327,6 +390,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
         deleteItem,
         archiveItem,
         restoreItem,
+        refreshInviteCode,
+        joinGroupByCode,
+        removeMember,
+        setGroupNickname,
         addGroup,
         updateGroup,
         deleteGroup,

@@ -1,15 +1,19 @@
 import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { Group } from '../types'
 import { GROUP_COLORS } from '../data/groupColors'
 
 interface GroupTabsProps {
   groups: Group[]
   activeGroupId: string | null
+  groupNicknames?: Record<string, string>
   onChange: (groupId: string | null) => void
   onAddGroup: (name: string) => void
   onReorder?: (groups: Group[]) => void
   onDeleteGroup?: (groupId: string, moveToGroupId: string | null) => void
-  onUpdateGroupColor?: (groupId: string, color: string) => void
+  onUpdateGroup?: (groupId: string, data: { color?: string }) => void
+  onSetNickname?: (groupId: string, nickname: string) => void
+  onInvite?: (group: Group) => void
   archivedCount?: number
 }
 
@@ -18,22 +22,29 @@ type PendingDelete = { groupId: string; groupName: string } | null
 export default function GroupTabs({
   groups,
   activeGroupId,
+  groupNicknames = {},
   onChange,
   onAddGroup,
   onReorder,
   onDeleteGroup,
-  onUpdateGroupColor,
+  onUpdateGroup,
+  onSetNickname,
+  onInvite,
   archivedCount,
 }: GroupTabsProps) {
   const [adding, setAdding] = useState(false)
   const [input, setInput] = useState('')
   const [manageOpen, setManageOpen] = useState(false)
-  const [editingColorId, setEditingColorId] = useState<string | null>(null)
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null)
+  const [editName, setEditName] = useState('')
+  const [editColor, setEditColor] = useState('')
   const [pendingDelete, setPendingDelete] = useState<PendingDelete>(null)
   const [deleteMode, setDeleteMode] = useState<'move' | 'delete'>('move')
   const [moveToId, setMoveToId] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const editNameRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   function startAdding() {
     setAdding(true)
@@ -67,7 +78,33 @@ export default function GroupTabs({
     onReorder?.(next)
   }
 
+  function displayName(g: Group) {
+    return groupNicknames[g.id] ?? g.name
+  }
+
+  function startEditing(g: Group) {
+    setEditingGroupId(g.id)
+    setEditName(groupNicknames[g.id] ?? '')
+    setEditColor(g.color ?? '')
+    setTimeout(() => editNameRef.current?.focus(), 0)
+  }
+
+  function cancelEditing() {
+    setEditingGroupId(null)
+    setEditName('')
+    setEditColor('')
+  }
+
+  function saveEditing(g: Group) {
+    // Nickname is always saved (empty string = clear nickname, fall back to group's real name)
+    onSetNickname?.(g.id, editName)
+    if (editColor !== (g.color ?? ''))
+      onUpdateGroup?.(g.id, { color: editColor })
+    cancelEditing()
+  }
+
   function initiateDelete(group: Group) {
+    cancelEditing()
     const others = groups.filter((g) => g.id !== group.id)
     setPendingDelete({ groupId: group.id, groupName: group.name })
     setMoveToId(others[0]?.id ?? '')
@@ -133,6 +170,7 @@ export default function GroupTabs({
               {/* Group tabs */}
               {groups.map((g) => {
                 const isActive = activeGroupId === g.id
+                const isShared = g.memberIds.length > 1
                 return (
                   <button
                     key={g.id}
@@ -156,7 +194,25 @@ export default function GroupTabs({
                         style={{ backgroundColor: g.color }}
                       />
                     )}
-                    {g.name}
+                    {displayName(g)}
+                    {isShared && (
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="opacity-50 shrink-0"
+                      >
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                    )}
                   </button>
                 )
               })}
@@ -249,7 +305,10 @@ export default function GroupTabs({
       {manageOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-          onClick={() => setManageOpen(false)}
+          onClick={() => {
+            cancelEditing()
+            setManageOpen(false)
+          }}
         >
           <div
             className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden"
@@ -260,7 +319,10 @@ export default function GroupTabs({
                 Manage Groups
               </h2>
               <button
-                onClick={() => setManageOpen(false)}
+                onClick={() => {
+                  cancelEditing()
+                  setManageOpen(false)
+                }}
                 className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
                 <svg
@@ -284,131 +346,246 @@ export default function GroupTabs({
               </p>
             ) : (
               <ul className="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto">
-                {groups.map((g, i) => (
-                  <li key={g.id} className="px-5 py-3 flex flex-col gap-2">
-                    <div className="flex items-center gap-3">
-                      {/* Up / down reorder */}
-                      <div className="flex flex-col gap-0.5">
-                        <button
-                          onClick={() => move(i, -1)}
-                          disabled={i === 0}
-                          className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
-                          aria-label="Move up"
-                        >
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path d="M12 4l8 8H4z" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={() => move(i, 1)}
-                          disabled={i === groups.length - 1}
-                          className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
-                          aria-label="Move down"
-                        >
-                          <svg
-                            width="10"
-                            height="10"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                          >
-                            <path d="M12 20l-8-8h16z" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Color dot — tap to change */}
-                      <button
-                        onClick={() =>
-                          setEditingColorId(
-                            editingColorId === g.id ? null : g.id,
-                          )
-                        }
-                        className="w-5 h-5 rounded-full shrink-0 transition-all"
-                        style={{
-                          backgroundColor: g.color || '#e5e7eb',
-                          boxShadow:
-                            editingColorId === g.id
-                              ? '0 0 0 2px white, 0 0 0 3.5px #9ca3af'
-                              : 'none',
-                        }}
-                        title="Change color"
-                      />
-
-                      <span className="flex-1 text-sm font-medium text-gray-700 truncate">
-                        {g.name}
-                      </span>
-
-                      <button
-                        onClick={() => initiateDelete(g)}
-                        className="text-sm text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition-colors"
-                      >
-                        Delete
-                      </button>
-                    </div>
-
-                    {/* Inline color picker */}
-                    {editingColorId === g.id && (
-                      <div className="flex gap-2 flex-wrap pl-14">
-                        {/* No color swatch */}
-                        <button
-                          onClick={() => {
-                            onUpdateGroupColor?.(g.id, '')
-                            setEditingColorId(null)
-                          }}
-                          className="w-6 h-6 rounded-full border border-gray-300 bg-white transition-transform hover:scale-110 relative overflow-hidden"
-                          title="No color"
-                          style={
-                            g.color === ''
-                              ? {
-                                  boxShadow:
-                                    '0 0 0 2px white, 0 0 0 3.5px #9ca3af',
-                                }
-                              : {}
-                          }
-                        >
-                          <span
-                            className="absolute inset-0"
-                            style={{
-                              background:
-                                'linear-gradient(to bottom right, transparent calc(50% - 0.5px), #d1d5db calc(50% - 0.5px), #d1d5db calc(50% + 0.5px), transparent calc(50% + 0.5px))',
-                            }}
-                          />
-                        </button>
-                        {GROUP_COLORS.map((c) => (
+                {groups.map((g, i) => {
+                  const isEditing = editingGroupId === g.id
+                  return (
+                    <li key={g.id} className="px-5 py-3 flex flex-col gap-2">
+                      <div className="flex items-center gap-3">
+                        {/* Up / down reorder */}
+                        <div className="flex flex-col gap-0.5">
                           <button
-                            key={c}
+                            onClick={() => move(i, -1)}
+                            disabled={i === 0}
+                            className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
+                            aria-label="Move up"
+                          >
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path d="M12 4l8 8H4z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => move(i, 1)}
+                            disabled={i === groups.length - 1}
+                            className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
+                            aria-label="Move down"
+                          >
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path d="M12 20l-8-8h16z" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Color dot — decorative only */}
+                        <span
+                          className="w-5 h-5 rounded-full shrink-0"
+                          style={{ backgroundColor: g.color || '#e5e7eb' }}
+                        />
+
+                        <span className="flex-1 text-sm font-medium text-gray-700 truncate flex items-center gap-1.5">
+                          {displayName(g)}
+                          {g.memberIds.length > 1 && (
+                            <span className="text-xs" title="Shared group">
+                              👥
+                            </span>
+                          )}
+                        </span>
+
+                        {/* Edit (pencil) button */}
+                        <button
+                          onClick={() =>
+                            isEditing ? cancelEditing() : startEditing(g)
+                          }
+                          className={`p-1.5 rounded transition-colors ${
+                            isEditing
+                              ? 'text-green-600 bg-green-50'
+                              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                          }`}
+                          title="Edit name and color"
+                        >
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                          </svg>
+                        </button>
+
+                        {/* Invite button */}
+                        {onInvite && (
+                          <button
                             onClick={() => {
-                              onUpdateGroupColor?.(g.id, c)
-                              setEditingColorId(null)
+                              cancelEditing()
+                              setManageOpen(false)
+                              onInvite(g)
                             }}
-                            className="w-6 h-6 rounded-full transition-transform hover:scale-110"
-                            style={{
-                              backgroundColor: c,
-                              outline:
-                                g.color === c ? `2px solid ${c}` : 'none',
-                              outlineOffset: '2px',
-                            }}
-                            title={c}
-                          />
-                        ))}
+                            className="p-1.5 rounded text-green-500 hover:text-green-700 hover:bg-green-50 transition-colors"
+                            title="Invite people"
+                          >
+                            <svg
+                              width="15"
+                              height="15"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                              <circle cx="8.5" cy="7" r="4" />
+                              <line x1="20" y1="8" x2="20" y2="14" />
+                              <line x1="23" y1="11" x2="17" y2="11" />
+                            </svg>
+                          </button>
+                        )}
+
+                        <button
+                          onClick={() => initiateDelete(g)}
+                          className="text-sm text-red-400 hover:text-red-600 px-2 py-1 rounded hover:bg-red-50 transition-colors"
+                        >
+                          Delete
+                        </button>
                       </div>
-                    )}
-                  </li>
-                ))}
+
+                      {/* Inline edit panel */}
+                      {isEditing && (
+                        <div className="flex flex-col gap-3 pl-9 pt-1">
+                          {/* Nickname input */}
+                          <div className="flex flex-col gap-1">
+                            <label className="text-xs text-gray-500">
+                              Your nickname
+                              <span className="text-gray-400 font-normal">
+                                {' '}
+                                (leave blank to use "{g.name}")
+                              </span>
+                            </label>
+                            <input
+                              ref={editNameRef}
+                              value={editName}
+                              onChange={(e) => setEditName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') saveEditing(g)
+                                if (e.key === 'Escape') cancelEditing()
+                              }}
+                              placeholder={g.name}
+                              className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                            />
+                          </div>
+
+                          {/* Color swatches */}
+                          <div className="flex gap-2 flex-wrap">
+                            {/* No color */}
+                            <button
+                              onClick={() => setEditColor('')}
+                              className="w-6 h-6 rounded-full border border-gray-300 bg-white transition-transform hover:scale-110 relative overflow-hidden shrink-0"
+                              title="No color"
+                              style={
+                                editColor === ''
+                                  ? {
+                                      boxShadow:
+                                        '0 0 0 2px white, 0 0 0 3.5px #9ca3af',
+                                    }
+                                  : {}
+                              }
+                            >
+                              <span
+                                className="absolute inset-0"
+                                style={{
+                                  background:
+                                    'linear-gradient(to bottom right, transparent calc(50% - 0.5px), #d1d5db calc(50% - 0.5px), #d1d5db calc(50% + 0.5px), transparent calc(50% + 0.5px))',
+                                }}
+                              />
+                            </button>
+                            {GROUP_COLORS.map((c) => (
+                              <button
+                                key={c}
+                                onClick={() => setEditColor(c)}
+                                className="w-6 h-6 rounded-full transition-transform hover:scale-110 shrink-0"
+                                style={{
+                                  backgroundColor: c,
+                                  outline:
+                                    editColor === c ? `2px solid ${c}` : 'none',
+                                  outlineOffset: '2px',
+                                }}
+                                title={c}
+                              />
+                            ))}
+                          </div>
+
+                          {/* Save / Cancel */}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => saveEditing(g)}
+                              className="flex-1 py-1.5 rounded-lg bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              className="flex-1 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </li>
+                  )
+                })}
               </ul>
             )}
 
-            <div className="px-5 py-4 border-t border-gray-100">
+            <div className="px-5 py-4 border-t border-gray-100 flex flex-col gap-2">
               <button
-                onClick={() => setManageOpen(false)}
+                onClick={() => {
+                  cancelEditing()
+                  setManageOpen(false)
+                }}
                 className="w-full py-2.5 rounded-xl bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors"
               >
                 Done
+              </button>
+              <button
+                onClick={() => {
+                  cancelEditing()
+                  setManageOpen(false)
+                  navigate('/join')
+                }}
+                className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="8.5" cy="7" r="4" />
+                  <line x1="20" y1="8" x2="20" y2="14" />
+                  <line x1="23" y1="11" x2="17" y2="11" />
+                </svg>
+                Join a group
               </button>
             </div>
           </div>
