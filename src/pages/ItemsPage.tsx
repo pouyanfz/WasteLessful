@@ -10,6 +10,7 @@ import ItemCard from '../components/ItemCard'
 import AddItemModal from '../components/AddItemModal'
 import EditItemModal from '../components/EditItemModal'
 import GroupTabs from '../components/GroupTabs'
+import InviteModal from '../components/InviteModal'
 import FilterSheet, {
   applyFilters,
   activeFilterCount,
@@ -440,8 +441,12 @@ export default function ItemsPage() {
     deleteGroup,
     reorderGroups,
     addShoppingItem,
+    refreshInviteCode,
+    removeMember,
+    setGroupNickname,
     userDoc,
   } = useAppData()
+  const [inviteGroup, setInviteGroup] = useState<Group | null>(null)
   const [activeGroupId, setActiveGroupId] = useState<string | null>(
     loadActiveGroupId,
   )
@@ -527,8 +532,11 @@ export default function ItemsPage() {
     reorderGroups(next)
   }
 
-  async function handleUpdateGroupColor(groupId: string, color: string) {
-    await updateGroup(groupId, { color })
+  async function handleUpdateGroup(
+    groupId: string,
+    data: { name?: string; color?: string },
+  ) {
+    await updateGroup(groupId, data)
   }
 
   async function handleDeleteGroup(
@@ -899,7 +907,10 @@ export default function ItemsPage() {
           onAddGroup={handleAddGroup}
           onReorder={reorderGroups}
           onDeleteGroup={handleDeleteGroup}
-          onUpdateGroupColor={handleUpdateGroupColor}
+          groupNicknames={userDoc?.groupNicknames ?? {}}
+          onUpdateGroup={handleUpdateGroup}
+          onSetNickname={setGroupNickname}
+          onInvite={setInviteGroup}
           archivedCount={archivedItems.length}
         />
         {!isArchiveView && (
@@ -1027,7 +1038,8 @@ export default function ItemsPage() {
             onAddGroup={handleAddGroup}
             onReorder={reorderGroups}
             onDeleteGroup={handleDeleteGroup}
-            onUpdateGroupColor={handleUpdateGroupColor}
+            onUpdateGroup={handleUpdateGroup}
+            onInvite={setInviteGroup}
             archivedCount={archivedItems.length}
           />
           {!isArchiveView && (
@@ -1166,6 +1178,16 @@ export default function ItemsPage() {
           shoppingLists={shoppingLists}
           onAdd={handleAutoAdd}
           onDismiss={() => setAutoAddPrompt(null)}
+        />
+      )}
+
+      {inviteGroup && (
+        <InviteModal
+          group={inviteGroup}
+          currentUserId={firebaseUser?.uid ?? ''}
+          onRefreshCode={() => refreshInviteCode(inviteGroup.id)}
+          onRemoveMember={(memberId) => removeMember(inviteGroup.id, memberId)}
+          onClose={() => setInviteGroup(null)}
         />
       )}
     </div>
