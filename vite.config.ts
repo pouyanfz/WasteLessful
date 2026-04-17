@@ -26,7 +26,7 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
       },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['appIcon.png', 'appIcon-192.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Wastelessful',
         short_name: 'Wastelessful',
@@ -35,8 +35,9 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         icons: [
-          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+          { src: 'appIcon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'appIcon.png',     sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'appIcon.png',     sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
     }),
