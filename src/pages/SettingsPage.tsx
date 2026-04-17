@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { version } from '../../package.json'
 import { useNavigate } from 'react-router-dom'
 import type { UserSettings } from '../types'
 import { useAuth } from '../context/AuthContext'
@@ -682,7 +683,7 @@ function SupportSection({ onBack }: { onBack: () => void }) {
 
       <div className="flex flex-col items-center gap-1 py-4">
         <p className="text-sm font-semibold text-gray-400">Wastelessful</p>
-        <p className="text-xs text-gray-400">Version 0.1.0 · Phase 3</p>
+        <p className="text-xs text-gray-400">Version {version}</p>
       </div>
     </PageShell>
   )
