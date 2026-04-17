@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import addToListImg from '../assets/addToList.png'
 import { useNavigate, useLocation } from 'react-router-dom'
 import type { Item, Group, ShoppingItem } from '../types'
 import { useAppData } from '../context/AppDataContext'
@@ -203,9 +204,9 @@ function GroupColumn({
 
         <button
           onClick={onAddClick}
-          className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xl leading-none shadow-sm hover:bg-green-600 transition-colors shrink-0"
+          className="w-8 h-8 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-sm hover:bg-blue-50 transition-colors shrink-0"
         >
-          +
+          <img src={addToListImg} alt="Add item" className="w-4 h-4 object-contain" />
         </button>
       </div>
       {/* Items */}
@@ -797,9 +798,9 @@ export default function ItemsPage() {
               </button>
               <button
                 onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-                className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
+                className="w-10 h-10 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow"
               >
-                +
+                <img src={addToListImg} alt="Add item" className="w-6 h-6 object-contain" />
               </button>
             </>
           )}
@@ -859,9 +860,9 @@ export default function ItemsPage() {
           {desktopView === 'single' && !isArchiveView && (
             <button
               onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-              className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
+              className="w-10 h-10 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow"
             >
-              +
+              <img src={addToListImg} alt="Add item" className="w-6 h-6 object-contain" />
             </button>
           )}
 
