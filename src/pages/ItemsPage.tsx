@@ -1129,14 +1129,13 @@ export default function ItemsPage() {
           ) : (
             <div className="flex flex-col gap-3 max-w-xl">
               {archivedItems.map((item) => (
-                <ItemCard
+                <ArchivedItemCard
                   key={item.id}
                   item={item}
-                  group={groups.find((g) => g.id === item.groupId)}
-                  showGroupBadge
-                  onClick={() => setEditingItem(item)}
-                  onAdjust={(d) => handleAdjust(item.id, d)}
-                  onRestore={() => restoreItem(item.id)}
+                  groupName={
+                    groups.find((g) => g.id === item.groupId)?.name ?? 'Unknown group'
+                  }
+                  onRestore={() => handleRestore(item.id)}
                   onDelete={() => handlePermanentDelete(item.id)}
                 />
               ))}
