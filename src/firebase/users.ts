@@ -81,20 +81,6 @@ export async function deleteUserDoc(uid: string) {
   await deleteDoc(doc(db, 'users', uid))
 }
 
-export async function getMemberProfiles(
-  uids: string[],
-): Promise<MemberProfile[]> {
-  if (uids.length === 0) return []
-  const snap = await getDocs(
-    query(collection(db, 'users'), where(documentId(), 'in', uids)),
-  )
-  return snap.docs.map((d) => ({
-    uid: d.id,
-    displayName: (d.data().displayName as string) ?? 'Unknown',
-    photoURL: (d.data().photoURL as string | null) ?? null,
-  }))
-}
-
 export async function setGroupNickname(
   uid: string,
   groupId: string,
@@ -125,6 +111,20 @@ export async function removeGroupFromUserDoc(
     groupIds: arrayRemove(groupId),
     updatedAt: serverTimestamp(),
   })
+}
+
+export async function getMemberProfiles(
+  uids: string[],
+): Promise<MemberProfile[]> {
+  if (uids.length === 0) return []
+  const snap = await getDocs(
+    query(collection(db, 'users'), where(documentId(), 'in', uids)),
+  )
+  return snap.docs.map((d) => ({
+    uid: d.id,
+    displayName: (d.data().displayName as string) ?? 'Unknown',
+    photoURL: (d.data().photoURL as string | null) ?? null,
+  }))
 }
 
 export { DEFAULT_SETTINGS }
