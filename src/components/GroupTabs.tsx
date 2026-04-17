@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Group } from '../types'
 import { GROUP_COLORS } from '../data/groupColors'
@@ -15,6 +15,9 @@ interface GroupTabsProps {
   onSetNickname?: (groupId: string, nickname: string) => void
   onInvite?: (group: Group) => void
   archivedCount?: number
+  /** When provided, externally controls the manage modal open state */
+  openManage?: boolean
+  onManageClose?: () => void
 }
 
 type PendingDelete = { groupId: string; groupName: string } | null
@@ -31,10 +34,16 @@ export default function GroupTabs({
   onSetNickname,
   onInvite,
   archivedCount,
+  openManage,
+  onManageClose,
 }: GroupTabsProps) {
   const [adding, setAdding] = useState(false)
   const [input, setInput] = useState('')
   const [manageOpen, setManageOpen] = useState(false)
+
+  useEffect(() => {
+    if (openManage) setManageOpen(true)
+  }, [openManage])
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null)
   const [editName, setEditName] = useState('')
   const [editColor, setEditColor] = useState('')
@@ -111,6 +120,11 @@ export default function GroupTabs({
     setDeleteMode(others.length > 0 ? 'move' : 'delete')
   }
 
+  function closeManage() {
+    setManageOpen(false)
+    onManageClose?.()
+  }
+
   function confirmDelete() {
     if (!pendingDelete) return
     onDeleteGroup?.(
@@ -118,7 +132,7 @@ export default function GroupTabs({
       deleteMode === 'move' ? moveToId : null,
     )
     setPendingDelete(null)
-    setManageOpen(false)
+    closeManage()
   }
 
   const otherGroups = pendingDelete
@@ -307,7 +321,7 @@ export default function GroupTabs({
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
           onClick={() => {
             cancelEditing()
-            setManageOpen(false)
+            closeManage()
           }}
         >
           <div
@@ -321,7 +335,7 @@ export default function GroupTabs({
               <button
                 onClick={() => {
                   cancelEditing()
-                  setManageOpen(false)
+                  closeManage()
                 }}
                 className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
               >
@@ -432,7 +446,7 @@ export default function GroupTabs({
                           <button
                             onClick={() => {
                               cancelEditing()
-                              setManageOpen(false)
+                              closeManage()
                               onInvite(g)
                             }}
                             className="p-1.5 rounded text-green-500 hover:text-green-700 hover:bg-green-50 transition-colors"
@@ -556,7 +570,7 @@ export default function GroupTabs({
               <button
                 onClick={() => {
                   cancelEditing()
-                  setManageOpen(false)
+                  closeManage()
                 }}
                 className="w-full py-2.5 rounded-xl bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors"
               >
@@ -565,7 +579,7 @@ export default function GroupTabs({
               <button
                 onClick={() => {
                   cancelEditing()
-                  setManageOpen(false)
+                  closeManage()
                   navigate('/join')
                 }}
                 className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"

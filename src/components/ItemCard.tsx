@@ -58,17 +58,6 @@ export default function ItemCard({
             {item.name}
           </span>
         </div>
-        {group && showGroupBadge && (
-          <span
-            style={{
-              backgroundColor: groupBadgeBg(group.color),
-              color: groupBadgeColor(group.color),
-            }}
-            className="text-xs rounded-full px-2 py-0.5 font-medium shrink-0"
-          >
-            {group.name}
-          </span>
-        )}
         <span className={`text-xs ${color} shrink-0`}>{label}</span>
       </div>
 
@@ -114,9 +103,20 @@ export default function ItemCard({
         </div>
       )}
 
-      {/* Categories */}
-      {item.categories.length > 0 && (
+      {/* Tags: group badge first, then categories */}
+      {(group && showGroupBadge || item.categories.length > 0) && (
         <div className="flex flex-wrap gap-1">
+          {group && showGroupBadge && (
+            <span
+              style={{
+                backgroundColor: groupBadgeBg(group.color),
+                color: groupBadgeColor(group.color),
+              }}
+              className="text-xs rounded-full px-2 py-0.5 font-medium"
+            >
+              {group.name}
+            </span>
+          )}
           {item.categories.map((cat) => (
             <span
               key={cat}

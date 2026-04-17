@@ -924,7 +924,7 @@ export default function ShoppingListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-xl font-semibold text-gray-900">Shopping List</h1>
@@ -993,21 +993,23 @@ export default function ShoppingListPage() {
           </div>
         )}
 
+        {/* Row 1: name */}
+        <input
+          type="text"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+          placeholder="Add item…"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+        />
+        {/* Row 2: qty + unit + submit — always fits on any screen width */}
         <div className="flex gap-2">
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="Add item…"
-            className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
           <input
             type="number"
             min={0.1}
             step="any"
             value={newAmount}
             onChange={(e) => setNewAmount(Number(e.target.value))}
-            className="w-14 border border-gray-200 rounded-xl px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-16 border border-gray-200 rounded-xl px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-green-400"
           />
           <select
             value={isCustomAddUnit ? '__custom__' : newUnit}
@@ -1018,7 +1020,7 @@ export default function ShoppingListPage() {
                 setNewUnit(e.target.value)
               }
             }}
-            className="w-20 border border-gray-200 rounded-xl px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="flex-1 border border-gray-200 rounded-xl px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
           >
             {UNITS.map((u) => (
               <option key={u} value={u}>

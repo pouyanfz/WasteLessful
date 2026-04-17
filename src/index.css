@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  /* Pin breakpoints to pixel values so the 18px root font-size doesn't
+     shift them (Tailwind v4 uses rem for breakpoints by default). */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
 *,
 *::before,
 *::after {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import addToListImg from '../assets/addToList.png'
 import { useNavigate, useLocation } from 'react-router-dom'
 import type { Item, Group, ShoppingItem } from '../types'
 import { useAppData } from '../context/AppDataContext'
@@ -37,6 +38,8 @@ function loadViewMode(): 'columns' | 'single' {
 
 interface GroupColumnProps {
   title: string
+  color?: string
+  isShared?: boolean
   items: Item[]
   filterCount: number
   onItemClick: (item: Item) => void
@@ -136,6 +139,8 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
 
 function GroupColumn({
   title,
+  color,
+  isShared,
   items,
   filterCount,
   onItemClick,
@@ -168,7 +173,13 @@ function GroupColumn({
           </svg>
         </button>
 
-        <h2 className="font-semibold text-gray-800 flex-1 truncate">{title}</h2>
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+          {color && (
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+          )}
+          <h2 className="font-semibold text-gray-800 truncate">{title}</h2>
+          {isShared && <span className="text-xs shrink-0" title="Shared group">👥</span>}
+        </div>
 
         {/* Move right */}
         <button
@@ -193,9 +204,9 @@ function GroupColumn({
 
         <button
           onClick={onAddClick}
-          className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xl leading-none shadow-sm hover:bg-green-600 transition-colors shrink-0"
+          className="w-8 h-8 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-sm hover:bg-blue-50 transition-colors shrink-0"
         >
-          +
+          <img src={addToListImg} alt="Add item" className="w-4 h-4 object-contain" />
         </button>
       </div>
       {/* Items */}
@@ -473,6 +484,15 @@ export default function ItemsPage() {
   const [showSampleBanner, setShowSampleBanner] = useState(
     () => localStorage.getItem('wl_sample_data') === '1',
   )
+  const [showColumnsManage, setShowColumnsManage] = useState(false)
+
+  // Auto-hide sample data banner for real (non-anonymous) accounts
+  useEffect(() => {
+    if (firebaseUser && !firebaseUser.isAnonymous && showSampleBanner) {
+      localStorage.removeItem('wl_sample_data')
+      setShowSampleBanner(false)
+    }
+  }, [firebaseUser])
 
   async function handleAddGroup(name: string) {
     const groupId = await addGroup(name)
@@ -778,9 +798,9 @@ export default function ItemsPage() {
               </button>
               <button
                 onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-                className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
+                className="w-10 h-10 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow"
               >
-                +
+                <img src={addToListImg} alt="Add item" className="w-6 h-6 object-contain" />
               </button>
             </>
           )}
@@ -840,9 +860,9 @@ export default function ItemsPage() {
           {desktopView === 'single' && !isArchiveView && (
             <button
               onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-              className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
+              className="w-10 h-10 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow"
             >
-              +
+              <img src={addToListImg} alt="Add item" className="w-6 h-6 object-contain" />
             </button>
           )}
 
@@ -961,7 +981,7 @@ export default function ItemsPage() {
               </span>
             </div>
           )}
-        <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto pb-24">
+        <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto">
           {isArchiveView ? (
             archivedItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
@@ -1002,18 +1022,93 @@ export default function ItemsPage() {
         </main>
       </div>
 
-      {/* Desktop: columns view */}
+      {/* Desktop: columns view toolbar */}
       {desktopView === 'columns' && (
         <div className="hidden lg:block">
-          <div className="px-6 pt-4 max-w-sm">{searchBar}</div>
+          {/* Slim toolbar: hamburger | search | archive */}
+          <div className="bg-white border-b border-gray-100 px-6 py-2 flex items-center gap-3">
+            {/* Hamburger → manage modal */}
+            <button
+              onClick={() => setShowColumnsManage(true)}
+              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-green-500 hover:bg-gray-50 transition-colors"
+              title="Manage groups"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+              </svg>
+            </button>
+
+            {/* Search bar — flex-1 */}
+            {!isArchiveView && (
+              <div className="flex-1 max-w-sm">{searchBar}</div>
+            )}
+
+            {/* Back to items — shown when archive is active */}
+            {isArchiveView && (
+              <button
+                onClick={() => handleTabChange(null)}
+                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 5l-7 7 7 7" />
+                </svg>
+                Back to items
+              </button>
+            )}
+
+            <div className="flex-1" />
+
+            {/* Archive button */}
+            <button
+              onClick={() => handleTabChange(isArchiveView ? null : 'archived')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
+                isArchiveView
+                  ? 'bg-green-100 text-green-700'
+                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="21 8 21 21 3 21 3 8" />
+                <rect x="1" y="3" width="22" height="5" />
+                <line x1="10" y1="12" x2="14" y2="12" />
+              </svg>
+              Archive
+              {!isArchiveView && archivedItems.length > 0 && (
+                <span className="w-4 h-4 bg-gray-200 text-gray-600 text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {archivedItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Hidden GroupTabs — only for its manage modal */}
+          <div className="overflow-hidden h-0">
+            <GroupTabs
+              groups={groups}
+              activeGroupId={null}
+              groupNicknames={userDoc?.groupNicknames ?? {}}
+              onChange={() => {}}
+              onAddGroup={handleAddGroup}
+              onReorder={reorderGroups}
+              onDeleteGroup={handleDeleteGroup}
+              onUpdateGroup={handleUpdateGroup}
+              onSetNickname={setGroupNickname}
+              onInvite={setInviteGroup}
+              archivedCount={archivedItems.length}
+              openManage={showColumnsManage}
+              onManageClose={() => setShowColumnsManage(false)}
+            />
+          </div>
         </div>
       )}
-      {desktopView === 'columns' && (
-        <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 pb-24 items-start min-h-[calc(100vh-8rem)]">
+      {desktopView === 'columns' && !isArchiveView && (
+        <div className="hidden lg:flex overflow-x-auto gap-6 px-6 py-4 items-start min-h-[calc(100vh-8rem)]">
           {itemsByGroup.map(({ group, items: groupItems }, i) => (
             <GroupColumn
               key={group.id}
-              title={group.name}
+              title={(userDoc?.groupNicknames ?? {})[group.id] ?? group.name}
+              color={group.color}
+              isShared={group.memberIds.length > 1}
               items={groupItems}
               filterCount={filterCount}
               onItemClick={setEditingItem}
@@ -1025,6 +1120,28 @@ export default function ItemsPage() {
             />
           ))}
           <AddGroupColumn onAdd={handleAddGroup} />
+        </div>
+      )}
+      {desktopView === 'columns' && isArchiveView && (
+        <div className="hidden lg:block px-6 py-6">
+          {archivedItems.length === 0 ? (
+            <p className="text-center text-gray-400 mt-12">Archive is empty.</p>
+          ) : (
+            <div className="flex flex-col gap-3 max-w-xl">
+              {archivedItems.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  group={groups.find((g) => g.id === item.groupId)}
+                  showGroupBadge
+                  onClick={() => setEditingItem(item)}
+                  onAdjust={(d) => handleAdjust(item.id, d)}
+                  onRestore={() => restoreItem(item.id)}
+                  onDelete={() => handlePermanentDelete(item.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1090,7 +1207,7 @@ export default function ItemsPage() {
                 </span>
               </div>
             )}
-          <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto pb-24">
+          <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto">
             {isArchiveView ? (
               archivedItems.length === 0 ? (
                 <p className="text-center text-gray-400 mt-12">
