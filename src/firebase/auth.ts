@@ -8,7 +8,6 @@ import {
   linkWithCredential,
   EmailAuthProvider,
   GoogleAuthProvider,
-  OAuthProvider,
   sendPasswordResetEmail,
   signOut as _signOut,
   deleteUser,
@@ -27,9 +26,6 @@ export const signInAnonymously = () => _signInAnonymously(auth)
 export const signInWithGoogle = () =>
   signInWithPopup(auth, new GoogleAuthProvider())
 
-export const signInWithApple = () =>
-  signInWithPopup(auth, new OAuthProvider('apple.com'))
-
 export const signInWithEmail = (email: string, password: string) =>
   signInWithEmailAndPassword(auth, email, password)
 
@@ -46,11 +42,6 @@ export async function createAccountWithEmail(
 export async function linkAnonWithGoogle() {
   if (!auth.currentUser) throw new Error('No current user')
   return linkWithPopup(auth.currentUser, new GoogleAuthProvider())
-}
-
-export async function linkAnonWithApple() {
-  if (!auth.currentUser) throw new Error('No current user')
-  return linkWithPopup(auth.currentUser, new OAuthProvider('apple.com'))
 }
 
 export async function linkAnonWithEmail(

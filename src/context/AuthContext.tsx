@@ -2,20 +2,19 @@ import {
   createContext,
   useContext,
   useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
-import { updateProfile } from 'firebase/auth'
+import { updateProfile, GoogleAuthProvider, signInWithCredential, type AuthError } from 'firebase/auth'
 import {
   auth,
   onAuthStateChanged,
   signInAnonymously,
   signInWithGoogle,
-  signInWithApple,
   signInWithEmail,
   createAccountWithEmail,
   linkAnonWithGoogle,
-  linkAnonWithApple,
   linkAnonWithEmail,
   signOut as _signOut,
   deleteCurrentUser,
@@ -36,7 +35,6 @@ interface AuthContextValue {
   firebaseUser: FirebaseUser | null
   loading: boolean
   signInGoogle: () => Promise<void>
-  signInApple: () => Promise<void>
   signInEmail: (email: string, password: string) => Promise<void>
   createAccount: (
     email: string,
@@ -44,7 +42,6 @@ interface AuthContextValue {
     name: string,
   ) => Promise<void>
   upgradeWithGoogle: () => Promise<void>
-  upgradeWithApple: () => Promise<void>
   upgradeWithEmail: (
     email: string,
     password: string,
@@ -61,6 +58,9 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null)
   const [loading, setLoading] = useState(true)
+  // Prevents signInAnonymously() from firing during intentional sign-in flows
+  // (e.g. Google popup briefly clears the anon session before the new credential lands)
+  const suppressAnon = useRef(false)
 
   useEffect(() => {
     let mounted = true
@@ -69,10 +69,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!mounted) return
 
       if (!fbUser) {
-        // No user — sign in anonymously; onAuthStateChanged fires again
-        signInAnonymously()
+        // No user — sign in anonymously unless we're mid-sign-in (race guard)
+        if (!suppressAnon.current) {
+          signInAnonymously()
+        }
         return
       }
+
+      // Non-null user landed — clear race guard
+      suppressAnon.current = false
 
       try {
         const existing = await getUserDoc(fbUser.uid)
@@ -126,10 +131,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         firebaseUser,
         loading,
         signInGoogle: async () => {
-          await signInWithGoogle()
-        },
-        signInApple: async () => {
-          await signInWithApple()
+          suppressAnon.current = true
+          try {
+            await signInWithGoogle()
+          } catch (e) {
+            suppressAnon.current = false
+            throw e
+          }
         },
         signInEmail: async (email, password) => {
           await signInWithEmail(email, password)
@@ -138,10 +146,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await createAccountWithEmail(email, password, name)
         },
         upgradeWithGoogle: async () => {
-          await linkAnonWithGoogle()
-        },
-        upgradeWithApple: async () => {
-          await linkAnonWithApple()
+          suppressAnon.current = true
+          try {
+            await linkAnonWithGoogle()
+          } catch (e) {
+            // Google account already linked to another Firebase user —
+            // extract the credential from the error and sign in directly
+            // (no second popup needed, which browsers would block anyway)
+            const credential = GoogleAuthProvider.credentialFromError(e as AuthError)
+            if (credential) {
+              await signInWithCredential(auth, credential)
+              return
+            }
+            suppressAnon.current = false
+            throw e
+          }
         },
         upgradeWithEmail: async (email, password, name) => {
           await linkAnonWithEmail(email, password, name)
@@ -164,6 +183,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await sendPasswordReset(email)
         },
         signOut: async () => {
+          // Clear UI immediately so the user isn't stuck waiting for
+          // the async onAuthStateChanged → Firestore round-trip
+          setFirebaseUser(null)
+          setLoading(true)
           await _signOut()
         },
         deleteAccount: async () => {
