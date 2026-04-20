@@ -481,16 +481,22 @@ export default function ItemsPage() {
     loadViewMode,
   )
   const [search, setSearch] = useState('')
-  const [showSampleBanner, setShowSampleBanner] = useState(
-    () => localStorage.getItem('wl_sample_data') === '1',
+  const [showWelcomeModal, setShowWelcomeModal] = useState(
+    () =>
+      localStorage.getItem('wl_sample_data') === '1' &&
+      !localStorage.getItem('wl_welcomed'),
   )
   const [showColumnsManage, setShowColumnsManage] = useState(false)
 
-  // Auto-hide sample data banner for real (non-anonymous) accounts
+  function dismissWelcome() {
+    localStorage.setItem('wl_welcomed', '1')
+    setShowWelcomeModal(false)
+  }
+
+  // Auto-dismiss welcome modal for real (non-anonymous) accounts
   useEffect(() => {
-    if (firebaseUser && !firebaseUser.isAnonymous && showSampleBanner) {
-      localStorage.removeItem('wl_sample_data')
-      setShowSampleBanner(false)
+    if (firebaseUser && !firebaseUser.isAnonymous && showWelcomeModal) {
+      dismissWelcome()
     }
   }, [firebaseUser])
 
@@ -771,38 +777,30 @@ export default function ItemsPage() {
         {/* Mobile controls */}
         <div className="flex items-center gap-2 lg:hidden">
           {!isArchiveView && (
-            <>
-              <button
-                onClick={() => setShowFilterSheet(true)}
-                className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:border-green-400 transition-colors"
+            <button
+              onClick={() => setShowFilterSheet(true)}
+              className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:border-green-400 transition-colors"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="4" y1="6" x2="20" y2="6" />
-                  <line x1="8" y1="12" x2="16" y2="12" />
-                  <line x1="11" y1="18" x2="13" y2="18" />
-                </svg>
-                {filterCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {filterCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-                className="w-10 h-10 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow"
-              >
-                <img src={addToListImg} alt="Add item" className="w-6 h-6 object-contain" />
-              </button>
-            </>
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+                <line x1="11" y1="18" x2="13" y2="18" />
+              </svg>
+              {filterCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {filterCount}
+                </span>
+              )}
+            </button>
           )}
           <GearButton onClick={() => navigate('/settings')} />
         </div>
@@ -856,16 +854,6 @@ export default function ItemsPage() {
             </button>
           </div>
 
-          {/* Add — only shown in single view (columns have their own + per column), hidden in archive */}
-          {desktopView === 'single' && !isArchiveView && (
-            <button
-              onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-              className="w-10 h-10 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow"
-            >
-              <img src={addToListImg} alt="Add item" className="w-6 h-6 object-contain" />
-            </button>
-          )}
-
           {/* Filter — hidden in archive view */}
           {!isArchiveView && (
             <button
@@ -898,23 +886,30 @@ export default function ItemsPage() {
         </div>
       </header>
 
-      {/* Sample data banner */}
-      {showSampleBanner && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
-          <p className="text-sm text-amber-800">
-            <span className="font-medium">This is sample data.</span> Explore
-            the app, then clear it whenever you're ready.
-          </p>
-          <button
-            onClick={() => {
-              localStorage.removeItem('wl_sample_data')
-              setShowSampleBanner(false)
-            }}
-            className="text-amber-500 hover:text-amber-700 shrink-0 text-lg leading-none"
-            aria-label="Dismiss"
+      {/* Welcome modal for new users with sample data */}
+      {showWelcomeModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+          onClick={dismissWelcome}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-sm w-full flex flex-col gap-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            &times;
-          </button>
+            <div className="text-4xl text-center">👋</div>
+            <div className="flex flex-col gap-1 text-center">
+              <h2 className="text-lg font-semibold text-gray-900">Welcome to Wastelessful!</h2>
+              <p className="text-sm text-gray-500">
+                We've added a couple of sample items so you can explore the app. Tap any item to edit it, use <strong>+</strong> and <strong>−</strong> to adjust quantities, and tap the add button to create your own items.
+              </p>
+            </div>
+            <button
+              onClick={dismissWelcome}
+              className="w-full py-3 rounded-xl bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition-colors"
+            >
+              Got it, let's explore!
+            </button>
+          </div>
         </div>
       )}
 
@@ -981,7 +976,7 @@ export default function ItemsPage() {
               </span>
             </div>
           )}
-        <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto">
+        <main className="px-4 py-4 pb-28 flex flex-col gap-3 max-w-lg mx-auto">
           {isArchiveView ? (
             archivedItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
@@ -1206,7 +1201,7 @@ export default function ItemsPage() {
                 </span>
               </div>
             )}
-          <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto">
+          <main className="px-6 py-6 pb-28 flex flex-col gap-3 max-w-xl mx-auto">
             {isArchiveView ? (
               archivedItems.length === 0 ? (
                 <p className="text-center text-gray-400 mt-12">
@@ -1246,6 +1241,17 @@ export default function ItemsPage() {
             )}
           </main>
         </div>
+      )}
+
+      {/* Floating add button — bottom right, above bottom nav */}
+      {!isArchiveView && (
+        <button
+          onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
+          className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-30 w-14 h-14 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-lg active:scale-95 transition-transform lg:bottom-8 lg:right-8 ${desktopView === 'columns' ? 'lg:hidden' : ''}`}
+          aria-label="Add item"
+        >
+          <img src={addToListImg} alt="Add item" className="w-8 h-8 object-contain" />
+        </button>
       )}
 
       {showAddModal && (
