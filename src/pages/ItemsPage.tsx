@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import addToListImg from '../assets/addToList.png'
 import { useNavigate, useLocation } from 'react-router-dom'
 import type { Item, Group, ShoppingItem } from '../types'
 import { useAppData } from '../context/AppDataContext'
@@ -37,6 +38,8 @@ function loadViewMode(): 'columns' | 'single' {
 
 interface GroupColumnProps {
   title: string
+  color?: string
+  isShared?: boolean
   items: Item[]
   filterCount: number
   onItemClick: (item: Item) => void
@@ -136,6 +139,8 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
 
 function GroupColumn({
   title,
+  color,
+  isShared,
   items,
   filterCount,
   onItemClick,
@@ -168,7 +173,13 @@ function GroupColumn({
           </svg>
         </button>
 
-        <h2 className="font-semibold text-gray-800 flex-1 truncate">{title}</h2>
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+          {color && (
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+          )}
+          <h2 className="font-semibold text-gray-800 truncate">{title}</h2>
+          {isShared && <span className="text-xs shrink-0" title="Shared group">👥</span>}
+        </div>
 
         {/* Move right */}
         <button
@@ -193,9 +204,9 @@ function GroupColumn({
 
         <button
           onClick={onAddClick}
-          className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-xl leading-none shadow-sm hover:bg-green-600 transition-colors shrink-0"
+          className="w-8 h-8 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-sm hover:bg-blue-50 transition-colors shrink-0"
         >
-          +
+          <img src={addToListImg} alt="Add item" className="w-4 h-4 object-contain" />
         </button>
       </div>
       {/* Items */}
@@ -470,9 +481,24 @@ export default function ItemsPage() {
     loadViewMode,
   )
   const [search, setSearch] = useState('')
-  const [showSampleBanner, setShowSampleBanner] = useState(
-    () => localStorage.getItem('wl_sample_data') === '1',
+  const [showWelcomeModal, setShowWelcomeModal] = useState(
+    () =>
+      localStorage.getItem('wl_sample_data') === '1' &&
+      !localStorage.getItem('wl_welcomed'),
   )
+  const [showColumnsManage, setShowColumnsManage] = useState(false)
+
+  function dismissWelcome() {
+    localStorage.setItem('wl_welcomed', '1')
+    setShowWelcomeModal(false)
+  }
+
+  // Auto-dismiss welcome modal for real (non-anonymous) accounts
+  useEffect(() => {
+    if (firebaseUser && !firebaseUser.isAnonymous && showWelcomeModal) {
+      dismissWelcome()
+    }
+  }, [firebaseUser])
 
   async function handleAddGroup(name: string) {
     const groupId = await addGroup(name)
@@ -751,38 +777,30 @@ export default function ItemsPage() {
         {/* Mobile controls */}
         <div className="flex items-center gap-2 lg:hidden">
           {!isArchiveView && (
-            <>
-              <button
-                onClick={() => setShowFilterSheet(true)}
-                className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:border-green-400 transition-colors"
+            <button
+              onClick={() => setShowFilterSheet(true)}
+              className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:border-green-400 transition-colors"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="4" y1="6" x2="20" y2="6" />
-                  <line x1="8" y1="12" x2="16" y2="12" />
-                  <line x1="11" y1="18" x2="13" y2="18" />
-                </svg>
-                {filterCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {filterCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-                className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
-              >
-                +
-              </button>
-            </>
+                <line x1="4" y1="6" x2="20" y2="6" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+                <line x1="11" y1="18" x2="13" y2="18" />
+              </svg>
+              {filterCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {filterCount}
+                </span>
+              )}
+            </button>
           )}
           <GearButton onClick={() => navigate('/settings')} />
         </div>
@@ -836,16 +854,6 @@ export default function ItemsPage() {
             </button>
           </div>
 
-          {/* Add — only shown in single view (columns have their own + per column), hidden in archive */}
-          {desktopView === 'single' && !isArchiveView && (
-            <button
-              onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-              className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-2xl leading-none shadow"
-            >
-              +
-            </button>
-          )}
-
           {/* Filter — hidden in archive view */}
           {!isArchiveView && (
             <button
@@ -878,23 +886,30 @@ export default function ItemsPage() {
         </div>
       </header>
 
-      {/* Sample data banner */}
-      {showSampleBanner && (
-        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3">
-          <p className="text-sm text-amber-800">
-            <span className="font-medium">This is sample data.</span> Explore
-            the app, then clear it whenever you're ready.
-          </p>
-          <button
-            onClick={() => {
-              localStorage.removeItem('wl_sample_data')
-              setShowSampleBanner(false)
-            }}
-            className="text-amber-500 hover:text-amber-700 shrink-0 text-lg leading-none"
-            aria-label="Dismiss"
+      {/* Welcome modal for new users with sample data */}
+      {showWelcomeModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+          onClick={dismissWelcome}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-sm w-full flex flex-col gap-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
           >
-            &times;
-          </button>
+            <div className="text-4xl text-center">👋</div>
+            <div className="flex flex-col gap-1 text-center">
+              <h2 className="text-lg font-semibold text-gray-900">Welcome to Wastelessful!</h2>
+              <p className="text-sm text-gray-500">
+                We've added a couple of sample items so you can explore the app. Tap any item to edit it, use <strong>+</strong> and <strong>−</strong> to adjust quantities, and tap the add button to create your own items.
+              </p>
+            </div>
+            <button
+              onClick={dismissWelcome}
+              className="w-full py-3 rounded-xl bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition-colors"
+            >
+              Got it, let's explore!
+            </button>
+          </div>
         </div>
       )}
 
@@ -961,7 +976,7 @@ export default function ItemsPage() {
               </span>
             </div>
           )}
-        <main className="px-4 py-4 flex flex-col gap-3 max-w-lg mx-auto pb-24">
+        <main className="px-4 py-4 pb-28 flex flex-col gap-3 max-w-lg mx-auto">
           {isArchiveView ? (
             archivedItems.length === 0 ? (
               <p className="text-center text-gray-400 mt-12">
@@ -1002,10 +1017,83 @@ export default function ItemsPage() {
         </main>
       </div>
 
-      {/* Desktop: columns view */}
+      {/* Desktop: columns view toolbar */}
       {desktopView === 'columns' && (
         <div className="hidden lg:block">
-          <div className="px-6 pt-4 max-w-sm">{searchBar}</div>
+          {/* Slim toolbar: hamburger | search | archive */}
+          <div className="bg-white border-b border-gray-100 px-6 py-2 flex items-center gap-3">
+            {/* Hamburger → manage modal */}
+            <button
+              onClick={() => setShowColumnsManage(true)}
+              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-green-500 hover:bg-gray-50 transition-colors"
+              title="Manage groups"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+              </svg>
+            </button>
+
+            {/* Search bar — flex-1 */}
+            {!isArchiveView && (
+              <div className="flex-1 max-w-sm">{searchBar}</div>
+            )}
+
+            {/* Back to items — shown when archive is active */}
+            {isArchiveView && (
+              <button
+                onClick={() => handleTabChange(null)}
+                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 5l-7 7 7 7" />
+                </svg>
+                Back to items
+              </button>
+            )}
+
+            <div className="flex-1" />
+
+            {/* Archive button */}
+            <button
+              onClick={() => handleTabChange(isArchiveView ? null : 'archived')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
+                isArchiveView
+                  ? 'bg-green-100 text-green-700'
+                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="21 8 21 21 3 21 3 8" />
+                <rect x="1" y="3" width="22" height="5" />
+                <line x1="10" y1="12" x2="14" y2="12" />
+              </svg>
+              Archive
+              {!isArchiveView && archivedItems.length > 0 && (
+                <span className="w-4 h-4 bg-gray-200 text-gray-600 text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {archivedItems.length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Hidden GroupTabs — only for its manage modal */}
+          <div className="overflow-hidden h-0">
+            <GroupTabs
+              groups={groups}
+              activeGroupId={null}
+              groupNicknames={userDoc?.groupNicknames ?? {}}
+              onChange={() => {}}
+              onAddGroup={handleAddGroup}
+              onReorder={reorderGroups}
+              onDeleteGroup={handleDeleteGroup}
+              onUpdateGroup={handleUpdateGroup}
+              onSetNickname={setGroupNickname}
+              onInvite={setInviteGroup}
+              archivedCount={archivedItems.length}
+              openManage={showColumnsManage}
+              onManageClose={() => setShowColumnsManage(false)}
+            />
+          </div>
         </div>
       )}
       {desktopView === 'columns' && (
@@ -1013,7 +1101,9 @@ export default function ItemsPage() {
           {itemsByGroup.map(({ group, items: groupItems }, i) => (
             <GroupColumn
               key={group.id}
-              title={group.name}
+              title={(userDoc?.groupNicknames ?? {})[group.id] ?? group.name}
+              color={group.color}
+              isShared={group.memberIds.length > 1}
               items={groupItems}
               filterCount={filterCount}
               onItemClick={setEditingItem}
@@ -1025,6 +1115,27 @@ export default function ItemsPage() {
             />
           ))}
           <AddGroupColumn onAdd={handleAddGroup} />
+        </div>
+      )}
+      {desktopView === 'columns' && isArchiveView && (
+        <div className="hidden lg:block px-6 py-6 pb-24">
+          {archivedItems.length === 0 ? (
+            <p className="text-center text-gray-400 mt-12">Archive is empty.</p>
+          ) : (
+            <div className="flex flex-col gap-3 max-w-xl">
+              {archivedItems.map((item) => (
+                <ArchivedItemCard
+                  key={item.id}
+                  item={item}
+                  groupName={
+                    groups.find((g) => g.id === item.groupId)?.name ?? 'Unknown group'
+                  }
+                  onRestore={() => handleRestore(item.id)}
+                  onDelete={() => handlePermanentDelete(item.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -1090,7 +1201,7 @@ export default function ItemsPage() {
                 </span>
               </div>
             )}
-          <main className="px-6 py-6 flex flex-col gap-3 max-w-xl mx-auto pb-24">
+          <main className="px-6 py-6 pb-28 flex flex-col gap-3 max-w-xl mx-auto">
             {isArchiveView ? (
               archivedItems.length === 0 ? (
                 <p className="text-center text-gray-400 mt-12">
@@ -1130,6 +1241,17 @@ export default function ItemsPage() {
             )}
           </main>
         </div>
+      )}
+
+      {/* Floating add button — bottom right, above bottom nav */}
+      {!isArchiveView && (
+        <button
+          onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
+          className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-30 w-14 h-14 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-lg active:scale-95 transition-transform lg:bottom-8 lg:right-8 ${desktopView === 'columns' ? 'lg:hidden' : ''}`}
+          aria-label="Add item"
+        >
+          <img src={addToListImg} alt="Add item" className="w-8 h-8 object-contain" />
+        </button>
       )}
 
       {showAddModal && (

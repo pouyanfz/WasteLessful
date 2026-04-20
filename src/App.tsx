@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import loadingAnimation from './assets/loadingAnimation.gif'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { AppDataProvider } from './context/AppDataContext'
 import ItemsPage from './pages/ItemsPage'
@@ -21,8 +22,8 @@ function AppShell() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-gray-400">Loading…</p>
+          <img src={loadingAnimation} alt="" className="w-16 h-16" />
+          <p className="text-sm text-gray-400">Loading Wastelessful…</p>
         </div>
       </div>
     )
@@ -31,14 +32,19 @@ function AppShell() {
   return (
     <AppDataProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<ItemsPage />} />
-          <Route path="/shopping" element={<ShoppingListPage />} />
-          <Route path="/recipes" element={<RecipesPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/join" element={<JoinPage />} />
-        </Routes>
-        <ConditionalBottomNav />
+        {/* Full-screen flex column: content scrolls, nav sits below it — no fixed overlap */}
+        <div className="flex flex-col h-dvh">
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <Routes>
+              <Route path="/" element={<ItemsPage />} />
+              <Route path="/shopping" element={<ShoppingListPage />} />
+              <Route path="/recipes" element={<RecipesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/join" element={<JoinPage />} />
+            </Routes>
+          </div>
+          <ConditionalBottomNav />
+        </div>
       </BrowserRouter>
     </AppDataProvider>
   )

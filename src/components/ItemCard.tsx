@@ -58,17 +58,6 @@ export default function ItemCard({
             {item.name}
           </span>
         </div>
-        {group && showGroupBadge && (
-          <span
-            style={{
-              backgroundColor: groupBadgeBg(group.color),
-              color: groupBadgeColor(group.color),
-            }}
-            className="text-xs rounded-full px-2 py-0.5 font-medium shrink-0"
-          >
-            {group.name}
-          </span>
-        )}
         <span className={`text-xs ${color} shrink-0`}>{label}</span>
       </div>
 
@@ -98,25 +87,36 @@ export default function ItemCard({
           <button
             onClick={() => onAdjust(-1)}
             disabled={item.quantity.current <= 0}
-            className="w-8 h-8 rounded-full border border-gray-200 text-gray-500 flex items-center justify-center text-lg leading-none hover:border-red-300 hover:text-red-400 disabled:opacity-30 transition-colors"
+            className="w-10 h-10 rounded-full border-2 border-gray-300 text-gray-600 flex items-center justify-center text-xl font-bold leading-none hover:border-red-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-30 transition-colors"
           >
             −
           </button>
-          <span className="text-sm text-gray-600 flex-1 text-center">
+          <span className="text-sm font-medium text-gray-700 flex-1 text-center">
             {item.quantity.current} {item.quantity.unit}
           </span>
           <button
             onClick={() => onAdjust(1)}
-            className="w-8 h-8 rounded-full border border-gray-200 text-gray-500 flex items-center justify-center text-lg leading-none hover:border-green-400 hover:text-green-500 transition-colors"
+            className="w-10 h-10 rounded-full border-2 border-gray-300 text-gray-600 flex items-center justify-center text-xl font-bold leading-none hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors"
           >
             +
           </button>
         </div>
       )}
 
-      {/* Categories */}
-      {item.categories.length > 0 && (
+      {/* Tags: group badge first, then categories */}
+      {(group && showGroupBadge || item.categories.length > 0) && (
         <div className="flex flex-wrap gap-1">
+          {group && showGroupBadge && (
+            <span
+              style={{
+                backgroundColor: groupBadgeBg(group.color),
+                color: groupBadgeColor(group.color),
+              }}
+              className="text-xs rounded-full px-2 py-0.5 font-medium"
+            >
+              {group.name}
+            </span>
+          )}
           {item.categories.map((cat) => (
             <span
               key={cat}

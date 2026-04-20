@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { version } from '../../package.json'
 import { useNavigate } from 'react-router-dom'
 import type { UserSettings } from '../types'
 import { useAuth } from '../context/AuthContext'
@@ -24,7 +25,7 @@ function PageShell({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
         <button
           onClick={onBack}
@@ -682,7 +683,7 @@ function SupportSection({ onBack }: { onBack: () => void }) {
 
       <div className="flex flex-col items-center gap-1 py-4">
         <p className="text-sm font-semibold text-gray-400">Wastelessful</p>
-        <p className="text-xs text-gray-400">Version 0.1.0 · Phase 3</p>
+        <p className="text-xs text-gray-400">Version {version}</p>
       </div>
     </PageShell>
   )
@@ -858,7 +859,7 @@ export default function SettingsPage() {
     return <SupportSection onBack={() => setActiveSection(null)} />
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
         <button
           onClick={() => navigate(-1)}

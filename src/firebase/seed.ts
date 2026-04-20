@@ -17,10 +17,7 @@ export async function seedUserData(
   const now = Timestamp.now()
 
   const milkId = crypto.randomUUID()
-  const eggsId = crypto.randomUUID()
-  const redbullID = crypto.randomUUID()
-  const chickenId = crypto.randomUUID()
-  const oliveOilId = crypto.randomUUID()
+  const redbullId = crypto.randomUUID()
 
   const items: Item[] = [
     {
@@ -31,7 +28,7 @@ export async function seedUserData(
       colorTag: null,
       photoURL: null,
       notes: null,
-      quantity: { current: 1, initial: 4, unit: 'L' },
+      quantity: { current: 1, initial: 1, unit: 'L' },
       dates: {
         addedAt: now,
         purchasedAt: null,
@@ -45,84 +42,21 @@ export async function seedUserData(
       archivedAt: null,
     },
     {
-      id: eggsId,
+      id: redbullId,
       groupId,
-      name: 'Eggs',
-      categories: ['dairy'],
-      colorTag: null,
-      photoURL: null,
-      notes: null,
-      quantity: { current: 12, initial: 12, unit: 'pack' },
-      dates: {
-        addedAt: now,
-        purchasedAt: null,
-        expiresAt: daysFromNow(3),
-        lastUsedAt: null,
-      },
-      notification: { enabled: true, daysBeforeExp: null },
-      addedBy: userId,
-      updatedAt: now,
-      isArchived: false,
-      archivedAt: null,
-    },
-    {
-      id: redbullID,
-      groupId,
-      name: 'Redbull',
+      name: 'Red Bull',
       categories: ['drink'],
       colorTag: '#ef4444',
       photoURL: null,
       notes: null,
-      quantity: { current: 2, initial: 20, unit: 'can' },
+      quantity: { current: 5, initial: 12, unit: 'can' },
       dates: {
         addedAt: now,
         purchasedAt: null,
-        expiresAt: daysFromNow(-1),
+        expiresAt: null,
         lastUsedAt: null,
       },
-      notification: { enabled: true, daysBeforeExp: null },
-      addedBy: userId,
-      updatedAt: now,
-      isArchived: false,
-      archivedAt: null,
-    },
-    {
-      id: chickenId,
-      groupId,
-      name: 'Chicken Breast',
-      categories: ['meat'],
-      colorTag: null,
-      photoURL: null,
-      notes: null,
-      quantity: { current: 400, initial: 500, unit: 'g' },
-      dates: {
-        addedAt: now,
-        purchasedAt: null,
-        expiresAt: daysFromNow(14),
-        lastUsedAt: null,
-      },
-      notification: { enabled: true, daysBeforeExp: null },
-      addedBy: userId,
-      updatedAt: now,
-      isArchived: false,
-      archivedAt: null,
-    },
-    {
-      id: oliveOilId,
-      groupId,
-      name: 'Olive Oil',
-      categories: ['pantry'],
-      colorTag: null,
-      photoURL: null,
-      notes: null,
-      quantity: { current: 300, initial: 500, unit: 'mL' },
-      dates: {
-        addedAt: now,
-        purchasedAt: null,
-        expiresAt: daysFromNow(180),
-        lastUsedAt: null,
-      },
-      notification: { enabled: true, daysBeforeExp: null },
+      notification: { enabled: false, daysBeforeExp: null },
       addedBy: userId,
       updatedAt: now,
       isArchived: false,
@@ -130,20 +64,17 @@ export async function seedUserData(
     },
   ]
 
-  const recipeId = crypto.randomUUID()
-  const pastaShoppingItemId = crypto.randomUUID()
-
   const milkShoppingItem: ShoppingItem = {
     id: crypto.randomUUID(),
     groupId,
     shoppingListId: null,
     name: 'Milk',
-    quantity: { amount: 2, unit: 'L' },
+    quantity: { amount: 1, unit: 'L' },
     linkedRecipeId: null,
     linkedItemId: milkId,
     linkedItemName: 'Milk',
     status: 'toBuy',
-    autoAdded: false,
+    autoAdded: true,
     addedToInventory: false,
     addedBy: userId,
     boughtBy: null,
@@ -151,6 +82,9 @@ export async function seedUserData(
     boughtAt: null,
     updatedAt: now,
   }
+
+  const recipeId = crypto.randomUUID()
+  const pastaShoppingItemId = crypto.randomUUID()
 
   const pastaShoppingItem: ShoppingItem = {
     id: pastaShoppingItemId,
@@ -175,8 +109,7 @@ export async function seedUserData(
     id: recipeId,
     groupId,
     name: 'Pasta with Olive Oil',
-    notes:
-      'A Simple classic that I saw on youtube. Great for using up pantry staples.',
+    notes: 'A simple classic. Great for using up pantry staples.',
     ingredients: [
       {
         name: 'Pasta',
@@ -190,9 +123,9 @@ export async function seedUserData(
         name: 'Olive Oil',
         quantityAmount: 3,
         quantityUnit: 'tbsp',
-        linkedItemId: oliveOilId,
+        linkedItemId: null,
         shoppingItemId: null,
-        haveIt: true,
+        haveIt: false,
       },
       {
         name: 'Garlic',

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import loadingAnimation from '../assets/loadingAnimation.gif'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useAppData } from '../context/AppDataContext'
@@ -60,7 +61,10 @@ export default function JoinPage() {
   if (state.phase === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-3">
+          <img src={loadingAnimation} alt="" className="w-16 h-16" />
+          <p className="text-sm text-gray-400">Loading...</p>
+        </div>
       </div>
     )
   }
