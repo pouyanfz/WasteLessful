@@ -21,10 +21,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
+      devOptions: {
+        enabled: true,
+        type: 'module',
       },
       includeAssets: ['appIcon.png', 'appIcon-192.png', 'appIcon-maskable.png', 'appIcon-192-maskable.png', 'apple-touch-icon.png'],
       manifest: {

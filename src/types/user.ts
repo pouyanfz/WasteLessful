@@ -24,6 +24,7 @@ export interface User {
   groupIds: string[]
   activeGroupId: string | null
   groupNicknames: Record<string, string>
+  fcmTokens: string[]
   createdAt: Timestamp
   updatedAt: Timestamp
   settings: UserSettings

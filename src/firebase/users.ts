@@ -127,4 +127,18 @@ export async function getMemberProfiles(
   }))
 }
 
+export async function saveFcmToken(uid: string, token: string): Promise<void> {
+  await updateDoc(doc(db, 'users', uid), {
+    fcmTokens: arrayUnion(token),
+    updatedAt: serverTimestamp(),
+  })
+}
+
+export async function removeFcmToken(uid: string, token: string): Promise<void> {
+  await updateDoc(doc(db, 'users', uid), {
+    fcmTokens: arrayRemove(token),
+    updatedAt: serverTimestamp(),
+  })
+}
+
 export { DEFAULT_SETTINGS }
