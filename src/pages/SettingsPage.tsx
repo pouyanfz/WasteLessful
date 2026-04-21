@@ -445,17 +445,22 @@ function NotificationPermissionCard() {
     return Notification.permission
   })
   const [token, setToken] = useState<string | null>(null)
+  const [tokenError, setTokenError] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (permission === 'granted' && firebaseUser && !firebaseUser.isAnonymous) {
-      getCurrentFcmToken().then(setToken)
+      getCurrentFcmToken().then((t) => {
+        setToken(t)
+        if (!t) setTokenError(true)
+      })
     }
   }, [permission, firebaseUser])
 
   async function handleEnable() {
     if (!firebaseUser || firebaseUser.isAnonymous) return
     setLoading(true)
+    setTokenError(false)
     try {
       const t = await requestFcmToken()
       if (t) {
@@ -464,6 +469,7 @@ function NotificationPermissionCard() {
         setPermission('granted')
       } else {
         setPermission(Notification.permission)
+        setTokenError(true)
       }
     } finally {
       setLoading(false)
@@ -486,15 +492,16 @@ function NotificationPermissionCard() {
   const isAnon = !firebaseUser || firebaseUser.isAnonymous
   const isEnabled = permission === 'granted' && !!token
   const isDenied = permission === 'denied'
+  const isGrantedNoToken = permission === 'granted' && !token && tokenError
 
   return (
     <div>
       <SectionLabel>Push notifications</SectionLabel>
       <Card>
-        <div className="flex flex-col gap-3 py-1">
+        <div className="flex flex-col gap-3 p-4">
           {isDenied ? (
             <p className="text-sm text-red-500">
-              Notifications are blocked in your browser. Enable them in your browser/OS settings and reload the app.
+              Notifications are blocked. Enable them in your browser/OS settings and reload the app.
             </p>
           ) : isAnon ? (
             <p className="text-sm text-gray-500">
@@ -515,6 +522,22 @@ function NotificationPermissionCard() {
                 className="self-start text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
               >
                 {loading ? 'Disabling…' : 'Disable on this device'}
+              </button>
+            </>
+          ) : isGrantedNoToken ? (
+            <>
+              <p className="text-sm text-orange-500 font-medium">
+                Permission granted but setup failed.
+              </p>
+              <p className="text-xs text-gray-400">
+                This can happen if the app isn't installed to your home screen or the browser doesn't support push notifications.
+              </p>
+              <button
+                onClick={handleEnable}
+                disabled={loading}
+                className="self-start border border-orange-300 text-orange-600 text-sm font-medium rounded-xl px-4 py-2 hover:bg-orange-50 transition-colors disabled:opacity-40"
+              >
+                {loading ? 'Retrying…' : 'Retry setup'}
               </button>
             </>
           ) : (
