@@ -12,6 +12,7 @@ export const mockUsers: User[] = [
     groupIds: ["group-1", "group-2"],
     activeGroupId: "group-1",
     groupNicknames: {},
+    fcmTokens: [],
     createdAt: daysAgo(30) as never,
     updatedAt: daysAgo(1) as never,
     settings: {
@@ -38,6 +39,7 @@ export const mockUsers: User[] = [
     groupIds: ["group-1"],
     activeGroupId: "group-1",
     groupNicknames: {},
+    fcmTokens: [],
     createdAt: daysAgo(5) as never,
     updatedAt: daysAgo(5) as never,
     settings: {
