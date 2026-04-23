@@ -193,10 +193,67 @@ export const dailyNotifications = onSchedule('0 9 * * *', async () => {
 })
 
 // ── HTTP trigger — for manual testing only ───────────────────────────────────
-// Call: curl -X POST https://<region>-<project>.cloudfunctions.net/triggerNotifications
+// Call: curl -X POST https://us-central1-wasteless-ebb06.cloudfunctions.net/triggerNotifications
 // Remove this export before going to production if you want.
 
 export const triggerNotifications = onRequest(async (_req, res) => {
   await runNotifications()
   res.json({ ok: true, message: 'Notifications sent' })
+})
+
+// ── Broadcast — send a custom message to all users with FCM tokens ───────────
+// Call: curl -X POST https://us-central1-wasteless-ebb06.cloudfunctions.net/broadcastNotification \
+//   -H "Content-Type: application/json" \
+//   -d '{"title":"Hello!","body":"This is a test notification."}'
+
+export const broadcastNotification = onRequest(async (req, res) => {
+  const title: string = req.body?.title ?? 'Wastelessful'
+  const body: string = req.body?.body ?? 'Test notification'
+
+  const db = getFirestore()
+  const messaging = getMessaging()
+
+  const usersSnap = await db
+    .collection('users')
+    .where('isAnonymous', '==', false)
+    .get()
+
+  let totalSent = 0
+  let totalFailed = 0
+
+  for (const userDoc of usersSnap.docs) {
+    const user = userDoc.data() as UserDoc
+    const tokens = user.fcmTokens ?? []
+    if (tokens.length === 0) continue
+
+    const result = await messaging.sendEachForMulticast({
+      tokens,
+      notification: { title, body },
+      webpush: {
+        notification: {
+          icon: 'https://wastelessful.web.app/appIcon.png',
+          badge: 'https://wastelessful.web.app/appIcon-192.png',
+        },
+        fcmOptions: { link: 'https://wastelessful.web.app' },
+      },
+    })
+
+    result.responses.forEach((r) => (r.success ? totalSent++ : totalFailed++))
+
+    const invalidTokens: string[] = []
+    result.responses.forEach((resp, i) => {
+      const code = resp.error?.code ?? ''
+      if (
+        code === 'messaging/registration-token-not-registered' ||
+        code === 'messaging/invalid-registration-token'
+      ) {
+        invalidTokens.push(tokens[i])
+      }
+    })
+    if (invalidTokens.length > 0) {
+      await userDoc.ref.update({ fcmTokens: FieldValue.arrayRemove(...invalidTokens) })
+    }
+  }
+
+  res.json({ ok: true, sent: totalSent, failed: totalFailed })
 })
