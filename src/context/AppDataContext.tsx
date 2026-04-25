@@ -46,7 +46,7 @@ import {
   setGroupNickname as fsSetGroupNickname,
 } from '../firebase/users'
 import { nextGroupColor } from '../data/groupColors'
-import { getLocalStore, initLocalStore, updateLocalStore } from '../utils/localStore'
+import { initLocalStore, updateLocalStore } from '../utils/localStore'
 import type {
   Item,
   Group,
