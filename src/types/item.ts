@@ -1,14 +1,12 @@
 import type { Timestamp } from "firebase/firestore";
 
 export type QuantityUnit =
-  | "kg"
-  | "g"
-  | "L"
-  | "mL"
-  | "bottle"
+  | "pieces"
   | "pack"
   | "box"
   | "can"
+  | "%"
+  | "slice"
   | string;
 
 export interface ItemQuantity {

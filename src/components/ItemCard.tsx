@@ -96,7 +96,8 @@ export default function ItemCard({
           </span>
           <button
             onClick={() => onAdjust(1)}
-            className="w-10 h-10 rounded-full border-2 border-gray-300 text-gray-600 flex items-center justify-center text-xl font-bold leading-none hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-colors"
+            disabled={item.quantity.current >= item.quantity.initial}
+            className="w-10 h-10 rounded-full border-2 border-gray-300 text-gray-600 flex items-center justify-center text-xl font-bold leading-none hover:border-green-500 hover:text-green-600 hover:bg-green-50 disabled:opacity-30 transition-colors"
           >
             +
           </button>

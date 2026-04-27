@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { version } from '../../package.json'
 import { useNavigate } from 'react-router-dom'
 import type { UserSettings } from '../types'
 import { useAuth } from '../context/AuthContext'
 import { useAppData } from '../context/AppDataContext'
 import SignInModal from '../components/SignInModal'
+import { requestFcmToken, getCurrentFcmToken } from '../firebase/messaging'
+import { saveFcmToken, removeFcmToken } from '../firebase/users'
 
 type Section =
   | 'account'
@@ -436,6 +438,128 @@ function AppearanceSection({
   )
 }
 
+function NotificationPermissionCard() {
+  const { firebaseUser } = useAuth()
+  const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(() => {
+    if (!('Notification' in window)) return 'unsupported'
+    return Notification.permission
+  })
+  const [token, setToken] = useState<string | null>(null)
+  const [tokenError, setTokenError] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (permission === 'granted' && firebaseUser && !firebaseUser.isAnonymous) {
+      getCurrentFcmToken().then((t) => {
+        setToken(t)
+        if (!t) setTokenError(true)
+      })
+    }
+  }, [permission, firebaseUser])
+
+  async function handleEnable() {
+    if (!firebaseUser || firebaseUser.isAnonymous) return
+    setLoading(true)
+    setTokenError(false)
+    try {
+      const t = await requestFcmToken()
+      if (t) {
+        await saveFcmToken(firebaseUser.uid, t)
+        setToken(t)
+        setPermission('granted')
+      } else {
+        setPermission(Notification.permission)
+        setTokenError(true)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleDisable() {
+    if (!firebaseUser || !token) return
+    setLoading(true)
+    try {
+      await removeFcmToken(firebaseUser.uid, token)
+      setToken(null)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (permission === 'unsupported') return null
+
+  const isAnon = !firebaseUser || firebaseUser.isAnonymous
+  const isEnabled = permission === 'granted' && !!token
+  const isDenied = permission === 'denied'
+  const isGrantedNoToken = permission === 'granted' && !token && tokenError
+
+  return (
+    <div>
+      <SectionLabel>Push notifications</SectionLabel>
+      <Card>
+        <div className="flex flex-col gap-3 p-4">
+          {isDenied ? (
+            <p className="text-sm text-red-500">
+              Notifications are blocked. Enable them in your browser/OS settings and reload the app.
+            </p>
+          ) : isAnon ? (
+            <p className="text-sm text-gray-500">
+              Sign in to enable push notifications for expiry and low-stock reminders — even when the app is closed.
+            </p>
+          ) : isEnabled ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                <span className="text-sm text-gray-700 font-medium">Notifications enabled</span>
+              </div>
+              <p className="text-xs text-gray-400">
+                You'll be notified daily about expiring items and low stock based on your settings below.
+              </p>
+              <button
+                onClick={handleDisable}
+                disabled={loading}
+                className="self-start text-xs text-red-400 hover:text-red-600 border border-red-200 hover:border-red-400 rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
+              >
+                {loading ? 'Disabling…' : 'Disable on this device'}
+              </button>
+            </>
+          ) : isGrantedNoToken ? (
+            <>
+              <p className="text-sm text-orange-500 font-medium">
+                Permission granted but setup failed.
+              </p>
+              <p className="text-xs text-gray-400">
+                This can happen if the app isn't installed to your home screen or the browser doesn't support push notifications.
+              </p>
+              <button
+                onClick={handleEnable}
+                disabled={loading}
+                className="self-start border border-orange-300 text-orange-600 text-sm font-medium rounded-xl px-4 py-2 hover:bg-orange-50 transition-colors disabled:opacity-40"
+              >
+                {loading ? 'Retrying…' : 'Retry setup'}
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-gray-500">
+                Get notified about expiring items and low stock — even when the app is closed.
+              </p>
+              <button
+                onClick={handleEnable}
+                disabled={loading}
+                className="self-start bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-xl px-4 py-2 transition-colors disabled:opacity-40"
+              >
+                {loading ? 'Enabling…' : 'Enable notifications'}
+              </button>
+            </>
+          )}
+        </div>
+      </Card>
+    </div>
+  )
+}
+
 function NotificationsSection({
   settings,
   update,
@@ -447,6 +571,8 @@ function NotificationsSection({
 }) {
   return (
     <PageShell title="Notifications" onBack={onBack}>
+      <NotificationPermissionCard />
+
       <div>
         <SectionLabel>Expiry</SectionLabel>
         <Card>
@@ -537,10 +663,6 @@ function NotificationsSection({
         </Card>
       </div>
 
-      <Note>
-        Push notifications require a signed-in account and will be enabled in a
-        future update.
-      </Note>
     </PageShell>
   )
 }

@@ -30,6 +30,8 @@ import {
 import { createGroup } from '../firebase/groups'
 import { seedUserData } from '../firebase/seed'
 import { nextGroupColor } from '../data/groupColors'
+import { initLocalStore, getLocalStore, clearLocalStore } from '../utils/localStore'
+import { migrateLocalToFirestore } from '../firebase/migration'
 
 interface AuthContextValue {
   firebaseUser: FirebaseUser | null
@@ -80,34 +82,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       suppressAnon.current = false
 
       try {
-        const existing = await getUserDoc(fbUser.uid)
-        if (!existing) {
-          // First-time user — create their Firestore document + default group
-          await createUserDoc(fbUser.uid, {
-            displayName: fbUser.displayName,
-            email: fbUser.email,
-            photoURL: fbUser.photoURL,
-            isAnonymous: fbUser.isAnonymous,
-          })
-          const groupId = await createGroup(
-            fbUser.uid,
-            'My Home',
-            nextGroupColor([]),
-          )
-          await updateUserDoc(fbUser.uid, {
-            groupIds: [groupId],
-            activeGroupId: groupId,
-          })
-          await seedUserData(groupId, fbUser.uid)
-          localStorage.setItem('wl_sample_data', '1')
-        } else if (!fbUser.isAnonymous && existing.isAnonymous) {
-          // Anonymous → real account upgrade: sync display fields
-          await updateUserDoc(fbUser.uid, {
-            displayName: fbUser.displayName ?? existing.displayName,
-            email: fbUser.email,
-            photoURL: fbUser.photoURL,
-            isAnonymous: false,
-          })
+        if (fbUser.isAnonymous) {
+          // Anonymous users: initialize local store only — no Firestore writes
+          initLocalStore(fbUser.uid)
+        } else {
+          const existing = await getUserDoc(fbUser.uid)
+          if (!existing) {
+            // First-time real user — check for local data to migrate
+            const localData = getLocalStore(fbUser.uid)
+            if (localData) {
+              await migrateLocalToFirestore(
+                fbUser.uid,
+                localData,
+                fbUser.displayName,
+                fbUser.email,
+                fbUser.photoURL,
+              )
+              clearLocalStore(fbUser.uid)
+            } else {
+              // No prior anonymous session — create a fresh account
+              await createUserDoc(fbUser.uid, {
+                displayName: fbUser.displayName,
+                email: fbUser.email,
+                photoURL: fbUser.photoURL,
+                isAnonymous: false,
+              })
+              const groupId = await createGroup(
+                fbUser.uid,
+                'My Home',
+                nextGroupColor([]),
+              )
+              await updateUserDoc(fbUser.uid, {
+                groupIds: [groupId],
+                activeGroupId: groupId,
+              })
+              await seedUserData(groupId, fbUser.uid)
+              localStorage.setItem('wl_sample_data', '1')
+            }
+          } else if (existing.isAnonymous) {
+            // Anonymous → real account upgrade: sync display fields
+            await updateUserDoc(fbUser.uid, {
+              displayName: fbUser.displayName ?? existing.displayName,
+              email: fbUser.email,
+              photoURL: fbUser.photoURL,
+              isAnonymous: false,
+            })
+          }
         }
       } catch (err) {
         console.error('User init error:', err)
