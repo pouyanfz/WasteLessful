@@ -60,10 +60,10 @@ export default function JoinPage() {
 
   if (state.phase === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800">
         <div className="flex flex-col items-center gap-3">
           <img src={loadingAnimation} alt="" className="w-16 h-16" />
-          <p className="text-sm text-gray-400">Loading...</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>
         </div>
       </div>
     )
@@ -125,8 +125,8 @@ export default function JoinPage() {
   const isJoining = state.phase === 'joining'
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col gap-5">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col gap-5">
         {/* Logo / brand */}
         <div className="flex flex-col items-center gap-1 pb-1">
           <div className="w-12 h-12 rounded-2xl bg-green-500 flex items-center justify-center mb-1">
@@ -143,10 +143,10 @@ export default function JoinPage() {
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </div>
-          <h1 className="text-lg font-semibold text-gray-900">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-50">
             Join a shared group
           </h1>
-          <p className="text-sm text-gray-500 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
             Enter the invite code or paste the link you received.
           </p>
         </div>
@@ -187,7 +187,7 @@ export default function JoinPage() {
         {/* Code input */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Invite code
             </label>
             <input
@@ -199,7 +199,7 @@ export default function JoinPage() {
               autoCapitalize="characters"
               autoCorrect="off"
               spellCheck={false}
-              className="border border-gray-200 rounded-xl px-4 py-3 text-base font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-green-400 uppercase"
+              className="border border-gray-200 rounded-xl px-4 py-3 text-base font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-green-400 uppercase dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
             />
           </div>
 
@@ -221,7 +221,7 @@ export default function JoinPage() {
 
         <button
           onClick={() => navigate('/')}
-          className="text-sm text-gray-400 hover:text-gray-600 text-center transition-colors"
+          className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-center transition-colors"
         >
           Back to app
         </button>
@@ -246,12 +246,12 @@ function ResultScreen({
   action: { label: string; onClick: () => void }
 }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col items-center gap-4 text-center">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800 flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex flex-col items-center gap-4 text-center">
         <span className="text-4xl">{icon}</span>
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-          <p className="text-sm text-gray-500">{body}</p>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-50">{title}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{body}</p>
         </div>
         <button
           onClick={action.onClick}
