@@ -59,17 +59,17 @@ function TabStrip({
     return `shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
       active
         ? 'border-green-500 text-green-600'
-        : 'border-transparent text-gray-500 hover:text-gray-700'
+        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
     }`
   }
 
   return (
-    <div className="bg-white border-b border-gray-100">
+    <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700">
       <div className="flex items-center max-w-lg mx-auto">
         {/* Manage button */}
         <button
           onClick={onManage}
-          className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-green-500 transition-colors border-r border-gray-100"
+          className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-green-500 transition-colors border-r border-gray-100 dark:border-gray-700"
           title="Manage lists"
         >
           <svg
@@ -109,7 +109,7 @@ function TabStrip({
 
             {/* Inventory group tabs — separated by a subtle divider if there are custom lists */}
             {groups.length > 0 && lists.length > 0 && (
-              <div className="w-px bg-gray-200 my-3 mx-1 shrink-0" />
+              <div className="w-px bg-gray-200 dark:bg-gray-600 my-3 mx-1 shrink-0" />
             )}
             {groups.map((g) => (
               <button
@@ -136,7 +136,7 @@ function TabStrip({
                     if (e.key === 'Escape') cancel()
                   }}
                   placeholder="List name"
-                  className="border border-green-400 rounded-lg px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="border border-green-400 rounded-lg px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
                 />
                 <button
                   onClick={confirm}
@@ -147,7 +147,7 @@ function TabStrip({
                 </button>
                 <button
                   onClick={cancel}
-                  className="w-8 h-8 rounded-full border border-gray-200 text-gray-400 text-lg leading-none flex items-center justify-center shrink-0"
+                  className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 text-lg leading-none flex items-center justify-center shrink-0"
                 >
                   ✕
                 </button>
@@ -155,7 +155,7 @@ function TabStrip({
             )}
           </div>
           {!adding && (
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none" />
           )}
         </div>
 
@@ -163,7 +163,7 @@ function TabStrip({
         {!adding && (
           <button
             onClick={startAdding}
-            className="shrink-0 w-10 h-10 flex items-center justify-center border-l border-gray-100 text-gray-400 text-xl leading-none hover:text-green-500 transition-colors"
+            className="shrink-0 w-10 h-10 flex items-center justify-center border-l border-gray-100 dark:border-gray-700 text-gray-400 dark:text-gray-500 text-xl leading-none hover:text-green-500 transition-colors"
             title="New list"
           >
             +
@@ -203,16 +203,16 @@ function ManageListsModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden"
+        className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-gray-800">
+        <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100 dark:border-gray-700">
+          <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">
             Manage Lists
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <svg
               width="14"
@@ -232,17 +232,17 @@ function ManageListsModal({
         {/* Custom lists */}
         {lists.length > 0 && (
           <>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 pt-3 pb-1">
+            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide px-5 pt-3 pb-1">
               Your lists
             </p>
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 dark:divide-gray-700">
               {lists.map((l, i) => (
                 <li key={l.id} className="flex items-center gap-3 px-5 py-3">
                   <div className="flex flex-col gap-0.5">
                     <button
                       onClick={() => move(i, -1)}
                       disabled={i === 0}
-                      className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
+                      className="w-6 h-5 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-20 transition-colors"
                     >
                       <svg
                         width="10"
@@ -256,7 +256,7 @@ function ManageListsModal({
                     <button
                       onClick={() => move(i, 1)}
                       disabled={i === lists.length - 1}
-                      className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
+                      className="w-6 h-5 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-20 transition-colors"
                     >
                       <svg
                         width="10"
@@ -268,7 +268,7 @@ function ManageListsModal({
                       </svg>
                     </button>
                   </div>
-                  <span className="flex-1 text-sm font-medium text-gray-700 truncate">
+                  <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-200 truncate">
                     {l.name}
                   </span>
                   <button
@@ -286,16 +286,16 @@ function ManageListsModal({
         {/* Inventory group tabs — read-only info */}
         {groups.length > 0 && (
           <>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-5 pt-3 pb-1">
+            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide px-5 pt-3 pb-1">
               Group tabs
             </p>
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 dark:divide-gray-700">
               {groups.map((g) => (
                 <li key={g.id} className="flex items-center gap-3 px-5 py-3">
-                  <span className="flex-1 text-sm text-gray-500 truncate">
+                  <span className="flex-1 text-sm text-gray-500 dark:text-gray-400 truncate">
                     {g.name}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
                     Managed in Items
                   </span>
                 </li>
@@ -305,12 +305,12 @@ function ManageListsModal({
         )}
 
         {lists.length === 0 && groups.length === 0 && (
-          <p className="text-center text-sm text-gray-400 py-8">
+          <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-8">
             No lists yet.
           </p>
         )}
 
-        <div className="px-5 py-4 border-t border-gray-100">
+        <div className="px-5 py-4 border-t border-gray-100 dark:border-gray-700">
           <button
             onClick={onClose}
             className="w-full py-2.5 rounded-xl bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors"
@@ -381,19 +381,19 @@ function EditShoppingItemSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[85vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Edit Item</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-50">Edit Item</h2>
             {listLabel && (
-              <p className="text-xs text-gray-400 mt-0.5">in {listLabel}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">in {listLabel}</p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl leading-none"
           >
             &times;
           </button>
@@ -401,18 +401,18 @@ function EditShoppingItemSheet({
 
         <form onSubmit={handleSave} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Name</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoFocus
-              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
             />
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Quantity
             </label>
             <div className="flex gap-2">
@@ -422,7 +422,7 @@ function EditShoppingItemSheet({
                 step="any"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-24 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="w-24 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
               />
               <select
                 value={isCustomUnit ? '__custom__' : unit}
@@ -433,7 +433,7 @@ function EditShoppingItemSheet({
                     setUnit(e.target.value)
                   }
                 }}
-                className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -450,7 +450,7 @@ function EditShoppingItemSheet({
                 onChange={(e) => setCustomUnit(e.target.value)}
                 placeholder="e.g. jar, tray…"
                 autoFocus
-                className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 mt-1"
+                className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 mt-1 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
               />
             )}
           </div>
@@ -475,7 +475,7 @@ function EditShoppingItemSheet({
 
         {isBought &&
           (item.addedToInventory ? (
-            <div className="w-full py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-400 text-sm font-medium flex items-center justify-center gap-2 cursor-default">
+            <div className="w-full py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 text-sm font-medium flex items-center justify-center gap-2 cursor-default">
               <svg
                 width="15"
                 height="15"
@@ -526,7 +526,7 @@ function EditShoppingItemSheet({
             </button>
             <button
               onClick={() => setConfirmDelete(false)}
-              className="flex-1 border border-gray-200 text-gray-600 rounded-xl py-3 text-sm hover:bg-gray-50 transition-colors"
+              className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-xl py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
@@ -563,23 +563,23 @@ function InventoryPromptSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-50">
               Mark as bought?
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Do you want to add{' '}
-              <span className="font-medium text-gray-700">{item.name}</span> to
+              <span className="font-medium text-gray-700 dark:text-gray-200">{item.name}</span> to
               your inventory too?
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none shrink-0"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl leading-none shrink-0"
           >
             &times;
           </button>
@@ -608,7 +608,7 @@ function InventoryPromptSheet({
 
         <button
           onClick={onJustMark}
-          className="w-full py-3 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors"
+          className="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           Just mark as bought
         </button>
@@ -637,7 +637,7 @@ function ShoppingRow({
   const bought = item.status === 'bought'
   return (
     <div
-      className={`bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm border border-gray-100 cursor-pointer active:scale-[0.99] transition-transform ${bought ? 'opacity-60' : ''}`}
+      className={`bg-white dark:bg-gray-900 rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm border border-gray-100 dark:border-gray-700 cursor-pointer active:scale-[0.99] transition-transform ${bought ? 'opacity-60' : ''}`}
       onClick={() => onEdit(item)}
     >
       <button
@@ -645,7 +645,7 @@ function ShoppingRow({
           e.stopPropagation()
           onToggle(item.id)
         }}
-        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${bought ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-green-400'}`}
+        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${bought ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 dark:border-gray-600 hover:border-green-400'}`}
       >
         {bought && (
           <svg
@@ -665,12 +665,12 @@ function ShoppingRow({
 
       <div className="flex-1 min-w-0">
         <p
-          className={`text-sm font-medium ${bought ? 'line-through text-gray-400' : 'text-gray-900'}`}
+          className={`text-sm font-medium ${bought ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-50'}`}
         >
           {item.name}
         </p>
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-gray-400 dark:text-gray-500">
             {item.quantity.amount} {item.quantity.unit}
           </span>
           {item.autoAdded && (
@@ -925,13 +925,13 @@ export default function ShoppingListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
-        <h1 className="text-xl font-semibold text-gray-900">Shopping List</h1>
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-50">Shopping List</h1>
         <button
           onClick={() => navigate('/settings')}
-          className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:border-green-400 hover:text-green-600 transition-colors"
+          className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-green-400 hover:text-green-600 transition-colors"
           title="Settings"
         >
           <svg
@@ -963,7 +963,7 @@ export default function ShoppingListPage() {
       {/* Add form */}
       <form
         onSubmit={showDestSelector ? handleAddFromAll : handleAdd}
-        className="bg-white border-b border-gray-100 px-4 py-3 flex flex-col gap-2"
+        className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-4 py-3 flex flex-col gap-2"
       >
         {/* Destination selector — only on All tab */}
         {showDestSelector && (lists.length > 0 || groups.length > 0) && (
@@ -973,20 +973,20 @@ export default function ShoppingListPage() {
                 key={l.id}
                 type="button"
                 onClick={() => setAddDestTab(l.id)}
-                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === l.id ? 'bg-green-500 text-white border-green-500' : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'}`}
+                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === l.id ? 'bg-green-500 text-white border-green-500' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-green-400'}`}
               >
                 {l.name}
               </button>
             ))}
             {lists.length > 0 && groups.length > 0 && (
-              <div className="w-px bg-gray-200 my-1 shrink-0" />
+              <div className="w-px bg-gray-200 dark:bg-gray-600 my-1 shrink-0" />
             )}
             {groups.map((g) => (
               <button
                 key={g.id}
                 type="button"
                 onClick={() => setAddDestTab(g.id)}
-                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === g.id ? 'bg-green-500 text-white border-green-500' : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'}`}
+                className={`shrink-0 text-xs rounded-full px-3 py-1.5 border font-medium transition-colors ${addDestTab === g.id ? 'bg-green-500 text-white border-green-500' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-green-400'}`}
               >
                 {g.name}
               </button>
@@ -1000,7 +1000,7 @@ export default function ShoppingListPage() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder="Add item…"
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
         />
         {/* Row 2: qty + unit + submit — always fits on any screen width */}
         <div className="flex gap-2">
@@ -1010,7 +1010,7 @@ export default function ShoppingListPage() {
             step="any"
             value={newAmount}
             onChange={(e) => setNewAmount(Number(e.target.value))}
-            className="w-16 border border-gray-200 rounded-xl px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-16 border border-gray-200 rounded-xl px-2 py-2.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
           />
           <select
             value={isCustomAddUnit ? '__custom__' : newUnit}
@@ -1021,7 +1021,7 @@ export default function ShoppingListPage() {
                 setNewUnit(e.target.value)
               }
             }}
-            className="flex-1 border border-gray-200 rounded-xl px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="flex-1 border border-gray-200 rounded-xl px-2 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
           >
             {UNITS.map((u) => (
               <option key={u} value={u}>
@@ -1047,7 +1047,7 @@ export default function ShoppingListPage() {
             onChange={(e) => setCustomAddUnit(e.target.value)}
             placeholder="e.g. jar, tray…"
             autoFocus
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
           />
         )}
       </form>
@@ -1056,7 +1056,7 @@ export default function ShoppingListPage() {
       <main className="px-4 py-4 max-w-lg mx-auto flex flex-col gap-6">
         {toBuy.length > 0 && (
           <section className="flex flex-col gap-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 px-1">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 px-1">
               To buy · {toBuy.length}
             </h2>
             {toBuy.map((item) => (
@@ -1085,7 +1085,7 @@ export default function ShoppingListPage() {
         {bought.length > 0 && (
           <section className="flex flex-col gap-2">
             <div className="flex items-center justify-between px-1">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
                 Bought · {bought.length}
               </h2>
               <button
@@ -1119,7 +1119,7 @@ export default function ShoppingListPage() {
         )}
 
         {scopedItems.length === 0 && (
-          <p className="text-center text-gray-400 mt-12">
+          <p className="text-center text-gray-400 dark:text-gray-500 mt-12">
             Nothing on the list.
           </p>
         )}

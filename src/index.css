@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Pin breakpoints to pixel values so the 18px root font-size doesn't
      shift them (Tailwind v4 uses rem for breakpoints by default). */

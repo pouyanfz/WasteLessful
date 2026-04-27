@@ -92,24 +92,24 @@ export default function InviteModal({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh] overflow-hidden"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100 dark:border-gray-700">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-50">
               Invite to {group.name}
             </h2>
             {codeExpiry && !isExpired && (
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                 Code expires {codeExpiry.toDate().toLocaleDateString()}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           >
             <svg
               width="14"
@@ -130,10 +130,10 @@ export default function InviteModal({
           {/* Invite code display */}
           <div className="flex flex-col gap-2">
             <div
-              className={`flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3 border ${isExpired ? 'border-red-200' : 'border-gray-200'}`}
+              className={`flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 border ${isExpired ? 'border-red-200' : 'border-gray-200 dark:border-gray-600'}`}
             >
               <span
-                className={`text-xl font-mono font-bold tracking-widest ${isExpired ? 'text-red-400' : 'text-gray-800'}`}
+                className={`text-xl font-mono font-bold tracking-widest ${isExpired ? 'text-red-400' : 'text-gray-800 dark:text-gray-100'}`}
               >
                 {code}
               </span>
@@ -148,7 +148,7 @@ export default function InviteModal({
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={handleCopyCode}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 {codeCopied ? (
                   <svg
@@ -182,7 +182,7 @@ export default function InviteModal({
               </button>
               <button
                 onClick={handleCopyLink}
-                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 {linkCopied ? (
                   <svg
@@ -220,7 +220,7 @@ export default function InviteModal({
               <button
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="flex items-center justify-center gap-2 py-2 text-sm text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                className="flex items-center justify-center gap-2 py-2 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50"
               >
                 <svg
                   width="13"
@@ -243,34 +243,34 @@ export default function InviteModal({
 
           {/* Members list */}
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
               Members ({members.length})
             </p>
             {loadingMembers ? (
               <div className="flex flex-col gap-2">
                 {[...Array(2)].map((_, i) => (
                   <div key={i} className="flex items-center gap-3 py-2">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 animate-pulse" />
-                    <div className="h-3.5 bg-gray-100 rounded animate-pulse w-32" />
+                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 animate-pulse" />
+                    <div className="h-3.5 bg-gray-100 dark:bg-gray-700 rounded animate-pulse w-32" />
                   </div>
                 ))}
               </div>
             ) : (
-              <ul className="flex flex-col divide-y divide-gray-50">
+              <ul className="flex flex-col divide-y divide-gray-50 dark:divide-gray-700">
                 {members.map((m) => (
                   <li key={m.uid} className="flex items-center gap-3 py-2.5">
                     <Avatar profile={m} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">
                         {m.displayName}
                         {m.uid === currentUserId && (
-                          <span className="ml-1.5 text-xs text-gray-400 font-normal">
+                          <span className="ml-1.5 text-xs text-gray-400 dark:text-gray-500 font-normal">
                             you
                           </span>
                         )}
                       </p>
                       {m.uid === group.ownerId && (
-                        <p className="text-xs text-gray-400">Owner</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">Owner</p>
                       )}
                     </div>
                     {isOwner && m.uid !== currentUserId && (
@@ -289,7 +289,7 @@ export default function InviteModal({
           </div>
         </div>
 
-        <div className="px-5 pb-5 pt-2 border-t border-gray-100">
+        <div className="px-5 pb-5 pt-2 border-t border-gray-100 dark:border-gray-700">
           <button
             onClick={onClose}
             className="w-full py-2.5 rounded-xl bg-green-500 text-white text-sm font-medium hover:bg-green-600 transition-colors"

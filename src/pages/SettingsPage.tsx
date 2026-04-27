@@ -27,11 +27,11 @@ function PageShell({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
         <button
           onClick={onBack}
-          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
         >
           <svg
             width="20"
@@ -46,7 +46,7 @@ function PageShell({
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-50">{title}</h1>
       </header>
       <div className="px-4 py-6 flex flex-col gap-6 max-w-lg mx-auto">
         {children}
@@ -57,7 +57,7 @@ function PageShell({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide px-1 mb-2">
+    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide px-1 mb-2">
       {children}
     </p>
   )
@@ -65,7 +65,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm">
       {children}
     </div>
   )
@@ -84,11 +84,11 @@ function Row({
 }) {
   return (
     <div
-      className={`flex items-center justify-between gap-4 px-4 py-3.5 ${!last ? 'border-b border-gray-100' : ''}`}
+      className={`flex items-center justify-between gap-4 px-4 py-3.5 ${!last ? 'border-b border-gray-100 dark:border-gray-700' : ''}`}
     >
       <div className="min-w-0">
-        <p className="text-sm text-gray-800">{label}</p>
-        {sublabel && <p className="text-xs text-gray-400 mt-0.5">{sublabel}</p>}
+        <p className="text-sm text-gray-800 dark:text-gray-100">{label}</p>
+        {sublabel && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sublabel}</p>}
       </div>
       {children}
     </div>
@@ -105,7 +105,7 @@ function Toggle({
   return (
     <button
       onClick={() => onChange(!value)}
-      className={`w-12 h-7 rounded-full transition-colors relative shrink-0 ${value ? 'bg-green-500' : 'bg-gray-200'}`}
+      className={`w-12 h-7 rounded-full transition-colors relative shrink-0 ${value ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-600'}`}
     >
       <span
         className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${value ? 'left-6' : 'left-1'}`}
@@ -134,7 +134,7 @@ function Stepper({
       <button
         onClick={() => onChange(Math.max(min, value - step))}
         disabled={disabled || value <= min}
-        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-green-400 hover:text-green-600 disabled:opacity-30 transition-colors"
+        className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-green-400 hover:text-green-600 disabled:opacity-30 transition-colors"
       >
         <svg
           width="12"
@@ -148,14 +148,14 @@ function Stepper({
         </svg>
       </button>
       <span
-        className={`text-sm font-medium w-8 text-center ${disabled ? 'text-gray-300' : 'text-gray-700'}`}
+        className={`text-sm font-medium w-8 text-center ${disabled ? 'text-gray-300 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200'}`}
       >
         {value}
       </span>
       <button
         onClick={() => onChange(Math.min(max, value + step))}
         disabled={disabled || value >= max}
-        className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:border-green-400 hover:text-green-600 disabled:opacity-30 transition-colors"
+        className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-600 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-green-400 hover:text-green-600 disabled:opacity-30 transition-colors"
       >
         <svg
           width="12"
@@ -173,7 +173,7 @@ function Stepper({
 }
 
 function Note({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs text-gray-400 px-1">{children}</p>
+  return <p className="text-xs text-gray-400 dark:text-gray-500 px-1">{children}</p>
 }
 
 // ─── Sub-pages ────────────────────────────────────────────────────────────────
@@ -224,10 +224,10 @@ function AccountSection({ onBack }: { onBack: () => void }) {
           <img
             src={photo}
             alt={displayName}
-            className="w-20 h-20 rounded-full object-cover border border-gray-200"
+            className="w-20 h-20 rounded-full object-cover border border-gray-200 dark:border-gray-600"
           />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-2xl font-semibold text-gray-400">
+          <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center text-2xl font-semibold text-gray-400 dark:text-gray-500">
             {isAnon ? (
               <svg
                 width="36"
@@ -248,12 +248,12 @@ function AccountSection({ onBack }: { onBack: () => void }) {
           </div>
         )}
         <div className="text-center">
-          <p className="text-sm font-semibold text-gray-800">
+          <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
             {isAnon ? 'Guest' : displayName}
           </p>
-          {email && <p className="text-xs text-gray-400 mt-0.5">{email}</p>}
+          {email && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{email}</p>}
           {isAnon && (
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
               Data saved on this device only
             </p>
           )}
@@ -265,7 +265,7 @@ function AccountSection({ onBack }: { onBack: () => void }) {
           <Card>
             <button
               onClick={() => setShowSignIn(true)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-green-600 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-green-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               <svg
                 width="17"
@@ -307,7 +307,7 @@ function AccountSection({ onBack }: { onBack: () => void }) {
                       if (e.key === 'Escape') setEditingName(false)
                     }}
                     placeholder="Your name"
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
                   />
                   <button
                     onClick={handleSaveName}
@@ -329,9 +329,9 @@ function AccountSection({ onBack }: { onBack: () => void }) {
                     setNameInput(displayName)
                     setEditingName(true)
                   }}
-                  className="w-full flex items-center justify-between px-4 py-3.5 text-sm hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
-                  <span className="text-gray-800">{displayName}</span>
+                  <span className="text-gray-800 dark:text-gray-100">{displayName}</span>
                   <span className="text-xs text-green-600">Edit</span>
                 </button>
               )}
@@ -343,7 +343,7 @@ function AccountSection({ onBack }: { onBack: () => void }) {
             <button
               onClick={handleSignOut}
               disabled={busy}
-              className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 px-4 py-4 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               Sign out
             </button>
@@ -359,10 +359,10 @@ function AccountSection({ onBack }: { onBack: () => void }) {
               </button>
             ) : (
               <div className="px-4 py-4 flex flex-col gap-3">
-                <p className="text-sm text-gray-700 font-medium">
+                <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
                   Delete your account?
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 dark:text-gray-500">
                   This cannot be undone. Your data will be removed.
                 </p>
                 <div className="flex gap-2">
@@ -375,7 +375,7 @@ function AccountSection({ onBack }: { onBack: () => void }) {
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
-                    className="flex-1 border border-gray-200 text-gray-500 rounded-xl py-2.5 text-sm hover:bg-gray-50 transition-colors"
+                    className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 rounded-xl py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     Cancel
                   </button>
@@ -421,7 +421,7 @@ function AppearanceSection({
                 className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors ${
                   settings.theme === t.value
                     ? 'bg-green-500 text-white shadow-sm'
-                    : 'text-gray-500 hover:bg-gray-50'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
                 }`}
               >
                 {t.label}
@@ -504,16 +504,16 @@ function NotificationPermissionCard() {
               Notifications are blocked. Enable them in your browser/OS settings and reload the app.
             </p>
           ) : isAnon ? (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Sign in to enable push notifications for expiry and low-stock reminders — even when the app is closed.
             </p>
           ) : isEnabled ? (
             <>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
-                <span className="text-sm text-gray-700 font-medium">Notifications enabled</span>
+                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">Notifications enabled</span>
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
                 You'll be notified daily about expiring items and low stock based on your settings below.
               </p>
               <button
@@ -529,7 +529,7 @@ function NotificationPermissionCard() {
               <p className="text-sm text-orange-500 font-medium">
                 Permission granted but setup failed.
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
                 This can happen if the app isn't installed to your home screen or the browser doesn't support push notifications.
               </p>
               <button
@@ -542,7 +542,7 @@ function NotificationPermissionCard() {
             </>
           ) : (
             <>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Get notified about expiring items and low stock — even when the app is closed.
               </p>
               <button
@@ -784,7 +784,7 @@ function SupportSection({ onBack }: { onBack: () => void }) {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center justify-between px-4 py-3.5 text-sm text-gray-800 hover:bg-gray-50 transition-colors ${i < arr.length - 1 ? 'border-b border-gray-100' : ''}`}
+            className={`flex items-center justify-between px-4 py-3.5 text-sm text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${i < arr.length - 1 ? 'border-b border-gray-100 dark:border-gray-700' : ''}`}
           >
             {link.label}
             <svg
@@ -804,8 +804,8 @@ function SupportSection({ onBack }: { onBack: () => void }) {
       </Card>
 
       <div className="flex flex-col items-center gap-1 py-4">
-        <p className="text-sm font-semibold text-gray-400">Wastelessful</p>
-        <p className="text-xs text-gray-400">Version {version}</p>
+        <p className="text-sm font-semibold text-gray-400 dark:text-gray-500">Wastelessful</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500">Version {version}</p>
       </div>
     </PageShell>
   )
@@ -981,11 +981,11 @@ export default function SettingsPage() {
     return <SupportSection onBack={() => setActiveSection(null)} />
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center gap-3 sticky top-0 z-10">
         <button
           onClick={() => navigate(-1)}
-          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500"
+          className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
         >
           <svg
             width="20"
@@ -1000,17 +1000,17 @@ export default function SettingsPage() {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
-        <h1 className="text-xl font-semibold text-gray-900">Settings</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-50">Settings</h1>
       </header>
 
       <div className="px-4 py-6 max-w-lg mx-auto">
-        <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm">
           {SECTIONS.map((section, i) => (
             <button
               key={section.id}
               onClick={() => setActiveSection(section.id)}
-              className={`w-full flex items-center gap-4 px-4 py-3.5 hover:bg-gray-50 transition-colors text-left ${
-                i < SECTIONS.length - 1 ? 'border-b border-gray-100' : ''
+              className={`w-full flex items-center gap-4 px-4 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left ${
+                i < SECTIONS.length - 1 ? 'border-b border-gray-100 dark:border-gray-700' : ''
               }`}
             >
               {/* Icon */}
@@ -1022,10 +1022,10 @@ export default function SettingsPage() {
 
               {/* Label + subtitle */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800">
+                <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
                   {section.label}
                 </p>
-                <p className="text-xs text-gray-400 truncate">
+                <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                   {settings ? section.subtitle(settings) : ''}
                 </p>
               </div>
@@ -1047,7 +1047,7 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <p className="text-center text-xs text-gray-300 mt-6">
+        <p className="text-center text-xs text-gray-300 dark:text-gray-600 mt-6">
           v{__APP_VERSION__} · build {__GIT_HASH__}
         </p>
       </div>
