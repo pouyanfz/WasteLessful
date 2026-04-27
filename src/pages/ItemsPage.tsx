@@ -603,7 +603,7 @@ export default function ItemsPage() {
             current.quantity.current,
             current.quantity.initial,
           )
-          const newPct = quantityPercentage(next, newInitial)
+          const newPct = quantityPercentage(next, current.quantity.initial)
           if (
             prevPct > (settings.lowQuantityThreshold ?? 25) &&
             newPct <= (settings.lowQuantityThreshold ?? 25)

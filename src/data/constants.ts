@@ -1,12 +1,11 @@
-export const ITEM_UNITS = ['pieces', 'pack', 'box', 'can', '%', 'slice'] as const
-export type ItemUnit = (typeof ITEM_UNITS)[number] | string
+export const ITEM_UNITS: string[] = ['pieces', 'pack', 'box', 'can', '%', 'slice']
 
 /** Step size for +/- adjust per unit. Defaults to 1 for unlisted units. */
 export const UNIT_STEP: Record<string, number> = {
   '%': 10,
 }
 
-export const ITEM_COLOR_TAGS = [
+export const ITEM_COLOR_TAGS: string[] = [
   '#ef4444',
   '#f97316',
   '#eab308',
@@ -14,9 +13,9 @@ export const ITEM_COLOR_TAGS = [
   '#3b82f6',
   '#a855f7',
   '#ec4899',
-] as const
+]
 
-export const ITEM_CATEGORIES = [
+export const ITEM_CATEGORIES: string[] = [
   'food',
   'drink',
   'dairy',
@@ -24,4 +23,4 @@ export const ITEM_CATEGORIES = [
   'condiment',
   'snack',
   'cleaning',
-] as const
+]
