@@ -6,6 +6,7 @@ import { useAppData } from '../context/AppDataContext'
 import { useAuth } from '../context/AuthContext'
 import { nowTimestamp } from '../utils/timestamp'
 import { groupBadgeBg } from '../data/groupColors'
+import { UNIT_STEP } from '../data/constants'
 import { quantityPercentage } from '../utils/quantity'
 import ItemCard from '../components/ItemCard'
 import AddItemModal from '../components/AddItemModal'
@@ -44,6 +45,7 @@ interface GroupColumnProps {
   filterCount: number
   onItemClick: (item: Item) => void
   onAddClick: () => void
+  onAdjust?: (item: Item, delta: number) => void
   onMoveLeft?: () => void
   onMoveRight?: () => void
 }
@@ -145,6 +147,7 @@ function GroupColumn({
   filterCount,
   onItemClick,
   onAddClick,
+  onAdjust,
   onMoveLeft,
   onMoveRight,
 }: GroupColumnProps) {
@@ -221,6 +224,7 @@ function GroupColumn({
               key={item.id}
               item={item}
               onClick={() => onItemClick(item)}
+              onAdjust={onAdjust ? (d) => onAdjust(item, d) : undefined}
             />
           ))
         )}
@@ -577,11 +581,13 @@ export default function ItemsPage() {
     const current = items.find((i) => i.id === id)
     if (!current) return
 
-    const next = Math.max(0, current.quantity.current + delta)
-    const newInitial =
-      next > current.quantity.initial ? next : current.quantity.initial
+    const step = UNIT_STEP[current.quantity.unit] ?? 1
+    const next = Math.min(
+      current.quantity.initial,
+      Math.max(0, current.quantity.current + delta * step),
+    )
     await updateItem(id, {
-      quantity: { ...current.quantity, current: next, initial: newInitial },
+      quantity: { ...current.quantity, current: next },
     })
 
     if (delta < 0) {
@@ -1108,6 +1114,7 @@ export default function ItemsPage() {
               filterCount={filterCount}
               onItemClick={setEditingItem}
               onAddClick={() => openAddModal(group.id)}
+              onAdjust={(item, d) => handleAdjust(item.id, d)}
               onMoveLeft={i > 0 ? () => moveGroup(i, -1) : undefined}
               onMoveRight={
                 i < groups.length - 1 ? () => moveGroup(i, 1) : undefined

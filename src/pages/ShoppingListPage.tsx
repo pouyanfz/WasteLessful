@@ -5,8 +5,9 @@ import type { Group, ShoppingItem, ShoppingList } from '../types'
 import { useAppData } from '../context/AppDataContext'
 import { useAuth } from '../context/AuthContext'
 import { groupBadgeBg } from '../data/groupColors'
+import { ITEM_UNITS } from '../data/constants'
 
-const UNITS = ['pack', 'L', 'mL', 'kg', 'g', 'bottle', 'box', 'can', 'piece']
+const UNITS = [...ITEM_UNITS]
 
 // ─── Tab strip ────────────────────────────────────────────────────────────────
 
@@ -344,7 +345,7 @@ function EditShoppingItemSheet({
   const [name, setName] = useState(item.name)
   const [amount, setAmount] = useState(item.quantity.amount)
   const [unit, setUnit] = useState(
-    UNITS.includes(item.quantity.unit) ? item.quantity.unit : 'pack',
+    UNITS.includes(item.quantity.unit) ? item.quantity.unit : 'pieces',
   )
   const [customUnit, setCustomUnit] = useState(
     !UNITS.includes(item.quantity.unit) ? item.quantity.unit : '',

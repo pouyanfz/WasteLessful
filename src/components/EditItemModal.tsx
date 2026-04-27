@@ -2,35 +2,11 @@ import { useState } from 'react'
 import type { Item, QuantityUnit } from '../types'
 import type { Group } from '../types'
 import { nowTimestamp, dateStringToTimestamp } from '../utils/timestamp'
+import { ITEM_UNITS, ITEM_COLOR_TAGS, ITEM_CATEGORIES } from '../data/constants'
 
-const UNITS: QuantityUnit[] = [
-  'kg',
-  'g',
-  'L',
-  'mL',
-  'bottle',
-  'pack',
-  'box',
-  'can',
-]
-const COLOR_OPTIONS = [
-  '#ef4444',
-  '#f97316',
-  '#eab308',
-  '#22c55e',
-  '#3b82f6',
-  '#a855f7',
-  '#ec4899',
-]
-const CATEGORY_OPTIONS = [
-  'food',
-  'drink',
-  'dairy',
-  'dry-goods',
-  'condiment',
-  'snack',
-  'cleaning',
-]
+const UNITS: QuantityUnit[] = [...ITEM_UNITS]
+const COLOR_OPTIONS = [...ITEM_COLOR_TAGS]
+const CATEGORY_OPTIONS = [...ITEM_CATEGORIES]
 
 interface EditItemModalProps {
   item: Item
@@ -111,7 +87,10 @@ export default function EditItemModal({
       categories,
       colorTag,
       notes: notes.trim() || null,
-      quantity,
+      quantity: {
+        ...quantity,
+        initial: quantity.unit === '%' ? 100 : quantity.initial,
+      },
       dates: {
         ...item.dates,
         expiresAt: expiresAt ? dateStringToTimestamp(expiresAt) : null,
@@ -184,20 +163,41 @@ export default function EditItemModal({
             <label className="text-sm font-medium text-gray-700">
               Quantity
             </label>
-            <div className="flex gap-2">
-              <input
-                type="number"
-                min={0}
-                step="any"
-                value={quantity.current}
-                onChange={(e) =>
-                  setQuantity((q) => ({
-                    ...q,
-                    current: Number(e.target.value),
-                  }))
-                }
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
-              />
+            <div className="flex gap-2 items-end">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-gray-400">Current</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="any"
+                  value={quantity.current}
+                  onChange={(e) =>
+                    setQuantity((q) => ({
+                      ...q,
+                      current: Number(e.target.value),
+                    }))
+                  }
+                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-20 focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
+              <span className="text-gray-300 text-base pb-2">/</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-gray-400">Max</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="any"
+                  value={quantity.unit === '%' ? 100 : quantity.initial}
+                  disabled={quantity.unit === '%'}
+                  onChange={(e) =>
+                    setQuantity((q) => ({
+                      ...q,
+                      initial: Number(e.target.value),
+                    }))
+                  }
+                  className={`border rounded-lg px-3 py-2 text-sm w-20 focus:outline-none focus:ring-2 focus:ring-green-400 ${quantity.unit === '%' ? 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed' : 'border-gray-200'}`}
+                />
+              </div>
               <select
                 value={isCustomUnit ? '__custom__' : quantity.unit}
                 onChange={(e) => {
@@ -211,6 +211,7 @@ export default function EditItemModal({
                     setQuantity((q) => ({
                       ...q,
                       unit: e.target.value as QuantityUnit,
+                      ...(e.target.value === '%' ? { initial: 100 } : {}),
                     }))
                   }
                 }}

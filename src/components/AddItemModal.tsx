@@ -2,35 +2,11 @@ import { useState } from 'react'
 import type { Item, QuantityUnit } from '../types'
 import type { Group } from '../types'
 import { nowTimestamp, dateStringToTimestamp } from '../utils/timestamp'
+import { ITEM_UNITS, ITEM_COLOR_TAGS, ITEM_CATEGORIES } from '../data/constants'
 
-const UNITS: QuantityUnit[] = [
-  'kg',
-  'g',
-  'L',
-  'mL',
-  'bottle',
-  'pack',
-  'box',
-  'can',
-]
-const COLOR_OPTIONS = [
-  '#ef4444',
-  '#f97316',
-  '#eab308',
-  '#22c55e',
-  '#3b82f6',
-  '#a855f7',
-  '#ec4899',
-]
-const CATEGORY_OPTIONS = [
-  'food',
-  'drink',
-  'dairy',
-  'dry-goods',
-  'condiment',
-  'snack',
-  'cleaning',
-]
+const UNITS: QuantityUnit[] = [...ITEM_UNITS]
+const COLOR_OPTIONS = [...ITEM_COLOR_TAGS]
+const CATEGORY_OPTIONS = [...ITEM_CATEGORIES]
 
 interface AddItemModalProps {
   defaultGroupId: string
@@ -55,12 +31,12 @@ export default function AddItemModal({
   const [customCategoryInput, setCustomCategoryInput] = useState('')
   const [colorTag, setColorTag] = useState<string | null>(null)
   const [notes, setNotes] = useState('')
-  const prefillUnit = prefill?.unit ?? 'pack'
+  const prefillUnit = prefill?.unit ?? 'pieces'
   const isKnownUnit = (UNITS as readonly string[]).includes(prefillUnit)
   const [quantity, setQuantity] = useState({
     current: prefill?.amount ?? 1,
     initial: prefill?.amount ?? 1,
-    unit: (isKnownUnit ? prefillUnit : 'pack') as QuantityUnit,
+    unit: (isKnownUnit ? prefillUnit : 'pieces') as QuantityUnit,
   })
   const [isCustomUnit, setIsCustomUnit] = useState(!isKnownUnit && !!prefill)
   const [customUnitInput, setCustomUnitInput] = useState('')
@@ -110,7 +86,10 @@ export default function AddItemModal({
       colorTag,
       photoURL: null,
       notes: notes.trim() || null,
-      quantity,
+      quantity: {
+        ...quantity,
+        initial: quantity.unit === '%' ? 100 : quantity.initial,
+      },
       dates: {
         addedAt: now,
         purchasedAt: now,
@@ -202,7 +181,8 @@ export default function AddItemModal({
                   setQuantity((q) => ({
                     ...q,
                     current: Number(e.target.value),
-                    initial: Number(e.target.value),
+                    // For % unit the max is always 100; for others keep current = initial
+                    initial: q.unit === '%' ? 100 : Number(e.target.value),
                   }))
                 }
                 className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -220,6 +200,7 @@ export default function AddItemModal({
                     setQuantity((q) => ({
                       ...q,
                       unit: e.target.value as QuantityUnit,
+                      ...(e.target.value === '%' ? { initial: 100 } : {}),
                     }))
                   }
                 }}
