@@ -3,7 +3,6 @@ import type { Item, QuantityUnit } from '../types'
 import type { Group } from '../types'
 import { nowTimestamp, dateStringToTimestamp } from '../utils/timestamp'
 import { ITEM_UNITS, ITEM_COLOR_TAGS, ITEM_CATEGORIES } from '../data/constants'
-import { haptic } from '../utils/haptics'
 
 const UNITS: QuantityUnit[] = [...ITEM_UNITS]
 const COLOR_OPTIONS = [...ITEM_COLOR_TAGS]
@@ -390,7 +389,6 @@ export default function EditItemModal({
               <button
                 type="button"
                 onClick={() => {
-                  haptic('heavy')
                   onDelete(item.id)
                   onClose()
                 }}

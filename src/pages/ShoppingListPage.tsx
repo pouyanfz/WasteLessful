@@ -6,7 +6,6 @@ import { useAppData } from '../context/AppDataContext'
 import { useAuth } from '../context/AuthContext'
 import { groupBadgeBg } from '../data/groupColors'
 import { ITEM_UNITS } from '../data/constants'
-import { haptic } from '../utils/haptics'
 
 const UNITS = [...ITEM_UNITS]
 
@@ -801,7 +800,6 @@ export default function ShoppingListPage() {
   }
 
   async function markBought(id: string) {
-    haptic('medium')
     await updateShoppingItem(id, {
       status: 'bought',
       boughtBy: firebaseUser?.uid ?? null,
@@ -810,7 +808,6 @@ export default function ShoppingListPage() {
   }
 
   async function markBoughtAndAddedToInventory(id: string) {
-    haptic('medium')
     await updateShoppingItem(id, {
       status: 'bought',
       boughtBy: firebaseUser?.uid ?? null,

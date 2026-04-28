@@ -3,7 +3,6 @@ import type { Item, Group } from '../types'
 import { daysUntilExpiry, daysSinceAdded } from '../utils/expiry'
 import { quantityPercentage } from '../utils/quantity'
 import { groupBadgeBg, groupBadgeColor } from '../data/groupColors'
-import { haptic } from '../utils/haptics'
 
 interface ItemCardProps {
   item: Item
@@ -88,7 +87,7 @@ export default function ItemCard({
           onClick={(e) => e.stopPropagation()}
         >
           <button
-            onClick={() => { haptic('light'); onAdjust(-1); setPulseKey(k => k + 1) }}
+            onClick={() => { onAdjust(-1); setPulseKey(k => k + 1) }}
             disabled={item.quantity.current <= 0}
             className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 text-gray-600 dark:text-gray-300 flex items-center justify-center text-xl font-bold leading-none hover:border-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 disabled:opacity-30 transition-colors"
           >
@@ -98,7 +97,7 @@ export default function ItemCard({
             {item.quantity.current} {item.quantity.unit}
           </span>
           <button
-            onClick={() => { haptic('light'); onAdjust(1); setPulseKey(k => k + 1) }}
+            onClick={() => { onAdjust(1); setPulseKey(k => k + 1) }}
             disabled={item.quantity.current >= item.quantity.initial}
             className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-600 dark:bg-gray-600 text-gray-600 dark:text-gray-300 flex items-center justify-center text-xl font-bold leading-none hover:border-green-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 disabled:opacity-30 transition-colors"
           >
