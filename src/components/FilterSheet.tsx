@@ -195,7 +195,7 @@ export default function FilterSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 flex flex-col gap-6 max-h-[85vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 flex flex-col gap-6 max-h-[85vh] overflow-y-auto animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

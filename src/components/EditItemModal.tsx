@@ -3,6 +3,7 @@ import type { Item, QuantityUnit } from '../types'
 import type { Group } from '../types'
 import { nowTimestamp, dateStringToTimestamp } from '../utils/timestamp'
 import { ITEM_UNITS, ITEM_COLOR_TAGS, ITEM_CATEGORIES } from '../data/constants'
+import { haptic } from '../utils/haptics'
 
 const UNITS: QuantityUnit[] = [...ITEM_UNITS]
 const COLOR_OPTIONS = [...ITEM_COLOR_TAGS]
@@ -108,7 +109,7 @@ export default function EditItemModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -389,6 +390,7 @@ export default function EditItemModal({
               <button
                 type="button"
                 onClick={() => {
+                  haptic('heavy')
                   onDelete(item.id)
                   onClose()
                 }}

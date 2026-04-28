@@ -92,7 +92,7 @@ export default function InviteModal({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh] overflow-hidden"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[85vh] overflow-hidden animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

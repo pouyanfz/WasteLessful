@@ -89,11 +89,11 @@ function AddIngredientSheet({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40"
+      className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-black/40"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -187,7 +187,7 @@ function AddIngredientSheet({
               className={`w-11 h-6 rounded-full transition-colors relative ${haveIt ? 'bg-green-500' : 'bg-gray-200'}`}
             >
               <span
-                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${haveIt ? 'left-[22px]' : 'left-0.5'}`}
+                className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${haveIt ? 'left-22px' : 'left-0.5'}`}
               />
             </button>
           </div>
@@ -210,7 +210,7 @@ function AddIngredientSheet({
                   className={`w-11 h-6 rounded-full transition-colors relative ${addToList ? 'bg-green-500' : 'bg-gray-200'}`}
                 >
                   <span
-                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${addToList ? 'left-[22px]' : 'left-0.5'}`}
+                    className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all duration-200 ${addToList ? 'left-22px' : 'left-0.5'}`}
                   />
                 </button>
               </div>
@@ -331,7 +331,7 @@ function RecipeDetailSheet({
         onClick={onClose}
       >
         <div
-          className="bg-white dark:bg-gray-900 w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[90vh]"
+          className="bg-white dark:bg-gray-900 w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[90vh] animate-slide-up sm:animate-scale-in"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -709,7 +709,7 @@ function AddToListButton({
       </button>
       {open && (
         <div
-          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40"
+          className="fixed inset-0 z-100 flex items-end justify-center bg-black/40"
           onClick={(e) => {
             e.stopPropagation()
             setOpen(false)
@@ -772,7 +772,7 @@ function NewRecipeSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">

@@ -22,6 +22,7 @@ import type { Filters } from '../components/FilterSheet'
 
 const STORAGE_KEY = 'activeGroupId'
 const VIEW_MODE_KEY = 'desktopViewMode'
+const NOW_MS = Date.now()
 
 function loadActiveGroupId(): string | null {
   const val = localStorage.getItem(STORAGE_KEY)
@@ -246,11 +247,9 @@ function ArchivedItemCard({
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const archivedMs = item.archivedAt
-    ? Date.now() - item.archivedAt.toDate().getTime()
+  const archivedDays = item.archivedAt
+    ? Math.floor((NOW_MS - item.archivedAt.toDate().getTime()) / 86400000)
     : null
-  const archivedDays =
-    archivedMs !== null ? Math.floor(archivedMs / 86400000) : null
   const archivedLabel =
     archivedDays === null
       ? ''
@@ -500,8 +499,9 @@ export default function ItemsPage() {
   // Auto-dismiss welcome modal for real (non-anonymous) accounts
   useEffect(() => {
     if (firebaseUser && !firebaseUser.isAnonymous && showWelcomeModal) {
-      dismissWelcome()
+      setTimeout(dismissWelcome, 0)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firebaseUser])
 
   async function handleAddGroup(name: string) {
@@ -547,11 +547,14 @@ export default function ItemsPage() {
     } | null
     if (state?.prefillItem) {
       const { name, amount, unit, groupId } = state.prefillItem
-      setAddToGroupId(groupId ?? groups[0]?.id ?? '')
-      setAddModalPrefill({ name, amount, unit })
-      setShowAddModal(true)
-      window.history.replaceState({}, document.title)
+      setTimeout(() => {
+        setAddToGroupId(groupId ?? groups[0]?.id ?? '')
+        setAddModalPrefill({ name, amount, unit })
+        setShowAddModal(true)
+        window.history.replaceState({}, document.title)
+      }, 0)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function moveGroup(index: number, dir: -1 | 1) {

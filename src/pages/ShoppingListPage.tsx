@@ -6,6 +6,7 @@ import { useAppData } from '../context/AppDataContext'
 import { useAuth } from '../context/AuthContext'
 import { groupBadgeBg } from '../data/groupColors'
 import { ITEM_UNITS } from '../data/constants'
+import { haptic } from '../utils/haptics'
 
 const UNITS = [...ITEM_UNITS]
 
@@ -155,7 +156,7 @@ function TabStrip({
             )}
           </div>
           {!adding && (
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white dark:from-gray-900 to-transparent pointer-events-none" />
           )}
         </div>
 
@@ -381,7 +382,7 @@ function EditShoppingItemSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[85vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[85vh] overflow-y-auto animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -563,7 +564,7 @@ function InventoryPromptSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4 animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
@@ -800,6 +801,7 @@ export default function ShoppingListPage() {
   }
 
   async function markBought(id: string) {
+    haptic('medium')
     await updateShoppingItem(id, {
       status: 'bought',
       boughtBy: firebaseUser?.uid ?? null,
@@ -808,6 +810,7 @@ export default function ShoppingListPage() {
   }
 
   async function markBoughtAndAddedToInventory(id: string) {
+    haptic('medium')
     await updateShoppingItem(id, {
       status: 'bought',
       boughtBy: firebaseUser?.uid ?? null,
