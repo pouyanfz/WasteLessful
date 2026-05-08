@@ -10,7 +10,7 @@ How many times have you thrown out food you forgot you had? Wastelessful lets yo
 |:---:|:---:|:---:|
 | ![Items page](docs/screenshots/items-dark.png) | ![Shopping list](docs/screenshots/shopping.png) | ![Settings](docs/screenshots/recipe.png) |
 
-| light Mode | Group Management | Add Item |
+| Light Mode | Group Management | Add Item |
 |:---:|:---:|:---:|
 | ![Add item modal](docs/screenshots/items-light.png) | ![Groups](docs/screenshots/groups.png) | ![Light mode](docs/screenshots/add-item.png) |
 
