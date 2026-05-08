@@ -2,6 +2,7 @@
 
 How many times have you thrown out food you forgot you had? Wastelessful lets you track items across locations, watch expiry dates, manage quantities, and keep a shopping list in sync with roommates or a partner.
 
+**Live app: [wastelessful.web.app](https://wastelessful.web.app)**
 ---
 
 ## Screenshots
