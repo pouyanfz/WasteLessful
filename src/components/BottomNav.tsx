@@ -3,7 +3,7 @@ import recipeImg from '../assets/recipe.png'
 
 export default function BottomNav() {
   return (
-    <nav className="bg-white border-t border-gray-100 flex pb-[env(safe-area-inset-bottom,0px)] shrink-0">
+    <nav className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700 flex pb-[env(safe-area-inset-bottom,0px)] shrink-0">
       {/* Items */}
       <NavLink
         to="/"
@@ -79,7 +79,7 @@ export default function BottomNav() {
             <img
               src={recipeImg}
               alt=""
-              className={`w-6 h-6 object-contain transition-opacity ${
+              className={`w-6 h-6 object-contain transition-opacity dark:invert ${
                 isActive ? 'opacity-100' : 'opacity-40'
               }`}
             />

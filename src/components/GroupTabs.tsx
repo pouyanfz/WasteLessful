@@ -141,12 +141,12 @@ export default function GroupTabs({
 
   return (
     <>
-      <div className="bg-white border-b border-gray-100">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-center max-w-lg mx-auto">
           {/* Manage button — fixed far left */}
           <button
             onClick={() => setManageOpen(true)}
-            className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-green-500 transition-colors border-r border-gray-100"
+            className="shrink-0 w-10 h-10 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-green-500 transition-colors border-r border-gray-100 dark:border-gray-700"
             title="Manage groups"
           >
             <svg
@@ -175,7 +175,7 @@ export default function GroupTabs({
                 className={`shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                   activeGroupId === null
                     ? 'border-green-500 text-green-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                 }`}
               >
                 All
@@ -199,7 +199,7 @@ export default function GroupTabs({
                         ? 'border-green-500 text-green-600'
                         : isActive
                           ? ''
-                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                          : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                   >
                     {g.color && (
@@ -252,8 +252,8 @@ export default function GroupTabs({
                 onClick={() => onChange('archived')}
                 className={`shrink-0 py-3 px-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                   activeGroupId === 'archived'
-                    ? 'border-gray-400 text-gray-700'
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
+                    ? 'border-gray-400 text-gray-700 dark:text-gray-200'
+                    : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                 }`}
               >
                 <svg
@@ -272,7 +272,7 @@ export default function GroupTabs({
                 </svg>
                 Archive
                 {archivedCount !== undefined && archivedCount > 0 && (
-                  <span className="text-[10px] bg-gray-200 text-gray-600 rounded-full px-1.5 leading-5 font-semibold">
+                  <span className="text-[10px] bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full px-1.5 leading-5 font-semibold">
                     {archivedCount}
                   </span>
                 )}
@@ -293,7 +293,7 @@ export default function GroupTabs({
                       if (e.key === 'Escape') cancel()
                     }}
                     placeholder="Group name"
-                    className="border border-green-400 rounded-lg px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400"
+                    className="border border-green-400 rounded-lg px-3 py-1.5 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
                   />
                   <button
                     onClick={confirm}
@@ -304,7 +304,7 @@ export default function GroupTabs({
                   </button>
                   <button
                     onClick={cancel}
-                    className="w-8 h-8 rounded-full border border-gray-200 text-gray-400 text-lg leading-none flex items-center justify-center shrink-0"
+                    className="w-8 h-8 rounded-full border border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 text-lg leading-none flex items-center justify-center shrink-0"
                   >
                     ✕
                   </button>
@@ -314,7 +314,7 @@ export default function GroupTabs({
 
             {/* Gradient fade — hints at more tabs to the right */}
             {!adding && (
-              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent pointer-events-none" />
             )}
           </div>
 
@@ -322,7 +322,7 @@ export default function GroupTabs({
           {!adding && (
             <button
               onClick={startAdding}
-              className="shrink-0 w-10 h-10 flex items-center justify-center border-l border-gray-100 text-gray-400 text-xl leading-none hover:text-green-500 transition-colors"
+              className="shrink-0 w-10 h-10 flex items-center justify-center border-l border-gray-100 dark:border-gray-700 text-gray-400 dark:text-gray-500 text-xl leading-none hover:text-green-500 transition-colors"
               title="Add group"
             >
               +
@@ -341,11 +341,11 @@ export default function GroupTabs({
           }}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100">
-              <h2 className="text-base font-semibold text-gray-800">
+            <div className="flex items-center justify-between px-5 pt-5 pb-3 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">
                 Manage Groups
               </h2>
               <button
@@ -353,7 +353,7 @@ export default function GroupTabs({
                   cancelEditing()
                   closeManage()
                 }}
-                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
                 <svg
                   width="14"
@@ -371,11 +371,11 @@ export default function GroupTabs({
             </div>
 
             {groups.length === 0 ? (
-              <p className="text-center text-sm text-gray-400 py-10">
+              <p className="text-center text-sm text-gray-400 dark:text-gray-500 py-10">
                 No groups yet.
               </p>
             ) : (
-              <ul className="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto">
+              <ul className="divide-y divide-gray-100 dark:divide-gray-700 max-h-[60vh] overflow-y-auto">
                 {groups.map((g, i) => {
                   const isEditing = editingGroupId === g.id
                   return (
@@ -386,7 +386,7 @@ export default function GroupTabs({
                           <button
                             onClick={() => move(i, -1)}
                             disabled={i === 0}
-                            className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
+                            className="w-6 h-5 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-20 transition-colors"
                             aria-label="Move up"
                           >
                             <svg
@@ -401,7 +401,7 @@ export default function GroupTabs({
                           <button
                             onClick={() => move(i, 1)}
                             disabled={i === groups.length - 1}
-                            className="w-6 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 transition-colors"
+                            className="w-6 h-5 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-20 transition-colors"
                             aria-label="Move down"
                           >
                             <svg
@@ -421,7 +421,7 @@ export default function GroupTabs({
                           style={{ backgroundColor: g.color || '#e5e7eb' }}
                         />
 
-                        <span className="flex-1 text-sm font-medium text-gray-700 truncate flex items-center gap-1.5">
+                        <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-200 truncate flex items-center gap-1.5">
                           {displayName(g)}
                           {g.memberIds.length > 1 && (
                             <span className="text-xs" title="Shared group">
@@ -438,7 +438,7 @@ export default function GroupTabs({
                           className={`p-1.5 rounded transition-colors ${
                             isEditing
                               ? 'text-green-600 bg-green-50'
-                              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                              : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
                           }`}
                           title="Edit name and color"
                         >
@@ -499,9 +499,9 @@ export default function GroupTabs({
                         <div className="flex flex-col gap-3 pl-9 pt-1">
                           {/* Nickname input */}
                           <div className="flex flex-col gap-1">
-                            <label className="text-xs text-gray-500">
+                            <label className="text-xs text-gray-500 dark:text-gray-400">
                               Your nickname
-                              <span className="text-gray-400 font-normal">
+                              <span className="text-gray-400 dark:text-gray-500 font-normal">
                                 {' '}
                                 (leave blank to use "{g.name}")
                               </span>
@@ -515,7 +515,7 @@ export default function GroupTabs({
                                 if (e.key === 'Escape') cancelEditing()
                               }}
                               placeholder={g.name}
-                              className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                              className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
                             />
                           </div>
 
@@ -524,7 +524,7 @@ export default function GroupTabs({
                             {/* No color */}
                             <button
                               onClick={() => setEditColor('')}
-                              className="w-6 h-6 rounded-full border border-gray-300 bg-white transition-transform hover:scale-110 relative overflow-hidden shrink-0"
+                              className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 transition-transform hover:scale-110 relative overflow-hidden shrink-0"
                               title="No color"
                               style={
                                 editColor === ''
@@ -569,7 +569,7 @@ export default function GroupTabs({
                             </button>
                             <button
                               onClick={cancelEditing}
-                              className="flex-1 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                              className="flex-1 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                             >
                               Cancel
                             </button>
@@ -582,7 +582,7 @@ export default function GroupTabs({
               </ul>
             )}
 
-            <div className="px-5 py-4 border-t border-gray-100 flex flex-col gap-2">
+            <div className="px-5 py-4 border-t border-gray-100 dark:border-gray-700 flex flex-col gap-2">
               <button
                 onClick={() => {
                   cancelEditing()
@@ -598,7 +598,7 @@ export default function GroupTabs({
                   closeManage()
                   navigate('/join')
                 }}
-                className="w-full py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
               >
                 <svg
                   width="14"
@@ -625,12 +625,12 @@ export default function GroupTabs({
       {/* Delete Confirmation Modal */}
       {pendingDelete && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm mx-4 overflow-hidden">
             <div className="px-5 pt-5 pb-2">
-              <h2 className="text-base font-semibold text-gray-800">
+              <h2 className="text-base font-semibold text-gray-800 dark:text-gray-100">
                 Delete "{pendingDelete.groupName}"
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 What should happen to items in this group?
               </p>
             </div>
@@ -641,7 +641,7 @@ export default function GroupTabs({
                   className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
                     deleteMode === 'move'
                       ? 'border-green-400 bg-green-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                   onClick={() => setDeleteMode('move')}
                 >
@@ -652,14 +652,14 @@ export default function GroupTabs({
                     className="mt-0.5 accent-green-500"
                   />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-700">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                       Move items to another group
                     </p>
                     {deleteMode === 'move' && (
                       <select
                         value={moveToId}
                         onChange={(e) => setMoveToId(e.target.value)}
-                        className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                        className="mt-2 w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {otherGroups.map((g) => (
@@ -677,7 +677,7 @@ export default function GroupTabs({
                 className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
                   deleteMode === 'delete'
                     ? 'border-red-400 bg-red-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
                 onClick={() => setDeleteMode('delete')}
               >
@@ -687,7 +687,7 @@ export default function GroupTabs({
                   onChange={() => setDeleteMode('delete')}
                   className="accent-red-500"
                 />
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   Delete all items in this group
                 </p>
               </label>
@@ -696,7 +696,7 @@ export default function GroupTabs({
             <div className="flex gap-2 px-5 pb-5">
               <button
                 onClick={() => setPendingDelete(null)}
-                className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 Cancel
               </button>

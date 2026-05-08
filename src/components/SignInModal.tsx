@@ -104,15 +104,15 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-50">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-2xl leading-none"
           >
             &times;
           </button>
@@ -122,7 +122,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
         {mode === 'choose' && (
           <div className="flex flex-col gap-3">
             {isUpgrade && (
-              <p className="text-sm text-gray-500 -mt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400 -mt-2">
                 Link an account to keep your data when switching devices.
               </p>
             )}
@@ -130,16 +130,16 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
             <button
               onClick={handleGoogle}
               disabled={loading}
-              className="flex items-center justify-center gap-3 w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              className="flex items-center justify-center gap-3 w-full border border-gray-200 dark:border-gray-600 rounded-xl py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               <GoogleIcon />
               Continue with Google
             </button>
 
             <div className="relative flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-100" />
-              <span className="text-xs text-gray-400">or</span>
-              <div className="flex-1 h-px bg-gray-100" />
+              <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
+              <span className="text-xs text-gray-400 dark:text-gray-500">or</span>
+              <div className="flex-1 h-px bg-gray-100 dark:bg-gray-700" />
             </div>
 
             <button
@@ -147,7 +147,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                 setMode('email-signin')
                 setError('')
               }}
-              className="w-full border border-gray-200 rounded-xl py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full border border-gray-200 dark:border-gray-600 rounded-xl py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Sign in with email
             </button>
@@ -170,7 +170,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
         {mode === 'email-signin' && (
           <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Email</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
               <input
                 type="email"
                 value={email}
@@ -178,11 +178,11 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                 required
                 autoFocus
                 placeholder="you@example.com"
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 Password
               </label>
               <input
@@ -191,7 +191,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Your password"
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
 
@@ -217,7 +217,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                   setMode('choose')
                   setError('')
                 }}
-                className="text-sm text-gray-400 hover:text-gray-600"
+                className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600"
               >
                 ← Back
               </button>
@@ -251,7 +251,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                   setLoading(false)
                 }
               }}
-              className="text-sm text-gray-400 hover:text-gray-600 disabled:opacity-40 text-center"
+              className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 disabled:opacity-40 text-center"
             >
               Forgot password?
             </button>
@@ -262,7 +262,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
         {mode === 'email-signup' && (
           <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 Your name
               </label>
               <input
@@ -272,22 +272,22 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                 required
                 autoFocus
                 placeholder="e.g. Alex"
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Email</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="you@example.com"
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 Password
               </label>
               <input
@@ -297,7 +297,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                 required
                 minLength={6}
                 placeholder="Min. 6 characters"
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
             </div>
 
@@ -318,7 +318,7 @@ export default function SignInModal({ isUpgrade, onClose }: Props) {
                   setMode('choose')
                   setError('')
                 }}
-                className="text-sm text-gray-400 hover:text-gray-600"
+                className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600"
               >
                 ← Back
               </button>

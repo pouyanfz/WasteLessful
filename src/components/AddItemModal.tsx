@@ -113,15 +113,15 @@ export default function AddItemModal({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Title */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Add Item</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-50">Add Item</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-2xl leading-none"
           >
             &times;
           </button>
@@ -131,7 +131,7 @@ export default function AddItemModal({
           {/* Group */}
           {groups.length > 1 && (
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 Add to
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -143,7 +143,7 @@ export default function AddItemModal({
                     className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                       selectedGroupId === g.id
                         ? 'bg-green-500 text-white border-green-500'
-                        : 'bg-white text-gray-500 border-gray-200'
+                        : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600'
                     }`}
                   >
                     {g.name}
@@ -155,20 +155,20 @@ export default function AddItemModal({
 
           {/* Name */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Name *</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Name *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Milk"
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               autoFocus
             />
           </div>
 
           {/* Quantity */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Quantity
             </label>
             <div className="flex gap-2">
@@ -185,7 +185,7 @@ export default function AddItemModal({
                     initial: q.unit === '%' ? 100 : Number(e.target.value),
                   }))
                 }
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
               <select
                 value={isCustomUnit ? '__custom__' : quantity.unit}
@@ -204,7 +204,7 @@ export default function AddItemModal({
                     }))
                   }
                 }}
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>
@@ -231,7 +231,7 @@ export default function AddItemModal({
                   }
                   placeholder="e.g. jar, tray…"
                   autoFocus
-                  className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
                 />
                 <button
                   type="button"
@@ -247,20 +247,20 @@ export default function AddItemModal({
 
           {/* Expiry */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Expiry date
             </label>
             <input
               type="date"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
 
           {/* Categories */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Categories
             </label>
             <div className="flex flex-wrap gap-2">
@@ -272,7 +272,7 @@ export default function AddItemModal({
                   className={`text-xs rounded-full px-3 py-1 border transition-colors ${
                     categories.includes(cat)
                       ? 'bg-green-500 text-white border-green-500'
-                      : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
+                      : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-green-400'
                   }`}
                 >
                   {cat}
@@ -307,7 +307,7 @@ export default function AddItemModal({
                   e.key === 'Enter' && (e.preventDefault(), addCustomCategory())
                 }
                 placeholder="Add custom category…"
-                className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
+                className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
               />
               <button
                 type="button"
@@ -322,7 +322,7 @@ export default function AddItemModal({
 
           {/* Color tag */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Color tag
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -344,13 +344,13 @@ export default function AddItemModal({
 
           {/* Notes */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Notes</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Notes</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Optional notes..."
               rows={2}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
 

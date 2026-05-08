@@ -195,12 +195,12 @@ export default function FilterSheet({
       onClick={onClose}
     >
       <div
-        className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 flex flex-col gap-6 max-h-[85vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 flex flex-col gap-6 max-h-[85vh] overflow-y-auto animate-slide-up sm:animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Filter & Sort</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-50">Filter & Sort</h2>
           <div className="flex items-center gap-3">
             {count > 0 && (
               <button
@@ -212,7 +212,7 @@ export default function FilterSheet({
             )}
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-2xl leading-none"
             >
               &times;
             </button>
@@ -222,10 +222,10 @@ export default function FilterSheet({
         {/* Sort */}
         <section className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-medium text-gray-700">Sort by</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Sort by</h3>
             <button
               onClick={toggleSortDir}
-              className="flex items-center gap-1 text-xs text-gray-500 px-2.5 py-1 rounded-full border border-gray-200 hover:border-green-400 hover:text-green-600 transition-colors"
+              className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-600 hover:border-green-400 hover:text-green-600 transition-colors"
             >
               {filters.sort.dir === 'asc' ? (
                 <>
@@ -270,7 +270,7 @@ export default function FilterSheet({
                 className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                   filters.sort.by === opt.value
                     ? 'bg-green-500 text-white border-green-500'
-                    : 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
+                    : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-green-400'
                 }`}
               >
                 {opt.label}
@@ -279,11 +279,11 @@ export default function FilterSheet({
           </div>
         </section>
 
-        <div className="border-t border-gray-100" />
+        <div className="border-t border-gray-100 dark:border-gray-700" />
 
         {/* Expiry status */}
         <section className="flex flex-col gap-3">
-          <h3 className="text-sm font-medium text-gray-700">Expiry status</h3>
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Expiry status</h3>
           <div className="flex flex-wrap gap-2">
             {EXPIRY_OPTIONS.map((opt) => {
               const active = filters.expiryStatus.includes(opt.value)
@@ -294,7 +294,7 @@ export default function FilterSheet({
                   className={`text-sm rounded-full px-4 py-2 border font-medium transition-colors ${
                     active
                       ? opt.color + ' ring-2 ring-offset-1 ring-current'
-                      : 'bg-white text-gray-500 border-gray-200'
+                      : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600'
                   }`}
                 >
                   {opt.label}
@@ -307,10 +307,10 @@ export default function FilterSheet({
         {/* Low quantity */}
         <section className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
               Low quantity only
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-gray-500">
               Items below {mockUser.settings.lowQuantityThreshold}% remaining
             </p>
           </div>
@@ -319,7 +319,7 @@ export default function FilterSheet({
               onChange({ ...filters, lowQuantity: !filters.lowQuantity })
             }
             className={`w-12 h-7 rounded-full transition-colors relative ${
-              filters.lowQuantity ? 'bg-green-500' : 'bg-gray-200'
+              filters.lowQuantity ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700'
             }`}
           >
             <span
@@ -333,7 +333,7 @@ export default function FilterSheet({
         {/* Colors */}
         {availableColors.length > 0 && (
           <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-medium text-gray-700">Color tag</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Color tag</h3>
             <div className="flex flex-wrap gap-3">
               {availableColors.map((color) => {
                 const active = filters.colors.includes(color)
@@ -345,7 +345,7 @@ export default function FilterSheet({
                     title={isNone ? 'No color' : color}
                     className={`w-9 h-9 rounded-full flex items-center justify-center transition-transform hover:scale-110 ${
                       active ? 'scale-110' : ''
-                    } ${isNone ? 'bg-gray-100 border border-gray-300' : ''}`}
+                    } ${isNone ? 'bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600' : ''}`}
                     style={
                       !isNone
                         ? {
@@ -357,7 +357,7 @@ export default function FilterSheet({
                     }
                   >
                     {isNone && (
-                      <span className="text-gray-400 text-lg leading-none">
+                      <span className="text-gray-400 dark:text-gray-500 text-lg leading-none">
                         ∅
                       </span>
                     )}
@@ -371,7 +371,7 @@ export default function FilterSheet({
         {/* Categories */}
         {availableCategories.length > 0 && (
           <section className="flex flex-col gap-3">
-            <h3 className="text-sm font-medium text-gray-700">Category</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200">Category</h3>
             <div className="flex flex-wrap gap-2">
               {availableCategories.map((cat) => {
                 const active = filters.categories.includes(cat)
@@ -382,7 +382,7 @@ export default function FilterSheet({
                     className={`text-sm rounded-full px-4 py-2 border transition-colors ${
                       active
                         ? 'bg-green-500 text-white border-green-500'
-                        : 'bg-white text-gray-500 border-gray-200'
+                        : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600'
                     }`}
                   >
                     {cat}

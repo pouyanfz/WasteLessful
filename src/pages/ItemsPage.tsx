@@ -22,6 +22,7 @@ import type { Filters } from '../components/FilterSheet'
 
 const STORAGE_KEY = 'activeGroupId'
 const VIEW_MODE_KEY = 'desktopViewMode'
+const NOW_MS = Date.now()
 
 function loadActiveGroupId(): string | null {
   const val = localStorage.getItem(STORAGE_KEY)
@@ -54,7 +55,7 @@ function GearButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:border-green-400 hover:text-green-600 transition-colors shrink-0"
+      className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-500 dark:text-gray-400 hover:border-green-400 hover:text-green-600 transition-colors shrink-0"
       title="Settings"
     >
       <svg
@@ -104,7 +105,7 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
           }}
           placeholder="Group name"
           autoFocus
-          className="border border-green-400 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 w-full"
+          className="border border-green-400 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 w-full dark:bg-gray-800 dark:text-gray-100 dark:border-gray-600"
         />
         <div className="flex gap-2">
           <button
@@ -119,7 +120,7 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
               setAdding(false)
               setInput('')
             }}
-            className="flex-1 border border-gray-200 text-gray-500 rounded-xl py-2.5 text-sm hover:bg-gray-50 transition-colors"
+            className="flex-1 border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 rounded-xl py-2.5 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
@@ -131,7 +132,7 @@ function AddGroupColumn({ onAdd }: { onAdd: (name: string) => void }) {
   return (
     <button
       onClick={() => setAdding(true)}
-      className="w-72 shrink-0 h-24 rounded-2xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-green-400 hover:text-green-500 transition-colors flex flex-col items-center justify-center gap-1 text-sm font-medium"
+      className="w-72 shrink-0 h-24 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500 hover:border-green-400 hover:text-green-500 transition-colors flex flex-col items-center justify-center gap-1 text-sm font-medium"
     >
       <span className="text-2xl leading-none">+</span>
       New group
@@ -159,7 +160,7 @@ function GroupColumn({
         <button
           onClick={onMoveLeft}
           disabled={!onMoveLeft}
-          className="w-6 h-6 rounded flex items-center justify-center text-gray-300 hover:text-gray-600 disabled:opacity-0 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0"
+          className="w-6 h-6 rounded flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-0 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0"
           title="Move left"
         >
           <svg
@@ -180,7 +181,7 @@ function GroupColumn({
           {color && (
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
           )}
-          <h2 className="font-semibold text-gray-800 truncate">{title}</h2>
+          <h2 className="font-semibold text-gray-800 dark:text-gray-100 truncate">{title}</h2>
           {isShared && <span className="text-xs shrink-0" title="Shared group">👥</span>}
         </div>
 
@@ -188,7 +189,7 @@ function GroupColumn({
         <button
           onClick={onMoveRight}
           disabled={!onMoveRight}
-          className="w-6 h-6 rounded flex items-center justify-center text-gray-300 hover:text-gray-600 disabled:opacity-0 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0"
+          className="w-6 h-6 rounded flex items-center justify-center text-gray-300 dark:text-gray-600 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-0 opacity-0 group-hover/col:opacity-100 transition-opacity shrink-0"
           title="Move right"
         >
           <svg
@@ -207,7 +208,7 @@ function GroupColumn({
 
         <button
           onClick={onAddClick}
-          className="w-8 h-8 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-sm hover:bg-blue-50 transition-colors shrink-0"
+          className="w-8 h-8 rounded-full border-2 border-blue-500 bg-white dark:bg-blue-100 flex items-center justify-center shadow-sm hover:bg-blue-50 transition-colors shrink-0"
         >
           <img src={addToListImg} alt="Add item" className="w-4 h-4 object-contain" />
         </button>
@@ -215,7 +216,7 @@ function GroupColumn({
       {/* Items */}
       <div className="flex flex-col gap-3">
         {items.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm mt-8">
+          <p className="text-center text-gray-400 dark:text-gray-500 text-sm mt-8">
             {filterCount > 0 ? 'No items match filters.' : 'No items yet.'}
           </p>
         ) : (
@@ -246,11 +247,9 @@ function ArchivedItemCard({
 }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const archivedMs = item.archivedAt
-    ? Date.now() - item.archivedAt.toDate().getTime()
+  const archivedDays = item.archivedAt
+    ? Math.floor((NOW_MS - item.archivedAt.toDate().getTime()) / 86400000)
     : null
-  const archivedDays =
-    archivedMs !== null ? Math.floor(archivedMs / 86400000) : null
   const archivedLabel =
     archivedDays === null
       ? ''
@@ -261,7 +260,7 @@ function ArchivedItemCard({
           : `Archived ${archivedDays}d ago`
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col gap-3">
+    <div className="bg-white dark:bg-gray-900 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           {item.colorTag && (
@@ -270,14 +269,14 @@ function ArchivedItemCard({
               style={{ backgroundColor: item.colorTag }}
             />
           )}
-          <span className="font-medium text-gray-700 truncate">
+          <span className="font-medium text-gray-700 dark:text-gray-200 truncate">
             {item.name}
           </span>
         </div>
-        <span className="text-xs text-gray-400 shrink-0">{archivedLabel}</span>
+        <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">{archivedLabel}</span>
       </div>
-      <div className="flex items-center gap-2 text-xs text-gray-400">
-        <span className="bg-gray-100 rounded-full px-2 py-0.5">
+      <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+        <span className="bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-0.5">
           {groupName}
         </span>
         <span>
@@ -294,7 +293,7 @@ function ArchivedItemCard({
           </button>
           <button
             onClick={() => setConfirmDelete(false)}
-            className="flex-1 py-2 rounded-lg border border-gray-200 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
             Cancel
           </button>
@@ -309,7 +308,7 @@ function ArchivedItemCard({
           </button>
           <button
             onClick={() => setConfirmDelete(true)}
-            className="flex-1 py-2 rounded-lg border border-gray-200 text-red-400 text-xs font-medium hover:bg-red-50 hover:border-red-300 transition-colors"
+            className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-gray-600 text-red-400 text-xs font-medium hover:bg-red-50 hover:border-red-300 transition-colors"
           >
             Delete
           </button>
@@ -352,23 +351,23 @@ function AutoAddPromptSheet({
       onClick={onDismiss}
     >
       <div
-        className="bg-white w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4"
+        className="bg-white dark:bg-gray-900 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-6 flex flex-col gap-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-50">
               {reason === 'empty'
                 ? `You're out of ${item.name}`
                 : `${item.name} is running low`}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Add it to your shopping list?
             </p>
           </div>
           <button
             onClick={onDismiss}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none shrink-0"
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl leading-none shrink-0"
           >
             &times;
           </button>
@@ -393,7 +392,7 @@ function AutoAddPromptSheet({
                   destId === d.id && !d.color
                     ? 'bg-green-500 text-white border-green-500'
                     : destId !== d.id
-                      ? 'bg-white text-gray-500 border-gray-200 hover:border-green-400'
+                      ? 'bg-white dark:bg-gray-600 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-green-400'
                       : ''
                 }`}
               >
@@ -414,7 +413,7 @@ function AutoAddPromptSheet({
         </button>
         <button
           onClick={onDismiss}
-          className="w-full py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm hover:bg-gray-50 transition-colors"
+          className="w-full py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           Not now
         </button>
@@ -500,8 +499,9 @@ export default function ItemsPage() {
   // Auto-dismiss welcome modal for real (non-anonymous) accounts
   useEffect(() => {
     if (firebaseUser && !firebaseUser.isAnonymous && showWelcomeModal) {
-      dismissWelcome()
+      setTimeout(dismissWelcome, 0)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firebaseUser])
 
   async function handleAddGroup(name: string) {
@@ -547,11 +547,14 @@ export default function ItemsPage() {
     } | null
     if (state?.prefillItem) {
       const { name, amount, unit, groupId } = state.prefillItem
-      setAddToGroupId(groupId ?? groups[0]?.id ?? '')
-      setAddModalPrefill({ name, amount, unit })
-      setShowAddModal(true)
-      window.history.replaceState({}, document.title)
+      setTimeout(() => {
+        setAddToGroupId(groupId ?? groups[0]?.id ?? '')
+        setAddModalPrefill({ name, amount, unit })
+        setShowAddModal(true)
+        window.history.replaceState({}, document.title)
+      }, 0)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function moveGroup(index: number, dir: -1 | 1) {
@@ -748,7 +751,7 @@ export default function ItemsPage() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search items…"
-        className="w-full pl-9 pr-8 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-gray-400"
+        className="w-full pl-9 pr-8 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-sm dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-gray-400 dark:placeholder:text-gray-500"
       />
       {search && (
         <button
@@ -773,11 +776,11 @@ export default function ItemsPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold text-gray-900">My Items</h1>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-50">My Items</h1>
         </div>
 
         {/* Mobile controls */}
@@ -785,7 +788,7 @@ export default function ItemsPage() {
           {!isArchiveView && (
             <button
               onClick={() => setShowFilterSheet(true)}
-              className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:border-green-400 transition-colors"
+              className="relative w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:border-green-400 transition-colors"
             >
               <svg
                 width="18"
@@ -814,14 +817,14 @@ export default function ItemsPage() {
         {/* Desktop controls */}
         <div className="hidden lg:flex items-center gap-3">
           {/* View toggle */}
-          <div className="flex items-center bg-gray-100 rounded-full p-1 gap-1">
+          <div className="flex items-center bg-gray-100 dark:bg-gray-700 rounded-full p-1 gap-1">
             <button
               onClick={() => {
                 setDesktopView('single')
                 localStorage.setItem(VIEW_MODE_KEY, 'single')
               }}
               title="Single column"
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === 'single' ? 'bg-white shadow text-gray-800' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === 'single' ? 'bg-white dark:bg-gray-900 shadow text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
             >
               <svg
                 width="14"
@@ -842,7 +845,7 @@ export default function ItemsPage() {
                 localStorage.setItem(VIEW_MODE_KEY, 'columns')
               }}
               title="Columns"
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === 'columns' ? 'bg-white shadow text-gray-800' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${desktopView === 'columns' ? 'bg-white dark:bg-gray-900 shadow text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
             >
               <svg
                 width="14"
@@ -864,7 +867,7 @@ export default function ItemsPage() {
           {!isArchiveView && (
             <button
               onClick={() => setShowFilterSheet(true)}
-              className="relative flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white text-sm text-gray-600 hover:border-green-400 transition-colors"
+              className="relative flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:border-green-400 transition-colors"
             >
               <svg
                 width="15"
@@ -899,13 +902,13 @@ export default function ItemsPage() {
           onClick={dismissWelcome}
         >
           <div
-            className="bg-white rounded-2xl p-6 max-w-sm w-full flex flex-col gap-4 shadow-xl"
+            className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-sm w-full flex flex-col gap-4 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="text-4xl text-center">👋</div>
             <div className="flex flex-col gap-1 text-center">
-              <h2 className="text-lg font-semibold text-gray-900">Welcome to Wastelessful!</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-50">Welcome to Wastelessful!</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 We've added a couple of sample items so you can explore the app. Tap any item to edit it, use <strong>+</strong> and <strong>−</strong> to adjust quantities, and tap the add button to create your own items.
               </p>
             </div>
@@ -941,7 +944,7 @@ export default function ItemsPage() {
         {!isArchiveView &&
           !(filters.sort.by === 'expiry' && filters.sort.dir === 'asc') && (
             <div className="px-4 pt-2 max-w-lg mx-auto flex">
-              <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
+              <span className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full px-3 py-1.5 font-medium">
                 <svg
                   width="11"
                   height="11"
@@ -985,7 +988,7 @@ export default function ItemsPage() {
         <main className="px-4 py-4 pb-28 flex flex-col gap-3 max-w-lg mx-auto">
           {isArchiveView ? (
             archivedItems.length === 0 ? (
-              <p className="text-center text-gray-400 mt-12">
+              <p className="text-center text-gray-400 dark:text-gray-500 mt-12">
                 Archive is empty.
               </p>
             ) : (
@@ -1003,7 +1006,7 @@ export default function ItemsPage() {
               ))
             )
           ) : visibleItems.length === 0 ? (
-            <p className="text-center text-gray-400 mt-12">
+            <p className="text-center text-gray-400 dark:text-gray-500 mt-12">
               {filterCount > 0
                 ? 'No items match your filters.'
                 : 'No items yet. Add one!'}
@@ -1027,11 +1030,11 @@ export default function ItemsPage() {
       {desktopView === 'columns' && (
         <div className="hidden lg:block">
           {/* Slim toolbar: hamburger | search | archive */}
-          <div className="bg-white border-b border-gray-100 px-6 py-2 flex items-center gap-3">
+          <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-6 py-2 flex items-center gap-3">
             {/* Hamburger → manage modal */}
             <button
               onClick={() => setShowColumnsManage(true)}
-              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-green-500 hover:bg-gray-50 transition-colors"
+              className="shrink-0 w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-gray-500 hover:text-green-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               title="Manage groups"
             >
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1048,7 +1051,7 @@ export default function ItemsPage() {
             {isArchiveView && (
               <button
                 onClick={() => handleTabChange(null)}
-                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors"
+                className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M19 12H5M12 5l-7 7 7 7" />
@@ -1065,7 +1068,7 @@ export default function ItemsPage() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                 isArchiveView
                   ? 'bg-green-100 text-green-700'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1075,7 +1078,7 @@ export default function ItemsPage() {
               </svg>
               Archive
               {!isArchiveView && archivedItems.length > 0 && (
-                <span className="w-4 h-4 bg-gray-200 text-gray-600 text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="w-4 h-4 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-[10px] font-bold rounded-full flex items-center justify-center">
                   {archivedItems.length}
                 </span>
               )}
@@ -1167,7 +1170,7 @@ export default function ItemsPage() {
           {!isArchiveView &&
             !(filters.sort.by === 'expiry' && filters.sort.dir === 'asc') && (
               <div className="px-6 pt-2 max-w-xl mx-auto flex">
-                <span className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-600 rounded-full px-3 py-1.5 font-medium">
+                <span className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full px-3 py-1.5 font-medium">
                   <svg
                     width="11"
                     height="11"
@@ -1254,7 +1257,7 @@ export default function ItemsPage() {
       {!isArchiveView && (
         <button
           onClick={() => openAddModal(activeGroupId ?? groups[0]?.id)}
-          className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-30 w-14 h-14 rounded-full border-2 border-blue-500 bg-white flex items-center justify-center shadow-lg active:scale-95 transition-transform lg:bottom-8 lg:right-8 ${desktopView === 'columns' ? 'lg:hidden' : ''}`}
+          className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-30 w-14 h-14 rounded-full border-2 border-blue-500 bg-white dark:bg-blue-100 flex items-center justify-center shadow-lg active:scale-95 transition-transform lg:bottom-8 lg:right-8 ${desktopView === 'columns' ? 'lg:hidden' : ''}`}
           aria-label="Add item"
         >
           <img src={addToListImg} alt="Add item" className="w-8 h-8 object-contain" />
