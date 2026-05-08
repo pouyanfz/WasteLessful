@@ -112,9 +112,20 @@ npx firebase-tools deploy
 - [x] Phase 4 - Firebase integration (Firestore helpers, real-time listeners)
 - [x] Phase 5 - Auth (anonymous, Google/email, anon-to-real upgrade)
 - [x] Phase 6 - Shared groups (invite codes, member management, join flow)
-- [ ] Phase 7 - Polish (animations, app icon, haptics, loading skeletons)
-- [ ] Phase 8 - PWA (service worker, install prompt, full offline)
-- [ ] Phase 9 - Deploy to Firebase Hosting
+- [x] Phase 7 - PWA (service worker, install prompt, full offline)
+- [x] Phase 8 - Polish (animations, app icon, haptics, loading skeletons)
+- [x] Phase 9 - Deploy to Firebase Hosting
+
+
+## Functional features not yet built:
+- [ ] Barcode scanning to pre-fill Add Item (camera + Open Food Facts API)                                                                                                                  
+- [ ] Photo upload for items (Firebase Storage)                                                                                                                                             
+- [ ] "What can I cook?" AI feature using inventory                                                                                                                                         
+- [ ] Waste calculator (uses activityLog — the type exists but there's no UI for it)                                                                                                        
+- [ ] Usage/waste charts                                                            
+- [ ] Weekly email report                                                                                                                                                                   
+- [ ] Assign people to shopping list items       
+- [ ] Activity log UI (the Firestore schema is defined but never surfaced in the app)  
 
 ---
 
