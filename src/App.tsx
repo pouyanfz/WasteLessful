@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import loadingAnimation from './assets/loadingAnimation.gif'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -9,6 +9,7 @@ import RecipesPage from './pages/RecipesPage'
 import SettingsPage from './pages/SettingsPage'
 import JoinPage from './pages/JoinPage'
 import BottomNav from './components/BottomNav'
+import UsernameSetupModal from './components/UsernameSetupModal'
 
 function applyTheme(theme: string) {
   const dark =
@@ -41,8 +42,41 @@ function ConditionalBottomNav() {
   return <BottomNav />
 }
 
+function UsernameSetupGuard() {
+  const { firebaseUser } = useAuth()
+  const { userDoc } = useAppData()
+
+  const needsSetup =
+    !!firebaseUser &&
+    !firebaseUser.isAnonymous &&
+    !!userDoc &&
+    localStorage.getItem('wl_needs_username') === firebaseUser.uid
+
+  if (!needsSetup) return null
+  return (
+    <UsernameSetupModal
+      uid={firebaseUser.uid}
+      email={firebaseUser.email}
+      onDone={() => {}}
+    />
+  )
+}
+
 function AppShell() {
   const { loading } = useAuth()
+  const [toast, setToast] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!loading) {
+      const msg = localStorage.getItem('wl_pending_toast')
+      if (msg) {
+        localStorage.removeItem('wl_pending_toast')
+        setToast(msg)
+        const t = setTimeout(() => setToast(null), 3000)
+        return () => clearTimeout(t)
+      }
+    }
+  }, [loading])
 
   if (loading) {
     return (
@@ -58,6 +92,12 @@ function AppShell() {
   return (
     <AppDataProvider>
       <ThemeWatcher />
+      <UsernameSetupGuard />
+      {toast && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-gray-800 dark:bg-gray-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg pointer-events-none">
+          {toast}
+        </div>
+      )}
       <BrowserRouter>
         {/* Full-screen flex column: content scrolls, nav sits below it — no fixed overlap */}
         <div className="flex flex-col h-dvh bg-white dark:bg-gray-900">

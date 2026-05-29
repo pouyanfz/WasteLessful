@@ -23,8 +23,11 @@ export const onAuthStateChanged = _onAuthStateChanged
 
 export const signInAnonymously = () => _signInAnonymously(auth)
 
-export const signInWithGoogle = () =>
-  signInWithPopup(auth, new GoogleAuthProvider())
+export const signInWithGoogle = () => {
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
+  return signInWithPopup(auth, provider)
+}
 
 export const signInWithEmail = (email: string, password: string) =>
   signInWithEmailAndPassword(auth, email, password)
@@ -41,7 +44,9 @@ export async function createAccountWithEmail(
 
 export async function linkAnonWithGoogle() {
   if (!auth.currentUser) throw new Error('No current user')
-  return linkWithPopup(auth.currentUser, new GoogleAuthProvider())
+  const provider = new GoogleAuthProvider()
+  provider.setCustomParameters({ prompt: 'select_account' })
+  return linkWithPopup(auth.currentUser, provider)
 }
 
 export async function linkAnonWithEmail(

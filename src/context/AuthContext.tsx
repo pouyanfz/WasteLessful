@@ -123,6 +123,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               await seedUserData(groupId, fbUser.uid)
               localStorage.setItem('wl_sample_data', '1')
             }
+            // Flag that this is a brand-new account needing username confirmation
+            localStorage.setItem('wl_needs_username', fbUser.uid)
           } else if (existing.isAnonymous) {
             // Anonymous → real account upgrade: sync display fields
             await updateUserDoc(fbUser.uid, {

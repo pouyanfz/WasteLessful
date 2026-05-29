@@ -211,6 +211,7 @@ function AccountSection({ onBack }: { onBack: () => void }) {
 
   async function handleDelete() {
     setBusy(true)
+    localStorage.setItem('wl_pending_toast', 'Account deleted successfully')
     await deleteAccount()
     setBusy(false)
     onBack()
