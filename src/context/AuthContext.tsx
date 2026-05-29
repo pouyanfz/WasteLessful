@@ -84,7 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         if (fbUser.isAnonymous) {
           // Anonymous users: initialize local store only — no Firestore writes
+          const isNewAnon = !getLocalStore(fbUser.uid)
           initLocalStore(fbUser.uid)
+          if (isNewAnon) {
+            localStorage.setItem('wl_sample_data', '1')
+          }
         } else {
           const existing = await getUserDoc(fbUser.uid)
           if (!existing) {
