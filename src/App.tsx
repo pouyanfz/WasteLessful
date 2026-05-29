@@ -55,7 +55,6 @@ function UsernameSetupGuard() {
   if (!needsSetup) return null
   return (
     <UsernameSetupModal
-      uid={firebaseUser.uid}
       email={firebaseUser.email}
       onDone={() => {}}
     />

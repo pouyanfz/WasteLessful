@@ -2,12 +2,11 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 interface Props {
-  uid: string
   email: string | null
   onDone: () => void
 }
 
-export default function UsernameSetupModal({ uid, email, onDone }: Props) {
+export default function UsernameSetupModal({ email, onDone }: Props) {
   const { updateDisplayName } = useAuth()
   const [name, setName] = useState(email ? email.split('@')[0] : '')
   const [loading, setLoading] = useState(false)
